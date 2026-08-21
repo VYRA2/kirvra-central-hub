@@ -16,6 +16,7 @@ import { Route as PrimeiroAcessoRouteImport } from './routes/primeiro-acesso'
 import { Route as CentralCentralRouteImport } from './routes/_central.central'
 import { Route as CentralMonitoramentoRouteImport } from './routes/_central.monitoramento'
 import { Route as CentralAlertasIndexRouteImport } from './routes/_central.alertas.index'
+import { Route as CentralAlertasAlertIdRouteImport } from './routes/_central.alertas.$alertId'
 import { Route as CentralHistoricoAlertasRouteImport } from './routes/_central.historico.alertas'
 import { Route as CentralSessoesSessionIdRouteImport } from './routes/_central.sessoes.$sessionId'
 
@@ -53,6 +54,11 @@ const CentralAlertasIndexRoute = CentralAlertasIndexRouteImport.update({
   path: '/alertas/',
   getParentRoute: () => CentralRoute,
 } as any)
+const CentralAlertasAlertIdRoute = CentralAlertasAlertIdRouteImport.update({
+  id: '/alertas/$alertId',
+  path: '/alertas/$alertId',
+  getParentRoute: () => CentralRoute,
+} as any)
 const CentralHistoricoAlertasRoute = CentralHistoricoAlertasRouteImport.update({
   id: '/historico/alertas',
   path: '/historico/alertas',
@@ -70,6 +76,7 @@ export interface FileRoutesByFullPath {
   '/primeiro-acesso': typeof PrimeiroAcessoRoute
   '/central': typeof CentralCentralRoute
   '/monitoramento': typeof CentralMonitoramentoRoute
+  '/alertas/$alertId': typeof CentralAlertasAlertIdRoute
   '/historico/alertas': typeof CentralHistoricoAlertasRoute
   '/sessoes/$sessionId': typeof CentralSessoesSessionIdRoute
   '/alertas/': typeof CentralAlertasIndexRoute
@@ -80,6 +87,7 @@ export interface FileRoutesByTo {
   '/primeiro-acesso': typeof PrimeiroAcessoRoute
   '/central': typeof CentralCentralRoute
   '/monitoramento': typeof CentralMonitoramentoRoute
+  '/alertas/$alertId': typeof CentralAlertasAlertIdRoute
   '/historico/alertas': typeof CentralHistoricoAlertasRoute
   '/sessoes/$sessionId': typeof CentralSessoesSessionIdRoute
   '/alertas': typeof CentralAlertasIndexRoute
@@ -92,6 +100,7 @@ export interface FileRoutesById {
   '/primeiro-acesso': typeof PrimeiroAcessoRoute
   '/_central/central': typeof CentralCentralRoute
   '/_central/monitoramento': typeof CentralMonitoramentoRoute
+  '/_central/alertas/$alertId': typeof CentralAlertasAlertIdRoute
   '/_central/historico/alertas': typeof CentralHistoricoAlertasRoute
   '/_central/sessoes/$sessionId': typeof CentralSessoesSessionIdRoute
   '/_central/alertas/': typeof CentralAlertasIndexRoute
@@ -104,6 +113,7 @@ export interface FileRouteTypes {
     | '/primeiro-acesso'
     | '/central'
     | '/monitoramento'
+    | '/alertas/$alertId'
     | '/historico/alertas'
     | '/sessoes/$sessionId'
     | '/alertas/'
@@ -114,6 +124,7 @@ export interface FileRouteTypes {
     | '/primeiro-acesso'
     | '/central'
     | '/monitoramento'
+    | '/alertas/$alertId'
     | '/historico/alertas'
     | '/sessoes/$sessionId'
     | '/alertas'
@@ -125,6 +136,7 @@ export interface FileRouteTypes {
     | '/primeiro-acesso'
     | '/_central/central'
     | '/_central/monitoramento'
+    | '/_central/alertas/$alertId'
     | '/_central/historico/alertas'
     | '/_central/sessoes/$sessionId'
     | '/_central/alertas/'
@@ -188,6 +200,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CentralAlertasIndexRouteImport
       parentRoute: typeof CentralRoute
     }
+    '/_central/alertas/$alertId': {
+      id: '/_central/alertas/$alertId'
+      path: '/alertas/$alertId'
+      fullPath: '/alertas/$alertId'
+      preLoaderRoute: typeof CentralAlertasAlertIdRouteImport
+      parentRoute: typeof CentralRoute
+    }
     '/_central/historico/alertas': {
       id: '/_central/historico/alertas'
       path: '/historico/alertas'
@@ -208,6 +227,7 @@ declare module '@tanstack/react-router' {
 interface CentralRouteChildren {
   CentralCentralRoute: typeof CentralCentralRoute
   CentralMonitoramentoRoute: typeof CentralMonitoramentoRoute
+  CentralAlertasAlertIdRoute: typeof CentralAlertasAlertIdRoute
   CentralHistoricoAlertasRoute: typeof CentralHistoricoAlertasRoute
   CentralSessoesSessionIdRoute: typeof CentralSessoesSessionIdRoute
   CentralAlertasIndexRoute: typeof CentralAlertasIndexRoute
@@ -216,6 +236,7 @@ interface CentralRouteChildren {
 const CentralRouteChildren: CentralRouteChildren = {
   CentralCentralRoute: CentralCentralRoute,
   CentralMonitoramentoRoute: CentralMonitoramentoRoute,
+  CentralAlertasAlertIdRoute: CentralAlertasAlertIdRoute,
   CentralHistoricoAlertasRoute: CentralHistoricoAlertasRoute,
   CentralSessoesSessionIdRoute: CentralSessoesSessionIdRoute,
   CentralAlertasIndexRoute: CentralAlertasIndexRoute,
