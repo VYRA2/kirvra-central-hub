@@ -1,7 +1,13 @@
-import { createStart, createCsrfMiddleware, createMiddleware } from "@tanstack/react-start";
+import {
+  createStart,
+  createCsrfMiddleware,
+  createMiddleware,
+} from "@tanstack/react-start";
 
 import { renderErrorPage } from "./lib/error-page";
-import { attachSupabaseAuth } from "@/integrations/supabase/auth-attacher";
+// A Central KIRVRA autentica exclusivamente contra o Supabase VYRA2.
+// O cliente gerado pelo Lovable Cloud não é importado por código da aplicação.
+import { attachVyraAuth } from "@/integrations/vyra/auth-middleware";
 
 const errorMiddleware = createMiddleware().server(async ({ next }) => {
   try {
@@ -26,6 +32,6 @@ const csrfMiddleware = createCsrfMiddleware({
 });
 
 export const startInstance = createStart(() => ({
-  functionMiddleware: [attachSupabaseAuth],
+  functionMiddleware: [attachVyraAuth],
   requestMiddleware: [errorMiddleware, csrfMiddleware],
 }));

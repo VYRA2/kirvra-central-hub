@@ -10,33 +10,131 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CentralRouteImport } from './routes/_central'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as PrimeiroAcessoRouteImport } from './routes/primeiro-acesso'
+import { Route as CentralCentralRouteImport } from './routes/_central.central'
+import { Route as CentralMonitoramentoRouteImport } from './routes/_central.monitoramento'
+import { Route as CentralAlertasIndexRouteImport } from './routes/_central.alertas.index'
+import { Route as CentralHistoricoAlertasRouteImport } from './routes/_central.historico.alertas'
+import { Route as CentralSessoesSessionIdRouteImport } from './routes/_central.sessoes.$sessionId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CentralRoute = CentralRouteImport.update({
+  id: '/_central',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrimeiroAcessoRoute = PrimeiroAcessoRouteImport.update({
+  id: '/primeiro-acesso',
+  path: '/primeiro-acesso',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CentralCentralRoute = CentralCentralRouteImport.update({
+  id: '/central',
+  path: '/central',
+  getParentRoute: () => CentralRoute,
+} as any)
+const CentralMonitoramentoRoute = CentralMonitoramentoRouteImport.update({
+  id: '/monitoramento',
+  path: '/monitoramento',
+  getParentRoute: () => CentralRoute,
+} as any)
+const CentralAlertasIndexRoute = CentralAlertasIndexRouteImport.update({
+  id: '/alertas/',
+  path: '/alertas/',
+  getParentRoute: () => CentralRoute,
+} as any)
+const CentralHistoricoAlertasRoute = CentralHistoricoAlertasRouteImport.update({
+  id: '/historico/alertas',
+  path: '/historico/alertas',
+  getParentRoute: () => CentralRoute,
+} as any)
+const CentralSessoesSessionIdRoute = CentralSessoesSessionIdRouteImport.update({
+  id: '/sessoes/$sessionId',
+  path: '/sessoes/$sessionId',
+  getParentRoute: () => CentralRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/primeiro-acesso': typeof PrimeiroAcessoRoute
+  '/central': typeof CentralCentralRoute
+  '/monitoramento': typeof CentralMonitoramentoRoute
+  '/historico/alertas': typeof CentralHistoricoAlertasRoute
+  '/sessoes/$sessionId': typeof CentralSessoesSessionIdRoute
+  '/alertas/': typeof CentralAlertasIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/primeiro-acesso': typeof PrimeiroAcessoRoute
+  '/central': typeof CentralCentralRoute
+  '/monitoramento': typeof CentralMonitoramentoRoute
+  '/historico/alertas': typeof CentralHistoricoAlertasRoute
+  '/sessoes/$sessionId': typeof CentralSessoesSessionIdRoute
+  '/alertas': typeof CentralAlertasIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_central': typeof CentralRouteWithChildren
+  '/login': typeof LoginRoute
+  '/primeiro-acesso': typeof PrimeiroAcessoRoute
+  '/_central/central': typeof CentralCentralRoute
+  '/_central/monitoramento': typeof CentralMonitoramentoRoute
+  '/_central/historico/alertas': typeof CentralHistoricoAlertasRoute
+  '/_central/sessoes/$sessionId': typeof CentralSessoesSessionIdRoute
+  '/_central/alertas/': typeof CentralAlertasIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/primeiro-acesso'
+    | '/central'
+    | '/monitoramento'
+    | '/historico/alertas'
+    | '/sessoes/$sessionId'
+    | '/alertas/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/login'
+    | '/primeiro-acesso'
+    | '/central'
+    | '/monitoramento'
+    | '/historico/alertas'
+    | '/sessoes/$sessionId'
+    | '/alertas'
+  id:
+    | '__root__'
+    | '/'
+    | '/_central'
+    | '/login'
+    | '/primeiro-acesso'
+    | '/_central/central'
+    | '/_central/monitoramento'
+    | '/_central/historico/alertas'
+    | '/_central/sessoes/$sessionId'
+    | '/_central/alertas/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CentralRoute: typeof CentralRouteWithChildren
+  LoginRoute: typeof LoginRoute
+  PrimeiroAcessoRoute: typeof PrimeiroAcessoRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +146,89 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_central': {
+      id: '/_central'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof CentralRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/primeiro-acesso': {
+      id: '/primeiro-acesso'
+      path: '/primeiro-acesso'
+      fullPath: '/primeiro-acesso'
+      preLoaderRoute: typeof PrimeiroAcessoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_central/central': {
+      id: '/_central/central'
+      path: '/central'
+      fullPath: '/central'
+      preLoaderRoute: typeof CentralCentralRouteImport
+      parentRoute: typeof CentralRoute
+    }
+    '/_central/monitoramento': {
+      id: '/_central/monitoramento'
+      path: '/monitoramento'
+      fullPath: '/monitoramento'
+      preLoaderRoute: typeof CentralMonitoramentoRouteImport
+      parentRoute: typeof CentralRoute
+    }
+    '/_central/alertas/': {
+      id: '/_central/alertas/'
+      path: '/alertas'
+      fullPath: '/alertas/'
+      preLoaderRoute: typeof CentralAlertasIndexRouteImport
+      parentRoute: typeof CentralRoute
+    }
+    '/_central/historico/alertas': {
+      id: '/_central/historico/alertas'
+      path: '/historico/alertas'
+      fullPath: '/historico/alertas'
+      preLoaderRoute: typeof CentralHistoricoAlertasRouteImport
+      parentRoute: typeof CentralRoute
+    }
+    '/_central/sessoes/$sessionId': {
+      id: '/_central/sessoes/$sessionId'
+      path: '/sessoes/$sessionId'
+      fullPath: '/sessoes/$sessionId'
+      preLoaderRoute: typeof CentralSessoesSessionIdRouteImport
+      parentRoute: typeof CentralRoute
+    }
   }
 }
 
+interface CentralRouteChildren {
+  CentralCentralRoute: typeof CentralCentralRoute
+  CentralMonitoramentoRoute: typeof CentralMonitoramentoRoute
+  CentralHistoricoAlertasRoute: typeof CentralHistoricoAlertasRoute
+  CentralSessoesSessionIdRoute: typeof CentralSessoesSessionIdRoute
+  CentralAlertasIndexRoute: typeof CentralAlertasIndexRoute
+}
+
+const CentralRouteChildren: CentralRouteChildren = {
+  CentralCentralRoute: CentralCentralRoute,
+  CentralMonitoramentoRoute: CentralMonitoramentoRoute,
+  CentralHistoricoAlertasRoute: CentralHistoricoAlertasRoute,
+  CentralSessoesSessionIdRoute: CentralSessoesSessionIdRoute,
+  CentralAlertasIndexRoute: CentralAlertasIndexRoute,
+}
+
+const CentralRouteWithChildren =
+  CentralRoute._addFileChildren(CentralRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CentralRoute: CentralRouteWithChildren,
+  LoginRoute: LoginRoute,
+  PrimeiroAcessoRoute: PrimeiroAcessoRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
