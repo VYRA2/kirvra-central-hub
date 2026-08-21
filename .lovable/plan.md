@@ -1,110 +1,80 @@
-# Plano de construção — Central KIRVRA
+# Central KIRVRA — apontar o app para o Supabase VYRA2
 
-## Objetivo
-Criar o painel web "Central KIRVRA": uma central operacional com autenticação, dashboard, gestão de chamados/tickets e cadastro de clientes, tudo persistido no banco de dados do próprio projeto (Lovable Cloud/Supabase).
+## Decisão confirmada
+- Projeto Lovable: **d421d4cf-b1ae-44cf-8278-8d7e4eea97ed** (mantido, sem troca).
+- Repositório GitHub: **VYRA2/kirvra-central-hub** (mantido).
+- Banco de dados usado pelo app: **VYRA2's Project** — `hwpansazevjwzdcmhssc`
+  (`https://hwpansazevjwzdcmhssc.supabase.co`).
+- Nenhum projeto Lovable, repositório ou banco novo será criado.
 
-## Premissas adotadas
-- Projeto/banco: **KIRVRA atual** (Lovable Cloud já ativo).
-- Público: operadores/administradores internos da central.
-- Login: email/senha + Google OAuth.
-- Idioma da interface: português.
-- Estilo: minimal, escuro, com identidade KIRVRA.
+## Limitação importante
+O Lovable Cloud continua ativado neste projeto e não pode ser removido. Ele
+não será usado: o app passará a falar exclusivamente com o Supabase VYRA2
+através de um cliente próprio. Consequências práticas:
 
-## Funcionalidades (MVP)
+- Migrations, RLS, policies e configurações de auth do VYRA2 são aplicadas por
+  você no painel Supabase — eu escrevo o SQL pronto para colar.
+- O login dos usuários passa a ser o do VYRA2.
+- Os arquivos gerados do Cloud (`src/integrations/supabase/*`) permanecem no
+  repositório, mas o código da aplicação não os importa.
 
-### 1. Autenticação
-- Tela pública `/auth` com login por email/senha e botão Google.
-- Rotas protegidas sob `/_authenticated/`.
-- Perfil de usuário vinculado à tabela `auth.users` via tabela `profiles`.
-- Após login, redirecionamento para `/` (dashboard).
+## O que falta para começar
+A **publishable/anon key** do projeto VYRA2 (Supabase → Project Settings →
+API Keys). Sem ela o app não consegue autenticar contra o VYRA2. Ela será
+salva como segredo do projeto, não escrita no código.
 
-### 2. Banco de dados
-Tabelas no schema `public`, com RLS, GRANTs e policies:
+## Etapas
 
-- `profiles` — estende `auth.users` (nome, papel, avatar, telefone).
-- `clients` — cadastro de clientes atendidos pela central (nome, email, telefone, documento, status).
-- `tickets` — chamados/tickets (título, descrição, status, prioridade, cliente, responsável, datas).
-- `ticket_comments` — histórico de interações em um ticket.
+### 1. Camada de conexão VYRA2
+- `src/integrations/vyra/client.ts` — cliente browser (URL + publishable key),
+  com sessão persistida, tipado por um `Database` local.
+- `src/integrations/vyra/auth-middleware.ts` — middleware de server function
+  que valida o bearer token contra o VYRA2 e injeta `supabase`/`userId`.
+- Variáveis: `VITE_VYRA_SUPABASE_URL`, `VITE_VYRA_SUPABASE_PUBLISHABLE_KEY`
+  (browser) e equivalentes server-side em segredos.
+- `src/start.ts` recebe o attacher de bearer do VYRA2 no `functionMiddleware`.
 
-Roles:
-- `admin`: acesso total.
-- `agent`: pode criar/editar tickets e clientes, mas não gerenciar usuários.
-- `viewer`: somente leitura.
+### 2. SQL para o VYRA2 (você aplica no painel)
+Um arquivo `supabase/vyra/0001_kirvra_schema.sql` versionado no repositório,
+com tabelas, GRANTs, RLS e policies:
 
-### 3. Layout e navegação
-- Sidebar fixa com logo KIRVRA e links: Dashboard, Tickets, Clientes, Sair.
-- Topbar com nome do usuário logado e avatar.
-- Layout responsivo (menu colapsa em mobile).
+- `profiles` — dados do usuário (nome, avatar, telefone).
+- `user_roles` + enum `app_role` (`admin`, `agent`, `viewer`) e função
+  `has_role()` security definer.
+- `clients` — clientes atendidos pela central.
+- `tickets` — chamados (título, descrição, status, prioridade, cliente,
+  responsável, datas).
+- `ticket_comments` — histórico de interações.
+- Trigger de `updated_at` e trigger que cria `profiles` no primeiro login.
+- Seed opcional de clientes/tickets de exemplo.
 
-### 4. Dashboard (`/`)
-- Cards de resumo: total de tickets, tickets abertos, tickets urgentes, total de clientes.
-- Lista dos tickets mais recentes.
-- Gráfico simples de tickets por status.
+### 3. Autenticação
+- Rota pública `/auth`: login e cadastro por email/senha contra o VYRA2.
+- Rotas protegidas sob `src/routes/_authenticated/` com gate `ssr: false`.
+- Google OAuth fica de fora nesta etapa: o broker do Lovable só funciona com o
+  Cloud. Se quiser Google, configura-se o provider direto no painel do VYRA2 e
+  eu ligo o `signInWithOAuth` padrão depois.
 
-### 5. Módulo de Tickets (`/tickets`)
-- Lista de tickets com filtros (status, prioridade, responsável, cliente).
-- Botão "Novo ticket".
-- Página de detalhes `/tickets/$ticketId` com:
-  - Dados do ticket (editáveis conforme papel).
-  - Histórico de comentários.
-  - Ações: alterar status/prioridade/responsável.
+### 4. Painel
+- Shell com sidebar (Dashboard, Tickets, Clientes, Sair) e topbar com usuário.
+- `/` — dashboard: cards de resumo (tickets totais, abertos, urgentes,
+  clientes) e lista de tickets recentes.
+- `/tickets` — lista com filtros por status, prioridade e responsável;
+  `/tickets/$ticketId` com edição e comentários.
+- `/clients` — lista com busca; `/clients/$clientId` com dados e histórico.
+- Identidade KIRVRA: tema escuro minimalista via tokens em `src/styles.css`.
 
-### 6. Módulo de Clientes (`/clients`)
-- Lista de clientes com busca.
-- Botão "Novo cliente".
-- Página de detalhes `/clients/$clientId` com dados e histórico de tickets do cliente.
+### 5. Verificação
+- Build limpa e preview funcional.
+- Login real contra o VYRA2, leitura e escrita de tickets/clientes com RLS
+  ativa.
 
-### 7. Seed de demonstração
-- Inserir usuários de teste (apenas em dev, via migration seed).
-- Inserir clientes e tickets de exemplo para o painel já nascer populado.
+## Detalhes técnicos
+- TanStack Start v1, React 19, TypeScript, Tailwind v4.
+- Toda leitura/escrita sensível via `createServerFn` com o middleware VYRA2.
+- Zod para validação de input; React Query para carregamento de dados.
+- Nenhum uso de service role no cliente; chaves apenas em segredos.
 
-## Estrutura de arquivos prevista
-```text
-src/
-  routes/
-    __root.tsx              # layout raiz + head + auth state listener
-    index.tsx               # dashboard
-    auth.tsx                # tela de login
-    _authenticated/
-      route.tsx             # layout protegido (sidebar + topbar)
-      tickets.tsx           # lista de tickets
-      tickets.$ticketId.tsx # detalhes do ticket
-      clients.tsx           # lista de clientes
-      clients.$clientId.tsx # detalhes do cliente
-  lib/
-    auth.functions.ts       # server fns de auth/perfil
-    tickets.functions.ts    # server fns de tickets
-    clients.functions.ts    # server fns de clientes
-    dashboard.functions.ts  # server fns de métricas
-  components/
-    ui/                     # componentes shadcn
-    layout/                 # sidebar, topbar, app-shell
-    tickets/                # tabela/filtros de tickets
-    clients/                # tabela/filtros de clientes
-supabase/
-  migrations/
-    0001_initial_schema.sql # cria tabelas, grants, RLS, policies, seed
-```
-
-## Tecnologias e padrões
-- TanStack Start v1 + React 19 + TypeScript.
-- Tailwind CSS v4 com tokens do tema do projeto.
-- Supabase via Lovable Cloud (cliente browser + server functions).
-- `createServerFn` para toda a lógica de backend.
-- Rotas protegidas sob `/_authenticated/` com `ssr: false`.
-- Zod para validação de inputs nas server functions.
-- React Query (`useSuspenseQuery`) para carregamento de dados.
-
-## Critérios de aceitação
-- Usuário consegue fazer login e acessar `/`.
-- Dashboard mostra métricas reais do banco.
-- É possível criar, listar e editar tickets e clientes.
-- Dados são isolados por tenant/RLS; usuários não-admin não acessam o que não devem.
-- A build passa sem erros e o preview reflete as mudanças.
-
-## Próximos passos após aprovação
-1. Criar migration inicial do banco (tabelas + RLS + seed).
-2. Configurar Google OAuth.
-3. Implementar tela de login e layout protegido.
-4. Implementar dashboard, tickets e clientes.
-5. Verificar build e preview.
+## Próximo passo imediato após aprovação
+Pedir a publishable key do VYRA2 pelo formulário seguro de segredos e então
+implementar a camada de conexão.
