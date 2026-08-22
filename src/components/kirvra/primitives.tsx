@@ -165,7 +165,7 @@ export function MetricCard({
   label: string;
   value: string;
   hint?: string;
-  sublabel?: string;
+  sublabel?: string | undefined;
   tone?: BadgeTone;
   className?: string | undefined;
 }) {
@@ -304,15 +304,15 @@ function StateShell({
   title,
   description,
   action,
-  tone = "neutral",
+      tone = "neutral" as BadgeTone,
   className,
 }: {
   icon: ReactNode;
-  title: string;
-  description: string | null | undefined;
-  action: ReactNode | null | undefined;
+      title: string;
+      description: string | undefined;
+      action: ReactNode | undefined;
   tone: BadgeTone | null | undefined;
-  className: string | null | undefined;
+  className: string | undefined;
 }) {
   const toneClass =
     tone === "critical"
@@ -321,7 +321,7 @@ function StateShell({
         ? "text-warning"
         : "text-muted-foreground";
   return (
-    <div className={cn("flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-border bg-card/40 px-6 py-10 text-center", className)}>
+    <div className={cn("flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-border bg-card/40 px-6 py-10 text-center", className || undefined)}>
       <span className={toneClass}>{icon}</span>
       <div>
         <p className="text-sm font-medium text-foreground">{title}</p>
