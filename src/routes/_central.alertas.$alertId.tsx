@@ -258,6 +258,8 @@ function AlertHandlingPage() {
                 )}
               </Panel>
 
+              <Panel title="Áudio e Transcrição" className={undefined} bodyClassName={undefined} actions={undefined} description={undefined}>
+
               <Panel
                 title="Áudio e transcrição"
                 description={
@@ -326,7 +328,7 @@ function AlertHandlingPage() {
             </div>
 
             <div className="flex flex-col gap-4">
-              <Panel title="Contexto do atendimento">
+              <Panel title="Contexto do atendimento" className={undefined} bodyClassName={undefined} actions={undefined} description={undefined}>
                 <dl className="space-y-2.5 text-sm">
                   <div className="flex justify-between gap-3">
                     <dt className="text-muted-foreground">Motorista</dt>
@@ -386,6 +388,8 @@ function AlertHandlingPage() {
                 title="Decisão humana"
                 description="A IA nunca decide. Toda ação registra funcionário, horário e contexto."
                 bodyClassName="grid gap-2 p-4"
+                className={undefined}
+                actions={undefined}
               >
                 <Button
                   variant="destructive"
