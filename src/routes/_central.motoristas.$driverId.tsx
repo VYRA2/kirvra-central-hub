@@ -160,12 +160,15 @@ function DriverDetailPage() {
 
           <div className="space-y-4">
             {/* Resumo Operacional */}
-            <Panel title="Resumo operacional">
+            <Panel title="Resumo operacional" className={undefined} bodyClassName={undefined} actions={undefined} description={undefined}>
               <div className="grid grid-cols-2 gap-3">
                 <MetricCard
                   label="Sessões"
                   value={(driver.sessionCount90d || 0).toString()}
                   tone="neutral"
+                  className={undefined}
+                  sublabel={undefined}
+                  hint={undefined}
                 />
                 <MetricCard
                   label="Alertas"
