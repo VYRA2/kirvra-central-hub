@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Maximize2, Minimize2, ShieldAlert } from "lucide-react";
+import { Maximize2, Minimize2, ShieldAlert, X, TriangleAlert } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +18,7 @@ import { KirvraAppShell } from "@/components/kirvra/app-shell";
 import { FilterBar, FilterField } from "@/components/kirvra/data-display";
 import { LiveMapPanel } from "@/components/kirvra/map-panel";
 import {
+  DriverAvatar,
   EmptyState,
   ErrorState,
   LoadingState,
