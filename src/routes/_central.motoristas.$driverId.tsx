@@ -73,10 +73,10 @@ function DriverDetailPage() {
             <Panel className="relative overflow-hidden" bodyClassName={undefined} title={undefined} description={undefined} actions={undefined}>
               <div className="flex flex-col gap-6 md:flex-row md:items-start">
                 <div className="flex flex-col items-center gap-3">
-                   <DriverAvatar initials={driver.initials} size="lg" className={undefined} />
-                  <StatusBadge tone={driver.registrationStatus === "verificado" ? "success" : "warning"} dot={undefined} className={undefined}>
-                    {driver.registrationStatus === "verificado" ? "Verificado" : driver.registrationStatus === "suspenso" ? "Suspenso" : "Em análise"}
-                  </StatusBadge>
+                    <DriverAvatar initials={driver.initials} size="lg" className={undefined} />
+                    <StatusBadge tone={driver.registrationStatus === "verificado" ? "success" : "warning"} dot={undefined} className={undefined}>
+                      {driver.registrationStatus === "verificado" ? "Verificado" : driver.registrationStatus === "suspenso" ? "Suspenso" : "Em análise"}
+                    </StatusBadge>
                 </div>
 
                 <div className="flex-1">
