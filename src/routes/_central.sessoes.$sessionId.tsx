@@ -235,6 +235,7 @@ function SessionPage() {
                           <Link
                           to="/motoristas/$driverId"
                           params={{ driverId: data.driver.id } as any}
+                          search={{} as any}
                         >
                           Acompanhar motorista
                           </Link>
@@ -324,6 +325,7 @@ function SessionPage() {
                     <Link
                       to="/motoristas/$driverId"
                       params={{ driverId: data.driver.id } as any}
+                      search={{} as any}
                     >
                       Abrir perfil
                     </Link>
