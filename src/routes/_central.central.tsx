@@ -194,7 +194,7 @@ function CommandCenterPage() {
                         </Button>
                       </div>
                     </div>
-                  ) : null
+                  ) : undefined
                 }
               />
             </Panel>
