@@ -198,12 +198,36 @@ function LoginPage() {
           </Button>
         </form>
 
+        {demoAvailable ? (
+          <div className="mt-4 rounded-md border border-dashed border-border bg-surface px-3 py-3">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              disabled={demoStarting}
+              onClick={() => void handleDemo()}
+            >
+              {demoStarting ? (
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+              ) : (
+                <MonitorPlay className="h-4 w-4" aria-hidden="true" />
+              )}
+              Entrar no modo demonstração
+            </Button>
+            <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
+              Visualização local das telas, sem dados reais e sem gravação.
+            </p>
+          </div>
+        ) : null}
+
         <div className="mt-4 flex flex-wrap items-center justify-between gap-2 text-xs">
           <Button
             type="button"
             variant="link"
             className="h-auto p-0 text-xs"
-            onClick={() => void navigate({ to: "/primeiro-acesso", search: {} as any } as any)}
+            onClick={() =>
+              void navigate({ to: "/primeiro-acesso", search: { id: "" } })
+            }
           >
             Primeiro acesso
           </Button>
