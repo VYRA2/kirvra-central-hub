@@ -75,7 +75,7 @@ function DriverDetailPage() {
             <Panel className="relative overflow-hidden">
               <div className="flex flex-col gap-6 md:flex-row md:items-start">
                 <div className="flex flex-col items-center gap-3">
-                  <DriverAvatar initials={driver.initials} size={"xl" as any} />
+                  <DriverAvatar initials={driver.initials} size={"lg" as any} />
                   <StatusBadge tone={(driver.registrationStatus === "verificado" ? "success" : "warning") as any}>
                     {driver.registrationStatus === "verificado" ? "Verificado" : driver.registrationStatus === "suspenso" ? "Suspenso" : "Em análise"}
                   </StatusBadge>
@@ -107,7 +107,7 @@ function DriverDetailPage() {
                     />
                     <DataField
                       label="Contato emergencial"
-                      value={driver.emergencyContact ? `${driver.emergencyContact.name} (${driver.emergencyContact.relationship || "Outro"})` : "—"}
+                      value={driver.emergencyContact ? `${driver.emergencyContact.name} (${(driver.emergencyContact as any).relationship || "Outro"})` : "—"}
                     />
                   </div>
                 </div>
@@ -164,14 +164,12 @@ function DriverDetailPage() {
                 <MetricCard
                   label="Sessões"
                   value={(driver.sessionCount90d || 0).toString()}
-                  sublabel="últimos 90 dias"
-                  className="bg-surface-raised"
+                  tone="neutral"
                 />
                 <MetricCard
                   label="Alertas"
                   value={(driver.alertCount || 0).toString()}
-                  sublabel={(driver.confirmedAlertCount || 0) + " confirmado"}
-                  className="bg-surface-raised"
+                  tone="neutral"
                 />
               </div>
             </Panel>
