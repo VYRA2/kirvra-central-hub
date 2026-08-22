@@ -1,4 +1,4 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router"; // CONTINUE DE ONDE PAROU
 
 import { getSession } from "@/services/auth-service";
 
