@@ -92,10 +92,10 @@ export function RiskBadge({
   className,
 }: {
   level: RiskLevel;
-  className?: string;
+  className?: string | null;
 }) {
   return (
-    <StatusBadge tone={RISK_TONE[level]} className={className}>
+    <StatusBadge tone={RISK_TONE[level]} className={className || undefined}>
       {RISK_LABEL[level]}
     </StatusBadge>
   );
@@ -323,7 +323,7 @@ function StateShell({
 }: {
   icon: ReactNode;
   title: string;
-  description?: string;
+  description?: string | null;
   action?: ReactNode;
   tone?: BadgeTone;
 }) {
