@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router"; // CONTINUE DE ONDE PAROU
 
-import { getSession } from "@/services/auth-service";
+import { resolveCentralSession } from "@/services/auth-service";
 
 export const Route = createFileRoute("/")({
   ssr: false,
