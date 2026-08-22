@@ -33,15 +33,11 @@ export function StatusBadge({
   tone = "neutral",
   dot = true,
   className,
-  status,
-  labels,
 }: {
   children?: ReactNode;
   tone?: BadgeTone;
   dot?: boolean;
   className?: string;
-  status?: string;
-  labels?: Record<string, string>;
 }) {
   const displayLabel = status && labels ? labels[status] : children;
 
@@ -334,7 +330,7 @@ function StateShell({
         ? "text-warning"
         : "text-muted-foreground";
   return (
-    <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-border bg-card/40 px-6 py-10 text-center">
+    <div className={cn("flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-border bg-card/40 px-6 py-10 text-center", className)}>
       <span className={toneClass}>{icon}</span>
       <div>
         <p className="text-sm font-medium text-foreground">{title}</p>
