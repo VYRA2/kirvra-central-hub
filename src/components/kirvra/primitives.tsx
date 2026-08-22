@@ -305,12 +305,14 @@ function StateShell({
   description,
   action,
   tone = "neutral",
+  className,
 }: {
   icon: ReactNode;
   title: string;
   description?: string;
   action?: ReactNode;
   tone?: BadgeTone;
+  className?: string;
 }) {
   const toneClass =
     tone === "critical"
