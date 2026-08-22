@@ -101,9 +101,6 @@ function CommandCenterPage() {
                 className="min-h-[420px] rounded-none border-0"
                 activeId={focused?.session.id ?? null}
                 track={focused?.session.track ?? []}
-                onSelect={undefined}
-                footer={undefined}
-                overlay={undefined}
                 markers={data.liveSessions.map((session) => ({
                   id: session.id,
                   label: findDriver(session.driverId)?.displayName ?? "Sessão",
@@ -114,6 +111,8 @@ function CommandCenterPage() {
                 }))}
                 onSelect={undefined}
                 footer={undefined}
+                overlay={undefined}
+              />
                 overlay={
                   focused?.driver ? (
                     <div className="absolute top-4 right-4 w-[290px] rounded-lg border border-critical/40 bg-card/95 p-3 backdrop-blur-sm">
