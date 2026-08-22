@@ -202,6 +202,7 @@ export function PageHeader({
   title,
   description,
   actions,
+  className,
 }: {
   title: string;
   description?: string | undefined;
