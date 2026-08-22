@@ -151,7 +151,7 @@ function DriversPage() {
       <PageHeader
         title="Motoristas cadastrados"
         description="Situação cadastral, assinatura, veículos e histórico."
-        action={<Button variant="outline">Exportar lista</Button>}
+        actions={<Button variant="outline">Exportar lista</Button>}
       />
 
       <FilterBar className="mt-2">
