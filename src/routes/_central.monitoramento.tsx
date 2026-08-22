@@ -244,9 +244,6 @@ function MonitoringPage() {
                   </div>
                 ) : null
               }
-            onSelect={undefined}
-            footer={undefined}
-            overlay={undefined}
           />
           </Panel>
 
