@@ -188,6 +188,7 @@ function CommandCenterPage() {
                           <Link
                             to="/sessoes/$sessionId"
                             params={{ sessionId: focused.session.id } as any}
+                            search={{} as any}
                           >
                             Acompanhar
                           </Link>
