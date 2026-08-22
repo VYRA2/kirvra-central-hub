@@ -44,7 +44,7 @@ export function StatusBadge({
       className={cn(
         "inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-[11px] font-medium whitespace-nowrap",
         TONE_CLASS[tone] || TONE_CLASS.neutral,
-        className,
+        className || undefined,
       )}
     >
       {dot ? (
@@ -100,7 +100,7 @@ const SEVERITY_LABEL: Record<AlertSeverity, string> = {
 
 export function SeverityBadge({ severity }: { severity: AlertSeverity }) {
   return (
-    <StatusBadge tone={SEVERITY_TONE[severity]}>
+    <StatusBadge tone={SEVERITY_TONE[severity]} dot={undefined} className={undefined}>
       {SEVERITY_LABEL[severity]}
     </StatusBadge>
   );
@@ -126,7 +126,7 @@ const ALERT_STATE_TONE: Record<AlertState, BadgeTone> = {
 
 export function AlertStateBadge({ state }: { state: AlertState }) {
   return (
-    <StatusBadge tone={ALERT_STATE_TONE[state]}>
+    <StatusBadge tone={ALERT_STATE_TONE[state]} dot={undefined} className={undefined}>
       {ALERT_STATE_LABEL[state]}
     </StatusBadge>
   );
