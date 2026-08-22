@@ -163,13 +163,13 @@ function DriverDetailPage() {
               <div className="grid grid-cols-2 gap-3">
                 <MetricCard
                   label="Sessões"
-                  value={driver.sessionCount90d.toString()}
+                  value={(driver.sessionCount90d || 0).toString()}
                   sublabel="últimos 90 dias"
                   className="bg-surface-raised"
                 />
                 <MetricCard
                   label="Alertas"
-                  value={driver.alertCount.toString()}
+                  value={(driver.alertCount || 0).toString()}
                   sublabel={(driver.confirmedAlertCount || 0) + " confirmado"}
                   className="bg-surface-raised"
                 />
