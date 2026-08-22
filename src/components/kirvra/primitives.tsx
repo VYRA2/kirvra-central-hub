@@ -39,7 +39,7 @@ export function StatusBadge({
   children?: ReactNode;
   tone?: BadgeTone;
   dot?: boolean;
-  className?: string;
+  className?: string | null;
   status?: string;
   labels?: Record<string, string>;
 }) {
@@ -59,7 +59,7 @@ export function StatusBadge({
       className={cn(
         "inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-[11px] font-medium whitespace-nowrap",
         TONE_CLASS[computedTone],
-        className,
+        className || undefined,
       )}
     >
       {dot ? (
@@ -251,7 +251,7 @@ export function Panel({
   description?: string;
   actions?: ReactNode;
   children: ReactNode;
-  className?: string;
+  className?: string | null;
   bodyClassName?: string;
 }) {
   return (
