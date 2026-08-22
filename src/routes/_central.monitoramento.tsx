@@ -189,7 +189,7 @@ function MonitoringPage() {
               )}
               activeId={selectedId}
               onSelect={setSelectedId}
-              track={selected?.session.track || undefined}
+              track={selected?.session.track || (undefined as any)}
               markers={rows.map((row) => ({
                 id: row.session.id,
                 label: row.driverName,
