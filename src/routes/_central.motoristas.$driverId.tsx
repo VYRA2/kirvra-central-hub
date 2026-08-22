@@ -86,9 +86,9 @@ function DriverDetailPage() {
                     Dados Cadastrais
                   </h3>
                   <div className="mt-4 grid gap-x-8 gap-y-4 sm:grid-cols-2">
-                    <DataField label="Nome completo" value={driver.fullName} />
-                    <DataField label="CPF" value={driver.maskedDocument} />
-                    <DataField label="Telefone" value={driver.phone} />
+                    <DataField label="Nome completo" value={driver.fullName || "—"} />
+                    <DataField label="CPF" value={driver.maskedDocument || "—"} />
+                    <DataField label="Telefone" value={driver.phone || "—"} />
                     <DataField
                       label="Nascimento"
                       value={driver.birthDate ? format(new Date(driver.birthDate), "dd/MM/yyyy") : "—"}
