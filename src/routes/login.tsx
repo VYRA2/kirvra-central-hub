@@ -158,7 +158,7 @@ function LoginPage() {
             type="button"
             variant="link"
             className="h-auto p-0 text-xs"
-            onClick={() => void navigate({ to: "/primeiro-acesso" })}
+            onClick={() => void navigate({ to: "/primeiro-acesso", search: {} as any })}
           >
             Primeiro acesso
           </Button>

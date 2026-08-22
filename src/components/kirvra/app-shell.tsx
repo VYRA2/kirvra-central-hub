@@ -256,8 +256,8 @@ export function BackLink({
 }) {
   return (
     <Link
-      to={to}
-      params={params}
+      to={to as any}
+      params={params || (undefined as any)}
       className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
     >
       <ChevronLeft className="h-3.5 w-3.5" aria-hidden="true" />

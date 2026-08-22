@@ -62,6 +62,7 @@ function AlertHistoryPage() {
         period: next.period ?? filters.period,
         outcome: next.outcome ?? filters.outcome,
         page: next.page ?? 1,
+        pageSize: filters.pageSize,
       },
     });
   };
