@@ -72,7 +72,7 @@ function DriverDetailPage() {
         <div className="grid gap-4 lg:grid-cols-[1fr_360px]">
           <div className="space-y-4">
             {/* Perfil Principal */}
-            <Panel className="relative overflow-hidden" bodyClassName={undefined}>
+            <Panel className="relative overflow-hidden" bodyClassName={undefined} title={undefined} description={undefined} actions={undefined}>
               <div className="flex flex-col gap-6 md:flex-row md:items-start">
                 <div className="flex flex-col items-center gap-3">
                    <DriverAvatar initials={driver.initials} size="xl" className={null} />
