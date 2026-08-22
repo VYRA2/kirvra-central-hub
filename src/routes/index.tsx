@@ -20,7 +20,9 @@ export const Route = createFileRoute("/")({
       },
     ],
   }),
-  beforeLoad: () => {
-    throw redirect({ to: getSession() ? "/central" : "/login" });
+  beforeLoad: async () => {
+    const session = await resolveCentralSession();
+    if (session) throw redirect({ to: "/central" });
+    throw redirect({ to: "/login", search: { redirect: "" } });
   },
 });
