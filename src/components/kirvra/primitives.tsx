@@ -340,10 +340,12 @@ export function EmptyState({
   title = "Nenhum registro encontrado",
   description,
   action,
+  className,
 }: {
   title?: string;
   description?: string;
   action?: ReactNode;
+  className?: string;
 }) {
   return (
     <StateShell
@@ -351,6 +353,7 @@ export function EmptyState({
       title={title}
       description={description || (undefined as any)}
       action={action}
+      className={className}
     />
   );
 }
@@ -359,10 +362,12 @@ export function ErrorState({
   title = "Não foi possível carregar os dados",
   description = "Tente novamente. Se o erro persistir, acione o suporte da Central.",
   action,
+  className,
 }: {
   title?: string;
   description?: string;
   action?: ReactNode;
+  className?: string;
 }) {
   return (
     <StateShell
@@ -371,6 +376,7 @@ export function ErrorState({
       description={description}
       action={action}
       tone="critical"
+      className={className}
     />
   );
 }
