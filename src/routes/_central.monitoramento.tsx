@@ -219,7 +219,7 @@ function MonitoringPage() {
                         </Button>
                       </div>
                       <div className="mb-3 flex items-center gap-3">
-                        <DriverAvatar initials={selected.driverInitials} size="md" />
+                        <DriverAvatar initials={selected.driverName.substring(0, 2)} size="md" />
                         <div className="min-w-0 flex-1">
                           <p className="truncate text-sm font-bold text-foreground">
                             {selected.driverName}
@@ -232,7 +232,7 @@ function MonitoringPage() {
                           </div>
                         </div>
                       </div>
-                      {selected.sessionAlerts.length > 0 ? (
+                      {selected.session.alertIds.length > 0 ? (
                         <Button
                           size="sm"
                           className="w-full gap-2 bg-critical text-critical-foreground hover:bg-critical/90"
@@ -240,7 +240,7 @@ function MonitoringPage() {
                         >
                           <Link
                             to={"/alertas/$alertId" as any}
-                            params={{ alertId: selected.sessionAlerts[0].id } as any}
+                            params={{ alertId: selected.session.alertIds[0] } as any}
                             search={{} as any}
                           >
                             <TriangleAlert className="h-3.5 w-3.5" />
