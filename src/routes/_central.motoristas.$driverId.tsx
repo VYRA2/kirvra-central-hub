@@ -44,30 +44,27 @@ function DriverDetailPage() {
       <div className="flex flex-col gap-4">
         <BackLink to="/motoristas" label="Voltar para a lista" />
 
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="space-y-1">
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">
-              {driver.displayName}
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Motorista verificado · cadastro desde{" "}
-              {format(new Date(driver.registeredAt), "dd/MM/yyyy", {
-                locale: ptBR,
-              })}
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" className="gap-2">
-              <Edit2 className="h-3.5 w-3.5" />
-              Editar cadastro
-            </Button>
-            <Button variant="destructive" size="sm" className="gap-2 bg-critical text-critical-foreground hover:bg-critical/90">
-              <ShieldOff className="h-3.5 w-3.5" />
-              Suspender acesso
-            </Button>
-          </div>
-        </div>
+        <PageHeader
+          title={driver.displayName}
+          description={`Motorista verificado · cadastro desde ${format(new Date(driver.registeredAt), "dd/MM/yyyy", { locale: ptBR })}`}
+          className={undefined}
+          actions={
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" className="gap-2">
+                <Edit2 className="h-3.5 w-3.5" />
+                Editar cadastro
+              </Button>
+              <Button
+                variant="destructive"
+                size="sm"
+                className="gap-2 bg-critical text-critical-foreground hover:bg-critical/90"
+              >
+                <ShieldOff className="h-3.5 w-3.5" />
+                Suspender acesso
+              </Button>
+            </div>
+          }
+        />
 
         <div className="grid gap-4 lg:grid-cols-[1fr_360px]">
           <div className="space-y-4">

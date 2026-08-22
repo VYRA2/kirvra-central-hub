@@ -73,7 +73,7 @@ function CommandCenterPage() {
       />
 
       {isLoading ? <LoadingState rows={5} /> : null}
-      {isError ? <ErrorState action={<Button onClick={() => void refetch()}>Tentar novamente</Button>} /> : null}
+      {isError ? <ErrorState action={<Button onClick={() => void refetch()}>Tentar novamente</Button>} className={undefined} tone={undefined} /> : null}
 
       {data ? (
         <>
