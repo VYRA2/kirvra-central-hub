@@ -181,7 +181,7 @@ export function MetricCard({
             : "text-foreground";
 
   return (
-    <div className={cn("rounded-lg border border-border bg-card px-4 py-3", className || (undefined as any))}>
+    <div className={cn("rounded-lg border border-border bg-card px-4 py-3", className || undefined)}>
       <p className="text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
         {label}
       </p>
@@ -243,7 +243,7 @@ export function Panel({
     <section
       className={cn(
         "flex min-w-0 flex-col overflow-hidden rounded-lg border border-border bg-card",
-        className || (undefined as any),
+        className || undefined,
       )}
     >
       {title ? (
@@ -289,7 +289,7 @@ export function DriverAvatar({
       className={cn(
         "inline-flex shrink-0 items-center justify-center rounded-full border border-primary/30 bg-primary/12 font-semibold text-primary",
         sizes[size],
-        className || (undefined as any),
+        className || undefined,
       )}
     >
       {initials}
