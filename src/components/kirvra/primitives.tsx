@@ -43,7 +43,7 @@ export function StatusBadge({
     <span
       className={cn(
         "inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-[11px] font-medium whitespace-nowrap",
-        TONE_CLASS[computedTone],
+        TONE_CLASS[tone] || TONE_CLASS.neutral,
         className,
       )}
     >
@@ -53,7 +53,7 @@ export function StatusBadge({
           className="h-1.5 w-1.5 shrink-0 rounded-full bg-current"
         />
       ) : null}
-      {displayLabel}
+      {children}
     </span>
   );
 }
