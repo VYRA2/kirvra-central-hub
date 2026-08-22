@@ -150,6 +150,7 @@ function SessionPage() {
               className={undefined}
               tone={undefined}
               sublabel={undefined}
+              hint={undefined}
             />
             <MetricCard
               label="Último heartbeat"
@@ -161,12 +162,16 @@ function SessionPage() {
                   ? "warning"
                   : "success"
               }
+              className={undefined}
+              sublabel={undefined}
             />
             <MetricCard
               label="Risk score"
               value={String(data.session.riskScore)}
               hint="Sinal do KIRVRA AI Engine"
               tone={data.session.riskScore >= 70 ? "critical" : "neutral"}
+              className={undefined}
+              sublabel={undefined}
             />
             <MetricCard
               label="Nível de risco"
