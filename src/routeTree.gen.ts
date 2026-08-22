@@ -18,6 +18,8 @@ import { Route as CentralMonitoramentoRouteImport } from './routes/_central.moni
 import { Route as CentralAlertasIndexRouteImport } from './routes/_central.alertas.index'
 import { Route as CentralAlertasAlertIdRouteImport } from './routes/_central.alertas.$alertId'
 import { Route as CentralHistoricoAlertasRouteImport } from './routes/_central.historico.alertas'
+import { Route as CentralMotoristasIndexRouteImport } from './routes/_central.motoristas.index'
+import { Route as CentralMotoristasDriverIdRouteImport } from './routes/_central.motoristas.$driverId'
 import { Route as CentralSessoesSessionIdRouteImport } from './routes/_central.sessoes.$sessionId'
 
 const IndexRoute = IndexRouteImport.update({
@@ -64,6 +66,17 @@ const CentralHistoricoAlertasRoute = CentralHistoricoAlertasRouteImport.update({
   path: '/historico/alertas',
   getParentRoute: () => CentralRoute,
 } as any)
+const CentralMotoristasIndexRoute = CentralMotoristasIndexRouteImport.update({
+  id: '/motoristas/',
+  path: '/motoristas/',
+  getParentRoute: () => CentralRoute,
+} as any)
+const CentralMotoristasDriverIdRoute =
+  CentralMotoristasDriverIdRouteImport.update({
+    id: '/motoristas/$driverId',
+    path: '/motoristas/$driverId',
+    getParentRoute: () => CentralRoute,
+  } as any)
 const CentralSessoesSessionIdRoute = CentralSessoesSessionIdRouteImport.update({
   id: '/sessoes/$sessionId',
   path: '/sessoes/$sessionId',
@@ -78,8 +91,10 @@ export interface FileRoutesByFullPath {
   '/monitoramento': typeof CentralMonitoramentoRoute
   '/alertas/$alertId': typeof CentralAlertasAlertIdRoute
   '/historico/alertas': typeof CentralHistoricoAlertasRoute
+  '/motoristas/$driverId': typeof CentralMotoristasDriverIdRoute
   '/sessoes/$sessionId': typeof CentralSessoesSessionIdRoute
   '/alertas/': typeof CentralAlertasIndexRoute
+  '/motoristas/': typeof CentralMotoristasIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -89,8 +104,10 @@ export interface FileRoutesByTo {
   '/monitoramento': typeof CentralMonitoramentoRoute
   '/alertas/$alertId': typeof CentralAlertasAlertIdRoute
   '/historico/alertas': typeof CentralHistoricoAlertasRoute
+  '/motoristas/$driverId': typeof CentralMotoristasDriverIdRoute
   '/sessoes/$sessionId': typeof CentralSessoesSessionIdRoute
   '/alertas': typeof CentralAlertasIndexRoute
+  '/motoristas': typeof CentralMotoristasIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -102,8 +119,10 @@ export interface FileRoutesById {
   '/_central/monitoramento': typeof CentralMonitoramentoRoute
   '/_central/alertas/$alertId': typeof CentralAlertasAlertIdRoute
   '/_central/historico/alertas': typeof CentralHistoricoAlertasRoute
+  '/_central/motoristas/$driverId': typeof CentralMotoristasDriverIdRoute
   '/_central/sessoes/$sessionId': typeof CentralSessoesSessionIdRoute
   '/_central/alertas/': typeof CentralAlertasIndexRoute
+  '/_central/motoristas/': typeof CentralMotoristasIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -115,8 +134,10 @@ export interface FileRouteTypes {
     | '/monitoramento'
     | '/alertas/$alertId'
     | '/historico/alertas'
+    | '/motoristas/$driverId'
     | '/sessoes/$sessionId'
     | '/alertas/'
+    | '/motoristas/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -126,8 +147,10 @@ export interface FileRouteTypes {
     | '/monitoramento'
     | '/alertas/$alertId'
     | '/historico/alertas'
+    | '/motoristas/$driverId'
     | '/sessoes/$sessionId'
     | '/alertas'
+    | '/motoristas'
   id:
     | '__root__'
     | '/'
@@ -138,8 +161,10 @@ export interface FileRouteTypes {
     | '/_central/monitoramento'
     | '/_central/alertas/$alertId'
     | '/_central/historico/alertas'
+    | '/_central/motoristas/$driverId'
     | '/_central/sessoes/$sessionId'
     | '/_central/alertas/'
+    | '/_central/motoristas/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -214,6 +239,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CentralHistoricoAlertasRouteImport
       parentRoute: typeof CentralRoute
     }
+    '/_central/motoristas/': {
+      id: '/_central/motoristas/'
+      path: '/motoristas'
+      fullPath: '/motoristas/'
+      preLoaderRoute: typeof CentralMotoristasIndexRouteImport
+      parentRoute: typeof CentralRoute
+    }
+    '/_central/motoristas/$driverId': {
+      id: '/_central/motoristas/$driverId'
+      path: '/motoristas/$driverId'
+      fullPath: '/motoristas/$driverId'
+      preLoaderRoute: typeof CentralMotoristasDriverIdRouteImport
+      parentRoute: typeof CentralRoute
+    }
     '/_central/sessoes/$sessionId': {
       id: '/_central/sessoes/$sessionId'
       path: '/sessoes/$sessionId'
@@ -229,8 +268,10 @@ interface CentralRouteChildren {
   CentralMonitoramentoRoute: typeof CentralMonitoramentoRoute
   CentralAlertasAlertIdRoute: typeof CentralAlertasAlertIdRoute
   CentralHistoricoAlertasRoute: typeof CentralHistoricoAlertasRoute
+  CentralMotoristasDriverIdRoute: typeof CentralMotoristasDriverIdRoute
   CentralSessoesSessionIdRoute: typeof CentralSessoesSessionIdRoute
   CentralAlertasIndexRoute: typeof CentralAlertasIndexRoute
+  CentralMotoristasIndexRoute: typeof CentralMotoristasIndexRoute
 }
 
 const CentralRouteChildren: CentralRouteChildren = {
@@ -238,8 +279,10 @@ const CentralRouteChildren: CentralRouteChildren = {
   CentralMonitoramentoRoute: CentralMonitoramentoRoute,
   CentralAlertasAlertIdRoute: CentralAlertasAlertIdRoute,
   CentralHistoricoAlertasRoute: CentralHistoricoAlertasRoute,
+  CentralMotoristasDriverIdRoute: CentralMotoristasDriverIdRoute,
   CentralSessoesSessionIdRoute: CentralSessoesSessionIdRoute,
   CentralAlertasIndexRoute: CentralAlertasIndexRoute,
+  CentralMotoristasIndexRoute: CentralMotoristasIndexRoute,
 }
 
 const CentralRouteWithChildren =
