@@ -124,7 +124,6 @@ function DriverDetailPage() {
               }
               className={undefined}
               bodyClassName={undefined}
-              title={undefined}
               description={undefined}
             >
               <div className="space-y-3">
