@@ -170,7 +170,6 @@ function DriverDetailPage() {
                   label="Alertas"
                   value={(driver.alertCount || 0).toString()}
                   tone="neutral"
-                  className=""
                 />
               </div>
             </Panel>
@@ -182,14 +181,12 @@ function DriverDetailPage() {
                   number={1}
                   title="Proteção iniciada"
                   time="Hoje, 19:47 · Honda Civic"
-                  className=""
                 />
                 <TimelineItem
                   number={2}
                   title="Alerta crítico recebido"
                   time="Hoje, 20:14 · possível arma"
                   tone="critical"
-                  className=""
                 />
                 <TimelineItem
                   number={3}
@@ -226,9 +223,10 @@ function TimelineItem({
   title: string;
   time: string;
   tone?: "neutral" | "critical" | "primary";
+  className?: string;
 }) {
   return (
-    <div className="relative pl-8">
+    <div className={cn("relative pl-8", className)}>
       <div
         className={cn(
           "absolute left-0 flex h-6 w-6 items-center justify-center rounded-full border-2 border-background text-[10px] font-bold",
