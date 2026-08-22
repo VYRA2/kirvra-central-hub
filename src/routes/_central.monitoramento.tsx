@@ -244,8 +244,6 @@ function MonitoringPage() {
                     </div>
                   </div>
                 ) : null
-              }
-            />
           </Panel>
 
           <Panel
