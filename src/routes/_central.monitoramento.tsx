@@ -201,49 +201,58 @@ function MonitoringPage() {
                 offline: row.session.state === "offline",
               }))}
               footer={undefined}
-              overlay={undefined}
-            />
+              overlay={
                 selected ? (
-                  <div className="absolute top-4 left-4 w-[300px] rounded-lg border border-border bg-card/95 p-3 backdrop-blur-sm">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-semibold text-foreground">
-                          {selected.driverName}
-                        </p>
-                        <p className="tabular truncate text-xs text-muted-foreground">
-                          {selected.plate}
-                        </p>
-                      </div>
-                      <RiskBadge level={selected.session.riskLevel} />
-                    </div>
-                    <p className="mt-2 text-xs text-muted-foreground">
-                      {selected.session.location.address}
-                    </p>
-                    <p className="tabular mt-1 text-[11px] text-muted-foreground">
-                      Último GPS {formatElapsed(selected.session.location.capturedAt)}
-                    </p>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      <Button size="sm" asChild>
-                        <Link
-                          to="/sessoes/$sessionId"
-                          params={{ sessionId: selected.session.id } as any}
+                  <div className="absolute top-4 left-4 z-10 max-w-[280px]">
+                    <div className="rounded-lg border border-border bg-background/95 p-3 shadow-lg backdrop-blur-sm">
+                      <div className="mb-2 flex items-center justify-between">
+                        <span className="text-xs font-semibold text-muted-foreground">
+                          FOCO EM TEMPO REAL
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6"
+                          onClick={() => setSelectedId(null)}
                         >
-                          Acompanhar
-                        </Link>
-                      </Button>
-                      {selected.session.alertIds[0] ? (
-                        <Button size="sm" variant="destructive" asChild>
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
+                      <div className="mb-3 flex items-center gap-3">
+                        <DriverAvatar initials={selected.driverInitials} size="md" />
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-sm font-bold text-foreground">
+                            {selected.driverName}
+                          </p>
+                          <div className="flex items-center gap-2">
+                            <RiskBadge level={selected.session.riskLevel} />
+                            <span className="text-[10px] text-muted-foreground uppercase">
+                              {selected.session.state}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      {selected.sessionAlerts.length > 0 ? (
+                        <Button
+                          size="sm"
+                          className="w-full gap-2 bg-critical text-critical-foreground hover:bg-critical/90"
+                          asChild
+                        >
                           <Link
-                            to="/alertas/$alertId"
-                            params={{ alertId: selected.session.alertIds[0] } as any}
+                            to={"/alertas/$alertId" as any}
+                            params={{ alertId: selected.sessionAlerts[0].id } as any}
+                            search={{} as any}
                           >
+                            <TriangleAlert className="h-3.5 w-3.5" />
                             Abrir alerta
                           </Link>
                         </Button>
                       ) : null}
                     </div>
                   </div>
-                ) : null
+                ) : undefined
+              }
+            />
           </Panel>
 
           <Panel
