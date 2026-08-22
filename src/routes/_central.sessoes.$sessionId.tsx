@@ -110,7 +110,6 @@ function SessionPage() {
           title="Sessão não encontrada"
           description={`Nenhuma sessão corresponde ao identificador ${sessionId}.`}
           className={undefined}
-          tone={undefined}
           action={
             <Button asChild variant="outline">
               <Link to="/monitoramento">Voltar ao monitoramento</Link>
