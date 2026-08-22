@@ -257,7 +257,7 @@ export function BackLink({
   return (
     <Link
       to={to as any}
-      params={(params || (undefined as any)) as any}
+      params={params || undefined}
       search={{} as any}
       className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
     >
