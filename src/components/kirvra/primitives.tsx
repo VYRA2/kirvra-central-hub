@@ -39,17 +39,6 @@ export function StatusBadge({
   dot?: boolean;
   className?: string;
 }) {
-  const displayLabel = status && labels ? labels[status] : children;
-
-  let computedTone = tone;
-  if (status) {
-    if (["ativa", "verificado", "online"].includes(status))
-      computedTone = "success";
-    else if (["pendente", "em_analise", "atencao", "suspeito"].includes(status))
-      computedTone = "warning";
-    else if (["cancelada", "suspenso", "critico", "offline"].includes(status))
-      computedTone = "critical";
-  }
   return (
     <span
       className={cn(
