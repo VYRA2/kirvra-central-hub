@@ -227,7 +227,7 @@ function TimelineItem({
   title: string;
   time: string;
   tone?: "neutral" | "critical" | "primary";
-  className?: string;
+  className?: string | undefined;
 }) {
   return (
     <div className={cn("relative pl-8", className)}>
