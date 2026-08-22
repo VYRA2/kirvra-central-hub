@@ -374,10 +374,10 @@ export function ErrorState({
     <StateShell
       icon={<AlertTriangle className="h-6 w-6" />}
       title={title}
-      description={description}
-      action={action}
+      description={description || undefined}
+      action={action || undefined}
       tone="critical"
-      className={className}
+      className={className || undefined}
     />
   );
 }
@@ -393,8 +393,10 @@ export function OfflineState({
     <StateShell
       icon={<WifiOff className="h-6 w-6" />}
       title={title}
-      description={description}
+      description={description || undefined}
+      action={undefined}
       tone="warning"
+      className={undefined}
     />
   );
 }
@@ -408,8 +410,10 @@ export function PermissionDeniedState({
     <StateShell
       icon={<Lock className="h-6 w-6" />}
       title="Sem permissão"
-      description={description}
+      description={description || undefined}
+      action={undefined}
       tone="warning"
+      className={undefined}
     />
   );
 }
@@ -420,8 +424,9 @@ export function SessionExpiredState({ action }: { action?: ReactNode }) {
       icon={<Ban className="h-6 w-6" />}
       title="Sessão expirada"
       description="Por segurança, autentique-se novamente para continuar."
-      action={action}
+      action={action || undefined}
       tone="warning"
+      className={undefined}
     />
   );
 }
