@@ -351,7 +351,7 @@ function SessionPage() {
                 </div>
               </Panel>
 
-              <Panel title="Sensores da sessão" bodyClassName="grid gap-3 p-4 sm:grid-cols-2">
+              <Panel title="Sensores da sessão" bodyClassName="grid gap-3 p-4 sm:grid-cols-2" className={undefined} actions={undefined} description={undefined}>
                 <SensorTile
                   icon={<Camera className="h-4 w-4" aria-hidden="true" />}
                   label="Câmera"
