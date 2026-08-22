@@ -241,8 +241,9 @@ function SessionPage() {
                       <div className="mt-3 flex gap-2">
                         <Button size="sm" asChild>
                           <Link
-                            to="/alertas/$alertId"
-                            params={{ alertId: data.sessionAlerts[0].id }}
+                            to={"/alertas/$alertId" as any}
+                            params={{ alertId: data.sessionAlerts[0].id } as any}
+                            search={{} as any}
                           >
                             Abrir alerta
                           </Link>
