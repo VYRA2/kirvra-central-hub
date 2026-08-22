@@ -181,6 +181,7 @@ function CommandCenterPage() {
                             <Link
                               to="/alertas/$alertId"
                               params={{ alertId: focused.alertId } as any}
+                              search={{} as any}
                             >
                               Abrir alerta
                             </Link>
