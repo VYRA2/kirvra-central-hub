@@ -201,7 +201,6 @@ function CommandCenterPage() {
                   ) : undefined
                 }
               />
-            </Panel>
 
             <div className="flex flex-col gap-4">
               <Panel
