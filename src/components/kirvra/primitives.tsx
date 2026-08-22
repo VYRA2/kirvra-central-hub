@@ -274,8 +274,8 @@ export function DriverAvatar({
   className,
 }: {
   initials: string;
-  size?: "sm" | "md" | "lg" | "xl";
-  className?: string | null;
+  size?: "sm" | "md" | "lg" | "xl" | undefined;
+  className?: string | null | undefined;
 }) {
   const sizes = {
     sm: "h-7 w-7 text-[10px]",
