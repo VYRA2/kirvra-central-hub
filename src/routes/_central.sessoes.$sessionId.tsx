@@ -109,6 +109,8 @@ function SessionPage() {
         <EmptyState
           title="Sessão não encontrada"
           description={`Nenhuma sessão corresponde ao identificador ${sessionId}.`}
+          className={undefined}
+          tone={undefined}
           action={
             <Button asChild variant="outline">
               <Link to="/monitoramento">Voltar ao monitoramento</Link>
@@ -126,6 +128,7 @@ function SessionPage() {
                 ? `${data.vehicle.make} ${data.vehicle.model} · ${data.vehicle.plate}`
                 : "Veículo não informado"
             }`}
+            className={undefined}
             actions={
               <>
                 <Button variant="outline" onClick={() => setNoteOpen(true)}>
@@ -145,6 +148,9 @@ function SessionPage() {
               label="Tempo protegido"
               value={formatClock(data.session.startedAt)}
               hint="Desde o início da sessão"
+              className={undefined}
+              tone={undefined}
+              sublabel={undefined}
             />
             <MetricCard
               label="Último heartbeat"
@@ -233,11 +239,11 @@ function SessionPage() {
                         </Button>
                         <Button size="sm" variant="outline" asChild>
                           <Link
-                          to={"/motoristas/$driverId" as any}
-                          params={{ driverId: data.driver.id } as any}
-                          search={{} as any}
-                        >
-                          Acompanhar motorista
+                            to={"/motoristas/$driverId" as any}
+                            params={{ driverId: data.driver.id } as any}
+                            search={{} as any}
+                          >
+                            Acompanhar motorista
                           </Link>
                         </Button>
                       </div>
@@ -265,6 +271,8 @@ function SessionPage() {
                             ? "success"
                             : "warning"
                         }
+                        dot={undefined}
+                        className={undefined}
                       >
                         {data.driver.registrationStatus === "verificado"
                           ? "Cadastro verificado"
