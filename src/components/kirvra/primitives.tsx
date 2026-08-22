@@ -37,7 +37,7 @@ export function StatusBadge({
   children?: ReactNode;
   tone?: BadgeTone;
   dot?: boolean;
-  className?: string;
+  className?: string | undefined;
 }) {
   return (
     <span
@@ -77,7 +77,7 @@ export function RiskBadge({
   className,
 }: {
   level: RiskLevel;
-  className?: string;
+  className?: string | undefined;
 }) {
   return (
     <StatusBadge tone={RISK_TONE[level]} className={className || (undefined as any)}>
@@ -343,9 +343,9 @@ export function EmptyState({
   className,
 }: {
   title?: string;
-  description?: string;
-  action?: ReactNode;
-  className?: string;
+  description?: string | undefined;
+  action?: ReactNode | undefined;
+  className?: string | undefined;
 }) {
   return (
     <StateShell
@@ -366,9 +366,9 @@ export function ErrorState({
   className,
 }: {
   title?: string;
-  description?: string;
-  action?: ReactNode;
-  className?: string;
+  description?: string | undefined;
+  action?: ReactNode | undefined;
+  className?: string | undefined;
 }) {
   return (
     <StateShell

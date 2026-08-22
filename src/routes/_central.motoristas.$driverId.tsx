@@ -170,7 +170,6 @@ function DriverDetailPage() {
                   label="Alertas"
                   value={(driver.alertCount || 0).toString()}
                   tone="neutral"
-                  className={undefined}
                 />
               </div>
             </Panel>
@@ -182,14 +181,12 @@ function DriverDetailPage() {
                   number={1}
                   title="Proteção iniciada"
                   time="Hoje, 19:47 · Honda Civic"
-                  className={undefined}
                 />
                 <TimelineItem
                   number={2}
                   title="Alerta crítico recebido"
                   time="Hoje, 20:14 · possível arma"
                   tone="critical"
-                  className={undefined}
                 />
                 <TimelineItem
                   number={3}
