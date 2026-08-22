@@ -100,7 +100,7 @@ function CommandCenterPage() {
               <LiveMapPanel
                 className="min-h-[420px] rounded-none border-0"
                 activeId={focused?.session.id ?? null}
-                track={focused?.session.track ?? undefined}
+                track={focused?.session.track ?? []}
                 markers={data.liveSessions.map((session) => ({
                   id: session.id,
                   label: findDriver(session.driverId)?.displayName ?? "Sessão",

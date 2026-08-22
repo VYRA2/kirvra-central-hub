@@ -191,7 +191,7 @@ function MonitoringPage() {
               )}
               activeId={selectedId}
               onSelect={(id: string) => setSelectedId(id)}
-              track={selected?.session.track ?? undefined}
+              track={selected?.session.track ?? []}
               markers={rows.map((row) => ({
                 id: row.session.id,
                 label: row.driverName,
@@ -201,7 +201,8 @@ function MonitoringPage() {
                 offline: row.session.state === "offline",
               }))}
               footer={undefined}
-              overlay={
+              overlay={undefined}
+            />
                 selected ? (
                   <div className="absolute top-4 left-4 w-[300px] rounded-lg border border-border bg-card/95 p-3 backdrop-blur-sm">
                     <div className="flex items-start justify-between gap-2">
