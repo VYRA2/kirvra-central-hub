@@ -107,7 +107,7 @@ function AlertHandlingPage() {
           description={`Nenhum alerta corresponde ao identificador ${alertId}.`}
           action={
             <Button variant="outline" asChild>
-              <Link to="/alertas" search={{} as any} {...({} as any)}>Voltar à fila</Link>
+              <Link to="/alertas" search={{} as any}>Voltar à fila</Link>
             </Button>
           }
         />
@@ -165,7 +165,7 @@ function AlertHandlingPage() {
                 <LiveMapPanel
                   className="min-h-[300px] rounded-none border-0"
                   activeId={session?.id ?? null}
-                  track={session?.track || (undefined as any)}
+                  track={session?.track || undefined}
                   markers={
                     session
                       ? [

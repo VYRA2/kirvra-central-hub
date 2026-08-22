@@ -62,7 +62,7 @@ function CommandCenterPage() {
               </Link>
             </Button>
             <Button variant="outline" asChild>
-              <Link to="/alertas" search={{} as any} {...({} as any)}>
+              <Link to="/alertas" search={{} as any}>
                 <ShieldAlert className="h-4 w-4" aria-hidden="true" />
                 Ver alertas
               </Link>
@@ -97,7 +97,7 @@ function CommandCenterPage() {
               <LiveMapPanel
                 className="min-h-[420px] rounded-none border-0"
                 activeId={focused?.session.id ?? null}
-                track={(focused?.session.track || (undefined as any)) as any}
+                track={focused?.session.track || undefined}
                 markers={data.liveSessions.map((session) => ({
                   id: session.id,
                   label: findDriver(session.driverId)?.displayName ?? "Sessão",
