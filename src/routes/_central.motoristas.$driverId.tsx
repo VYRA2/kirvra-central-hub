@@ -168,7 +168,7 @@ function DriverDetailPage() {
                 />
                 <MetricCard
                   label="Alertas"
-                  value={(driver.alertCount || 0).toString()}
+                  value={String(driver.alertCount || 0)}
                   tone="neutral"
                 />
               </div>
