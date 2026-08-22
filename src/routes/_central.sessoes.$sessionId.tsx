@@ -234,7 +234,7 @@ function SessionPage() {
                         <Button size="sm" variant="outline" asChild>
                           <Link
                           to="/motoristas/$driverId"
-                          params={{ driverId: data.driver.id } as any}
+                          params={{ sessionId: data.session.id } as any}
                           search={{} as any}
                         >
                           Acompanhar motorista
@@ -324,7 +324,7 @@ function SessionPage() {
                   <Button size="sm" variant="link" asChild className="h-auto p-0">
                     <Link
                       to="/motoristas/$driverId"
-                      params={{ driverId: data.driver.id } as any}
+                      params={{ sessionId: data.session.id } as any}
                       search={{} as any}
                     >
                       Abrir perfil

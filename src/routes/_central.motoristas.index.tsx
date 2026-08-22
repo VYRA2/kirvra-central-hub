@@ -132,7 +132,7 @@ function DriversPage() {
       align: "right",
       render: (driver) => (
         <Button size="sm" variant="outline" asChild>
-          <Link to="/motoristas/$driverId" params={{ driverId: driver.id } as any}>
+          <Link to="/motoristas/$driverId" params={{ driverId: driver.id } as any} search={{} as any}>
             Abrir perfil
           </Link>
         </Button>
