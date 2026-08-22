@@ -184,6 +184,8 @@ function AlertHandlingPage() {
                         ]
                       : []
                   }
+                  onSelect={undefined}
+                  overlay={undefined}
                   footer={
                     <div className="flex items-center justify-between gap-2">
                       <span className="tabular text-xs text-muted-foreground">
@@ -194,8 +196,9 @@ function AlertHandlingPage() {
                       {session ? (
                         <Button size="sm" variant="outline" asChild>
                           <Link
-                            to="/sessoes/$sessionId"
+                            to={"/sessoes/$sessionId" as any}
                             params={{ sessionId: session.id } as any}
+                            search={{} as any}
                           >
                             Abrir sessão
                           </Link>

@@ -109,6 +109,8 @@ function CommandCenterPage() {
                   risk: session.riskLevel,
                   offline: session.state === "offline",
                 }))}
+                onSelect={undefined}
+                footer={undefined}
                 overlay={
                   focused?.driver ? (
                     <div className="absolute top-4 right-4 w-[290px] rounded-lg border border-critical/40 bg-card/95 p-3 backdrop-blur-sm">
