@@ -161,6 +161,8 @@ function CommandCenterPage() {
                 title="Alertas prioritários"
                 description="Ordenados por severidade e tempo de espera"
                 bodyClassName="space-y-3 p-3"
+                actions={undefined}
+                className={undefined}
               >
                 {data.priorityAlerts.map((alert) => (
                   <AlertCard
