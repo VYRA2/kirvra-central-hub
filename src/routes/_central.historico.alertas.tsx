@@ -59,8 +59,8 @@ function AlertHistoryPage() {
     void navigate({
       to: "/historico/alertas" as any,
       search: {
-        period: next.period ?? filters.period,
-        outcome: next.outcome ?? filters.outcome,
+        period: (next.period ?? filters.period) as any,
+        outcome: (next.outcome ?? filters.outcome) as any,
         page: next.page ?? 1,
         pageSize: filters.pageSize,
       },

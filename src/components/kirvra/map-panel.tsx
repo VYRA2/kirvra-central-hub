@@ -132,7 +132,7 @@ export function LiveMapPanel({
           key={marker.id}
           marker={marker}
           active={activeId === marker.id}
-          onSelect={onSelect || (undefined as any)}
+          onSelect={(onSelect || (undefined as any)) as any}
         />
       ))}
 
