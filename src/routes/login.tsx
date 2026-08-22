@@ -124,7 +124,7 @@ function LoginPage() {
       });
       return;
     }
-    void navigate({ to: "/central", replace: true });
+    void goToDestination();
   };
 
   const handleReset = async () => {
