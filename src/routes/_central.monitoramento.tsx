@@ -189,7 +189,7 @@ function MonitoringPage() {
               )}
               activeId={selectedId}
               onSelect={setSelectedId}
-              track={selected?.session.track || undefined}
+              track={selected?.session.track ?? undefined}
               markers={rows.map((row) => ({
                 id: row.session.id,
                 label: row.driverName,
@@ -248,7 +248,7 @@ function MonitoringPage() {
             title="Sessões ativas"
             description={`${rows.length} sessões no filtro atual`}
             bodyClassName="p-0"
-            className={fullscreen ? "xl:hidden" : undefined}
+            className={fullscreen ? "xl:hidden" : (undefined as any)}
           >
             {rows.length === 0 ? (
               <div className="p-4">

@@ -236,8 +236,8 @@ export function Panel({
   description?: string;
   actions?: ReactNode;
   children: ReactNode;
-  className?: string;
-  bodyClassName?: string;
+  className?: string | undefined;
+  bodyClassName?: string | undefined;
 }) {
   return (
     <section

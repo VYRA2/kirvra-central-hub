@@ -71,7 +71,7 @@ export function LiveMapPanel({
   markers: MapMarkerData[];
   activeId?: string | null;
   onSelect?: (id: string) => void;
-  track?: Array<{ x: number; y: number }>;
+  track?: Array<{ x: number; y: number }> | undefined;
   overlay?: ReactNode;
   footer?: ReactNode;
   className?: string;
