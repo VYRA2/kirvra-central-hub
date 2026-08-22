@@ -188,7 +188,7 @@ function MonitoringPage() {
                 fullscreen ? "min-h-[calc(100vh-330px)]" : "min-h-[520px]",
               )}
               activeId={selectedId}
-              onSelect={setSelectedId}
+              onSelect={setSelectedId || undefined}
               track={selected?.session.track ?? undefined}
               markers={rows.map((row) => ({
                 id: row.session.id,
@@ -250,6 +250,8 @@ function MonitoringPage() {
             bodyClassName="p-0"
             className={fullscreen ? "xl:hidden" : undefined}
             actions={undefined}
+            title={undefined}
+            description={undefined}
           >
             {rows.length === 0 ? (
               <div className="p-4">
