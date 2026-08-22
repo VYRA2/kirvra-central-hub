@@ -218,6 +218,7 @@ function TimelineItem({
   title,
   time,
   tone = "neutral",
+  className,
 }: {
   number: number;
   title: string;
