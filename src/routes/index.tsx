@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router"; // CONTINUE DE ONDE PAROU
 
-import { getSession } from "@/services/auth-service";
+import { resolveCentralSession } from "@/services/auth-service";
 
 export const Route = createFileRoute("/")({
   ssr: false,
@@ -20,7 +20,9 @@ export const Route = createFileRoute("/")({
       },
     ],
   }),
-  beforeLoad: () => {
-    throw redirect({ to: getSession() ? "/central" : "/login" });
+  beforeLoad: async () => {
+    const session = await resolveCentralSession();
+    if (session) throw redirect({ to: "/central" });
+    throw redirect({ to: "/login", search: { redirect: "" } });
   },
 });

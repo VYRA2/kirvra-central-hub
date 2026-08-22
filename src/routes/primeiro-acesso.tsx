@@ -210,7 +210,9 @@ function FirstAccessPage() {
             type="button"
             variant="ghost"
             className="w-full"
-            onClick={() => void navigate({ to: "/login" })}
+            onClick={() =>
+              void navigate({ to: "/login", search: { redirect: "" } })
+            }
           >
             Voltar ao login
           </Button>

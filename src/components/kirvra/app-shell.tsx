@@ -202,7 +202,9 @@ export function UserMenu() {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onSelect={() => {
-            void signOut().then(() => navigate({ to: "/login" }));
+            void signOut().then(() =>
+              navigate({ to: "/login", search: { redirect: "" }, replace: true }),
+            );
           }}
         >
           <LogOut className="h-4 w-4" aria-hidden="true" />
@@ -274,7 +276,7 @@ export function KirvraAppShell({
   title: string;
   children: ReactNode;
 }) {
-  const { session } = useAuth();
+  const { session, loading } = useAuth();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -327,8 +329,16 @@ export function KirvraAppShell({
         />
         <main className="min-h-0 flex-1 overflow-y-auto p-4 lg:p-5">
           <div className="mx-auto flex max-w-[1600px] flex-col gap-4">
-            {session && !session.backed ? <PendingIntegrationNotice /> : null}
-            {children}
+            {session && !session.backed ? (
+              <PendingIntegrationNotice message="Modo demonstração: os dados exibidos são fictícios (mocks locais). Nada é gravado no backend e nenhuma ação crítica é executada." />
+            ) : null}
+            {loading && !session ? (
+              <p className="text-xs text-muted-foreground">
+                Restaurando sessão…
+              </p>
+            ) : (
+              children
+            )}
           </div>
         </main>
       </div>

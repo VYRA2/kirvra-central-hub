@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Loader2, ShieldCheck } from "lucide-react";
+import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
+import { Loader2, MonitorPlay, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -8,16 +8,22 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { KirvraAuthLayout } from "@/components/kirvra/auth-layout";
 import { PendingIntegrationNotice } from "@/components/kirvra/primitives";
+import { safeInternalPath } from "@/lib/safe-redirect";
 import {
-  getSession,
   isBackendAvailable,
+  isDemoAvailable,
   remainingLockSeconds,
   requestPasswordReset,
+  resolveCentralSession,
   signIn,
+  startDemoSession,
 } from "@/services/auth-service";
 
 export const Route = createFileRoute("/login")({
   ssr: false,
+  validateSearch: (search: Record<string, unknown>) => ({
+    redirect: safeInternalPath(search["redirect"]),
+  }),
   head: () => ({
     meta: [
       { title: "Acesso à Central | Kirvra Central de Vigilância" },
@@ -39,15 +45,54 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const navigate = useNavigate();
+  const router = useRouter();
+  const { redirect: redirectTo } = Route.useSearch();
   const [employeeCode, setEmployeeCode] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [demoStarting, setDemoStarting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const backendAvailable = isBackendAvailable();
+  const demoAvailable = isDemoAvailable();
+
+  const goToDestination = async () => {
+    await router.invalidate();
+    const dest = safeInternalPath(redirectTo);
+    if (dest) {
+      await navigate({ href: dest, replace: true });
+      return;
+    }
+    await navigate({ to: "/central", replace: true });
+  };
 
   useEffect(() => {
-    if (getSession()) void navigate({ to: "/central", replace: true });
-  }, [navigate]);
+    let active = true;
+    void resolveCentralSession().then((session) => {
+      if (active && session) void goToDestination();
+    });
+    return () => {
+      active = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleDemo = async () => {
+    setError(null);
+    if (!demoAvailable) {
+      setError("Modo demonstração desabilitado neste ambiente.");
+      return;
+    }
+    setDemoStarting(true);
+    const demo = startDemoSession();
+    if (!demo) {
+      setDemoStarting(false);
+      setError("Não foi possível iniciar o modo demonstração.");
+      return;
+    }
+    await goToDestination();
+    setDemoStarting(false);
+  };
+
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -79,7 +124,7 @@ function LoginPage() {
       });
       return;
     }
-    void navigate({ to: "/central", replace: true });
+    void goToDestination();
   };
 
   const handleReset = async () => {
@@ -153,12 +198,36 @@ function LoginPage() {
           </Button>
         </form>
 
+        {demoAvailable ? (
+          <div className="mt-4 rounded-md border border-dashed border-border bg-surface px-3 py-3">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              disabled={demoStarting}
+              onClick={() => void handleDemo()}
+            >
+              {demoStarting ? (
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+              ) : (
+                <MonitorPlay className="h-4 w-4" aria-hidden="true" />
+              )}
+              Entrar no modo demonstração
+            </Button>
+            <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
+              Visualização local das telas, sem dados reais e sem gravação.
+            </p>
+          </div>
+        ) : null}
+
         <div className="mt-4 flex flex-wrap items-center justify-between gap-2 text-xs">
           <Button
             type="button"
             variant="link"
             className="h-auto p-0 text-xs"
-            onClick={() => void navigate({ to: "/primeiro-acesso", search: {} as any } as any)}
+            onClick={() =>
+              void navigate({ to: "/primeiro-acesso", search: { id: "" } })
+            }
           >
             Primeiro acesso
           </Button>
