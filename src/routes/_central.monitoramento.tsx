@@ -190,7 +190,7 @@ function MonitoringPage() {
                 fullscreen ? "min-h-[calc(100vh-330px)]" : "min-h-[520px]",
               )}
               activeId={selectedId}
-              onSelect={setSelectedId}
+              onSelect={(id) => setSelectedId(id)}
               track={selected?.session.track ?? undefined}
               markers={rows.map((row) => ({
                 id: row.session.id,
@@ -200,6 +200,7 @@ function MonitoringPage() {
                 risk: row.session.riskLevel,
                 offline: row.session.state === "offline",
               }))}
+              footer={undefined}
               overlay={
                 selected ? (
                   <div className="absolute top-4 left-4 w-[300px] rounded-lg border border-border bg-card/95 p-3 backdrop-blur-sm">
