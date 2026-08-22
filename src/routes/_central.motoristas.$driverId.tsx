@@ -72,7 +72,7 @@ function DriverDetailPage() {
         <div className="grid gap-4 lg:grid-cols-[1fr_360px]">
           <div className="space-y-4">
             {/* Perfil Principal */}
-            <Panel className="relative overflow-hidden">
+            <Panel className="relative overflow-hidden" bodyClassName={undefined}>
               <div className="flex flex-col gap-6 md:flex-row md:items-start">
                 <div className="flex flex-col items-center gap-3">
                   <DriverAvatar initials={driver.initials} size="xl" />
@@ -122,6 +122,8 @@ function DriverDetailPage() {
                   Ver todos
                 </Button>
               }
+              className={undefined}
+              bodyClassName={undefined}
             >
               <div className="space-y-3">
                 {driverVehicles.map((v) => (
@@ -170,13 +172,14 @@ function DriverDetailPage() {
                   label="Alertas"
                   value={String(driver.alertCount || 0)}
                   tone="neutral"
+                  sublabel={undefined}
                   className={undefined}
                 />
               </div>
             </Panel>
 
             {/* Atividade Recente */}
-            <Panel title="Atividade recente">
+            <Panel title="Atividade recente" className={undefined} bodyClassName={undefined}>
               <div className="relative space-y-6 before:absolute before:top-2 before:bottom-2 before:left-[11px] before:w-0.5 before:bg-border">
                 <TimelineItem
                   number={1}

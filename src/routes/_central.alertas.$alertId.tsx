@@ -110,6 +110,7 @@ function AlertHandlingPage() {
               <Link to="/alertas" search={{} as any}>Voltar à fila</Link>
             </Button>
           }
+          className={undefined}
         />
       ) : null}
 
