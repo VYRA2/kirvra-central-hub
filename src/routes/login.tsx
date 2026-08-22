@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Loader2, ShieldCheck } from "lucide-react";
+import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
+import { Loader2, MonitorPlay, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -8,16 +8,22 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { KirvraAuthLayout } from "@/components/kirvra/auth-layout";
 import { PendingIntegrationNotice } from "@/components/kirvra/primitives";
+import { safeInternalPath } from "@/lib/safe-redirect";
 import {
-  getSession,
   isBackendAvailable,
+  isDemoAvailable,
   remainingLockSeconds,
   requestPasswordReset,
+  resolveCentralSession,
   signIn,
+  startDemoSession,
 } from "@/services/auth-service";
 
 export const Route = createFileRoute("/login")({
   ssr: false,
+  validateSearch: (search: Record<string, unknown>) => ({
+    redirect: safeInternalPath(search["redirect"]),
+  }),
   head: () => ({
     meta: [
       { title: "Acesso à Central | Kirvra Central de Vigilância" },
