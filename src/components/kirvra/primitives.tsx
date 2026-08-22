@@ -304,13 +304,13 @@ function StateShell({
   title,
   description,
   action,
-      tone = "neutral",
+  tone = "neutral",
   className,
 }: {
   icon: ReactNode;
-      title: string;
-      description: string | undefined;
-      action: ReactNode | undefined;
+  title: string;
+  description: string | undefined;
+  action: ReactNode | undefined;
   tone?: BadgeTone | undefined;
   className: string | undefined;
 }) {
