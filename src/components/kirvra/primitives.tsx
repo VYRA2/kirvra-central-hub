@@ -160,7 +160,7 @@ export function MetricCard({
   hint,
   sublabel,
   tone = "neutral" as BadgeTone,
-  className,
+        className || undefined,
 }: {
   label: string;
   value: string;
