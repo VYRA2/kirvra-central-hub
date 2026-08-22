@@ -67,7 +67,6 @@ function MonitoringPage() {
         title="Motoristas protegidos"
         description="Localização, nível de risco e conectividade das sessões em execução, atualizados continuamente pela Central."
         className={undefined}
-        className={undefined}
         actions={
           <>
             <Button

@@ -117,13 +117,8 @@ function DriverDetailPage() {
             {/* Veículos */}
             <Panel
               title="Veículos"
-        className={undefined}
-        actions={
-                <Button variant="ghost" size="sm" className="h-8 text-xs">
-                  Ver todos
-                </Button>
-              }
               className={undefined}
+              actions={
               bodyClassName={undefined}
               description={undefined}
             >
