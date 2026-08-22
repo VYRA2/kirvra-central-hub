@@ -165,7 +165,7 @@ function AlertHandlingPage() {
                 <LiveMapPanel
                   className="min-h-[300px] rounded-none border-0"
                   activeId={session?.id ?? null}
-                  track={session?.track}
+                  track={session?.track || undefined}
                   markers={
                     session
                       ? [

@@ -95,7 +95,7 @@ export function RiskBadge({
   className?: string;
 }) {
   return (
-    <StatusBadge tone={RISK_TONE[level]} className={className || undefined}>
+    <StatusBadge tone={RISK_TONE[level]} className={className || (undefined as any)}>
       {RISK_LABEL[level]}
     </StatusBadge>
   );
@@ -196,7 +196,7 @@ export function MetricCard({
             : "text-foreground";
 
   return (
-    <div className={cn("rounded-lg border border-border bg-card px-4 py-3", className || undefined)}>
+    <div className={cn("rounded-lg border border-border bg-card px-4 py-3", className || (undefined as any))}>
       <p className="text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
         {label}
       </p>
@@ -258,7 +258,7 @@ export function Panel({
     <section
       className={cn(
         "flex min-w-0 flex-col overflow-hidden rounded-lg border border-border bg-card",
-        className || undefined,
+        className || (undefined as any),
       )}
     >
       {title ? (
@@ -304,7 +304,7 @@ export function DriverAvatar({
       className={cn(
         "inline-flex shrink-0 items-center justify-center rounded-full border border-primary/30 bg-primary/12 font-semibold text-primary",
         sizes[size],
-        className || undefined,
+        className || (undefined as any),
       )}
     >
       {initials}
@@ -362,7 +362,7 @@ export function EmptyState({
     <StateShell
       icon={<Inbox className="h-6 w-6" />}
       title={title}
-      description={description || undefined}
+      description={description || (undefined as any)}
       action={action}
     />
   );
