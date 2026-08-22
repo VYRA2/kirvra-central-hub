@@ -108,7 +108,6 @@ function DriverDetailPage() {
                     <DataField
                       label="Contato emergencial"
                       value={driver.emergencyContact ? `${driver.emergencyContact.name} (${driver.emergencyContact.relationship || "Outro"})` : "—"}
-                      hint={undefined}
                     />
                   </div>
                 </div>

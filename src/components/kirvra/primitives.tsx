@@ -35,8 +35,8 @@ export function StatusBadge({
   className,
 }: {
   children?: ReactNode;
-  tone?: BadgeTone;
-  dot?: boolean;
+  tone?: BadgeTone | undefined;
+  dot?: boolean | undefined;
   className?: string | undefined;
 }) {
   return (

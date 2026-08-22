@@ -336,8 +336,6 @@ function AlertHandlingPage() {
                         params={{ driverId: data.driver.id } as any}
                         search={{} as any}
                         className="text-primary hover:underline"
-                        activeProps={undefined}
-                        inactiveProps={undefined}
                       >
                         {data.driver.displayName}
                       </Link>
