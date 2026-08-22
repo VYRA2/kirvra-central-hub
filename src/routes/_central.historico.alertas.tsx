@@ -63,7 +63,7 @@ function AlertHistoryPage() {
         outcome: (next.outcome || filters.outcome) as any,
         page: (next.page || 1) as any,
         pageSize: (filters.pageSize || 20) as any,
-      },
+      } as any,
     });
   };
 

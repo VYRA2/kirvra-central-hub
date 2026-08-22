@@ -75,7 +75,7 @@ function DriverDetailPage() {
             <Panel className="relative overflow-hidden" bodyClassName={undefined}>
               <div className="flex flex-col gap-6 md:flex-row md:items-start">
                 <div className="flex flex-col items-center gap-3">
-                  <DriverAvatar initials={driver.initials} size="xl" className={null} />
+                   <DriverAvatar initials={driver.initials} size="xl" className={null} />
                   <StatusBadge tone={driver.registrationStatus === "verificado" ? "success" : "warning"} dot={undefined} className={undefined}>
                     {driver.registrationStatus === "verificado" ? "Verificado" : driver.registrationStatus === "suspenso" ? "Suspenso" : "Em análise"}
                   </StatusBadge>
@@ -124,6 +124,8 @@ function DriverDetailPage() {
               }
               className={undefined}
               bodyClassName={undefined}
+              title={undefined}
+              description={undefined}
             >
               <div className="space-y-3">
                 {driverVehicles.map((v) => (
@@ -179,7 +181,7 @@ function DriverDetailPage() {
             </Panel>
 
             {/* Atividade Recente */}
-            <Panel title="Atividade recente" className={undefined} bodyClassName={undefined}>
+            <Panel title="Atividade recente" className={undefined} bodyClassName={undefined} actions={undefined} description={undefined}>
               <div className="relative space-y-6 before:absolute before:top-2 before:bottom-2 before:left-[11px] before:w-0.5 before:bg-border">
                 <TimelineItem
                   number={1}

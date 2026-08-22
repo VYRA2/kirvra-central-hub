@@ -250,6 +250,8 @@ function MonitoringPage() {
             bodyClassName="p-0"
             className={fullscreen ? "xl:hidden" : undefined}
             actions={undefined}
+            title={undefined}
+            description={undefined}
           >
             {rows.length === 0 ? (
               <div className="p-4">
