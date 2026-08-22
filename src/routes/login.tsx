@@ -45,15 +45,54 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const navigate = useNavigate();
+  const router = useRouter();
+  const { redirect: redirectTo } = Route.useSearch();
   const [employeeCode, setEmployeeCode] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [demoStarting, setDemoStarting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const backendAvailable = isBackendAvailable();
+  const demoAvailable = isDemoAvailable();
+
+  const goToDestination = async () => {
+    await router.invalidate();
+    const dest = safeInternalPath(redirectTo);
+    if (dest) {
+      await navigate({ href: dest, replace: true });
+      return;
+    }
+    await navigate({ to: "/central", replace: true });
+  };
 
   useEffect(() => {
-    if (getSession()) void navigate({ to: "/central", replace: true });
-  }, [navigate]);
+    let active = true;
+    void resolveCentralSession().then((session) => {
+      if (active && session) void goToDestination();
+    });
+    return () => {
+      active = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleDemo = async () => {
+    setError(null);
+    if (!demoAvailable) {
+      setError("Modo demonstração desabilitado neste ambiente.");
+      return;
+    }
+    setDemoStarting(true);
+    const demo = startDemoSession();
+    if (!demo) {
+      setDemoStarting(false);
+      setError("Não foi possível iniciar o modo demonstração.");
+      return;
+    }
+    await goToDestination();
+    setDemoStarting(false);
+  };
+
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
