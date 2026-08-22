@@ -162,6 +162,10 @@ function AlertHandlingPage() {
                     : "Sessão sem localização disponível"
                 }
                 bodyClassName="p-0"
+                className={undefined}
+                actions={undefined}
+                title={undefined}
+                description={undefined}
               >
                 <LiveMapPanel
                   className="min-h-[300px] rounded-none border-0"

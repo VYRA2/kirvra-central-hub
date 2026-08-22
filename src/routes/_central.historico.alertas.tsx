@@ -138,11 +138,14 @@ function AlertHistoryPage() {
       {isError ? (
         <ErrorState
           action={<Button onClick={() => void refetch()}>Tentar novamente</Button>}
+          className={undefined}
+          description={undefined}
+          title={undefined}
         />
       ) : null}
 
       {data ? (
-        <Panel bodyClassName="p-0">
+        <Panel bodyClassName="p-0" className={undefined} title={undefined} description={undefined} actions={undefined}>
           <OperationalTable<AlertRow>
             caption="Histórico de ocorrências concluídas"
             rows={data.rows}
