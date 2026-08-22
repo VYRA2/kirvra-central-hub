@@ -76,7 +76,7 @@ function DriverDetailPage() {
               <div className="flex flex-col gap-6 md:flex-row md:items-start">
                 <div className="flex flex-col items-center gap-3">
                   <DriverAvatar initials={driver.initials} size={"xl" as any} />
-                  <StatusBadge tone={driver.registrationStatus === "verificado" ? "success" : "warning"}>
+                  <StatusBadge tone={(driver.registrationStatus === "verificado" ? "success" : "warning") as any}>
                     {driver.registrationStatus === "verificado" ? "Verificado" : driver.registrationStatus === "suspenso" ? "Suspenso" : "Em análise"}
                   </StatusBadge>
                 </div>
@@ -96,7 +96,7 @@ function DriverDetailPage() {
                     <DataField
                       label="Assinatura"
                       value={
-                        <StatusBadge tone={driver.subscriptionStatus === "ativa" ? "success" : "warning"}>
+                        <StatusBadge tone={(driver.subscriptionStatus === "ativa" ? "success" : "warning") as any}>
                           {driver.subscriptionStatus === "ativa" ? "Ativa" : driver.subscriptionStatus === "cancelada" ? "Cancelada" : "Pendente"}
                         </StatusBadge>
                       }
