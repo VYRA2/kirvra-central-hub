@@ -37,8 +37,8 @@ import {
 
 export const Route = createFileRoute("/_central/historico/alertas")({
   validateSearch: (search: Record<string, unknown>): HistoryFilters => ({
-    period: (search["period"] as any) || "30d",
-    outcome: (search["outcome"] as any) || "all",
+    period: (search["period"] as HistoryFilters["period"]) || DEFAULT_HISTORY_FILTERS.period,
+    outcome: (search["outcome"] as HistoryFilters["outcome"]) || DEFAULT_HISTORY_FILTERS.outcome,
     page: Number(search["page"] || 1),
     pageSize: Number(search["pageSize"] || 20),
   }),
