@@ -105,7 +105,6 @@ function AlertHandlingPage() {
         <EmptyState
           title="Alerta não encontrado"
           description={`Nenhum alerta corresponde ao identificador ${alertId}.`}
-          tone={undefined}
           action={
             <Button variant="outline" asChild>
               <Link to="/alertas" search={{} as any}>Voltar à fila</Link>
