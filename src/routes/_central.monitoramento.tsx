@@ -251,7 +251,7 @@ function MonitoringPage() {
             title="Sessões ativas"
             description={`${rows.length} sessões no filtro atual`}
             bodyClassName="p-0"
-            className={fullscreen ? "xl:hidden" : undefined}
+            className={cn(fullscreen ? "xl:hidden" : undefined)}
             actions={undefined}
           >
             {rows.length === 0 ? (
