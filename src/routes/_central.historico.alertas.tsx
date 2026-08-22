@@ -37,9 +37,9 @@ import {
 
 export const Route = createFileRoute("/_central/historico/alertas")({
   validateSearch: (search: Record<string, unknown>): HistoryFilters => ({
-    period: (search["periodo"] as HistoryFilters["period"]) ?? "30d",
-    outcome: (search["resultado"] as HistoryFilters["outcome"]) ?? "todos",
-    page: Number(search["pagina"]) > 0 ? Number(search["pagina"]) : 1,
+    period: (search["period"] as HistoryFilters["period"]) ?? "30d",
+    outcome: (search["outcome"] as HistoryFilters["outcome"]) ?? "todos",
+    page: Number(search["page"]) > 0 ? Number(search["page"]) : 1,
     pageSize: DEFAULT_HISTORY_FILTERS.pageSize,
   }),
   component: AlertHistoryPage,
@@ -59,9 +59,9 @@ function AlertHistoryPage() {
     void navigate({
       to: "/historico/alertas",
       search: {
-        periodo: next.period ?? filters.period,
-        resultado: next.outcome ?? filters.outcome,
-        pagina: next.page ?? 1,
+        period: next.period ?? filters.period,
+        outcome: next.outcome ?? filters.outcome,
+        page: next.page ?? 1,
       },
     });
   };
