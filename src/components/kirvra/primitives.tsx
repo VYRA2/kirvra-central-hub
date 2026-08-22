@@ -309,10 +309,10 @@ function StateShell({
 }: {
   icon: ReactNode;
   title: string;
-  description?: string;
-  action?: ReactNode;
-  tone?: BadgeTone;
-  className?: string;
+  description: string | undefined;
+  action: ReactNode | undefined;
+  tone: BadgeTone | undefined;
+  className: string | undefined;
 }) {
   const toneClass =
     tone === "critical"
@@ -351,9 +351,10 @@ export function EmptyState({
     <StateShell
       icon={<Inbox className="h-6 w-6" />}
       title={title}
-      description={description || (undefined as any)}
-      action={action}
-      className={className}
+      description={description || undefined}
+      action={action || undefined}
+      tone={undefined}
+      className={className || undefined}
     />
   );
 }
