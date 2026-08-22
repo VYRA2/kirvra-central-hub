@@ -232,9 +232,9 @@ export function Panel({
   className,
   bodyClassName,
 }: {
-  title?: string;
-  description?: string;
-  actions?: ReactNode;
+  title?: string | undefined;
+  description?: string | undefined;
+  actions?: ReactNode | undefined;
   children: ReactNode;
   className?: string | undefined;
   bodyClassName?: string | undefined;
@@ -342,7 +342,7 @@ export function EmptyState({
   action,
   className,
 }: {
-  title?: string;
+  title?: string | undefined;
   description?: string | undefined;
   action?: ReactNode | undefined;
   className?: string | undefined;
@@ -365,7 +365,7 @@ export function ErrorState({
   action,
   className,
 }: {
-  title?: string;
+  title?: string | undefined;
   description?: string | undefined;
   action?: ReactNode | undefined;
   className?: string | undefined;
@@ -386,8 +386,8 @@ export function OfflineState({
   title = "Sem conexão com a Central",
   description = "Exibindo o último estado conhecido. A reconexão é automática.",
 }: {
-  title?: string;
-  description?: string;
+  title?: string | undefined;
+  description?: string | undefined;
 }) {
   return (
     <StateShell
