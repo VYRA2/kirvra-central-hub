@@ -233,7 +233,7 @@ function SessionPage() {
                         </Button>
                         <Button size="sm" variant="outline" asChild>
                           <Link
-                          to="/motoristas/$driverId" as any
+                          to={"/motoristas/$driverId" as any}
                           params={{ driverId: data.driver.id } as any}
                           search={{} as any}
                         >
@@ -323,7 +323,7 @@ function SessionPage() {
                   <RiskBadge level={data.session.riskLevel} />
                   <Button size="sm" variant="link" asChild className="h-auto p-0">
                     <Link
-                      to="/motoristas/$driverId" as any
+                      to={"/motoristas/$driverId" as any}
                       params={{ driverId: data.driver.id } as any}
                       search={{} as any}
                     >

@@ -167,7 +167,7 @@ export function MetricCard({
   hint?: string;
   sublabel?: string;
   tone?: BadgeTone;
-  className?: string;
+  className?: string | undefined;
 }) {
   const valueTone =
     tone === "critical"
