@@ -244,10 +244,8 @@ function MonitoringPage() {
                   </div>
                 ) : null
               }
-            actions={undefined}
-            className={undefined}
-          />
-        </Panel>
+            />
+          </Panel>
 
           <Panel
             title="Sessões ativas"
