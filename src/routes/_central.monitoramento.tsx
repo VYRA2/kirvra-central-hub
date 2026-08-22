@@ -81,7 +81,7 @@ function MonitoringPage() {
               {fullscreen ? "Sair da tela cheia" : "Tela cheia"}
             </Button>
             <Button variant="destructive" asChild>
-              <Link to="/alertas" search={{} as any}>
+              <Link to="/alertas" search={{} as any} {...({} as any)}>
                 <ShieldAlert className="h-4 w-4" aria-hidden="true" />
                 Alertas críticos · {criticalCount}
               </Link>

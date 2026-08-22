@@ -107,7 +107,7 @@ function AlertHandlingPage() {
           description={`Nenhum alerta corresponde ao identificador ${alertId}.`}
           action={
             <Button variant="outline" asChild>
-              <Link to="/alertas" search={{} as any} as any>Voltar à fila</Link>
+              <Link to="/alertas" search={{} as any} {...({} as any)}>Voltar à fila</Link>
             </Button>
           }
         />
