@@ -80,7 +80,7 @@ export function RiskBadge({
   className?: string | undefined;
 }) {
   return (
-    <StatusBadge tone={RISK_TONE[level]} className={className || (undefined as any)}>
+    <StatusBadge tone={RISK_TONE[level]} className={className || undefined}>
       {RISK_LABEL[level]}
     </StatusBadge>
   );
