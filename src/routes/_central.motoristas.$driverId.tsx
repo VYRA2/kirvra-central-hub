@@ -170,6 +170,7 @@ function DriverDetailPage() {
                   label="Alertas"
                   value={String(driver.alertCount || 0)}
                   tone="neutral"
+                  className={undefined}
                 />
               </div>
             </Panel>
@@ -223,7 +224,7 @@ function TimelineItem({
   number: number;
   title: string;
   time: string;
-  tone?: "neutral" | "critical" | "primary";
+  tone?: "neutral" | "critical" | "primary" | undefined;
   className?: string | undefined;
 }) {
   return (

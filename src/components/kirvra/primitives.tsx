@@ -159,14 +159,14 @@ export function MetricCard({
   value,
   hint,
   sublabel,
-  tone = "neutral",
+  tone = "neutral" as BadgeTone,
   className,
 }: {
   label: string;
   value: string;
-  hint?: string;
+  hint?: string | undefined;
   sublabel?: string | undefined;
-  tone?: BadgeTone;
+  tone?: BadgeTone | undefined;
   className?: string | undefined;
 }) {
   const valueTone =
