@@ -75,7 +75,7 @@ function DriverDetailPage() {
             <Panel className="relative overflow-hidden">
               <div className="flex flex-col gap-6 md:flex-row md:items-start">
                 <div className="flex flex-col items-center gap-3">
-                  <DriverAvatar initials={driver.initials} size="xl" />
+                  <DriverAvatar initials={driver.initials} size={"xl" as any} />
                   <StatusBadge
                     status={driver.registrationStatus}
                     labels={{

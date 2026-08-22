@@ -330,7 +330,7 @@ function AlertHandlingPage() {
                     <dd className="text-right">
                       <Link
                         to="/motoristas/$driverId"
-                        params={{ driverId: data.driver.id }}
+                        params={{ driverId: data.driver.id } as any}
                         className="text-primary hover:underline"
                       >
                         {data.driver.displayName}

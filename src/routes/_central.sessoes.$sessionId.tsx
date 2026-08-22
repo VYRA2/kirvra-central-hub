@@ -233,10 +233,10 @@ function SessionPage() {
                         </Button>
                         <Button size="sm" variant="outline" asChild>
                           <Link
-                            to="/motoristas/$driverId"
-                            params={{ driverId: data.driver.id }}
-                          >
-                            Acompanhar motorista
+                          to="/motoristas/$driverId"
+                          params={{ driverId: data.driver.id } as any}
+                        >
+                          Acompanhar motorista
                           </Link>
                         </Button>
                       </div>
@@ -323,7 +323,7 @@ function SessionPage() {
                   <Button size="sm" variant="link" asChild className="h-auto p-0">
                     <Link
                       to="/motoristas/$driverId"
-                      params={{ driverId: data.driver.id }}
+                      params={{ driverId: data.driver.id } as any}
                     >
                       Abrir perfil
                     </Link>
