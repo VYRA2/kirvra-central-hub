@@ -73,8 +73,8 @@ function DriverDetailPage() {
             <Panel className="relative overflow-hidden" bodyClassName={undefined} title={undefined} description={undefined} actions={undefined}>
               <div className="flex flex-col gap-6 md:flex-row md:items-start">
                 <div className="flex flex-col items-center gap-3">
-                    <DriverAvatar initials={driver.initials} size="lg" className={undefined} />
-                    <StatusBadge tone={driver.registrationStatus === "verificado" ? "success" : "warning"} dot={undefined} className={undefined}>
+                    <DriverAvatar initials={driver.initials} size="lg" />
+                    <StatusBadge tone={driver.registrationStatus === "verificado" ? "success" : "warning"}>
                       {driver.registrationStatus === "verificado" ? "Verificado" : driver.registrationStatus === "suspenso" ? "Suspenso" : "Em análise"}
                     </StatusBadge>
                 </div>
@@ -94,7 +94,7 @@ function DriverDetailPage() {
                     <DataField
                       label="Assinatura"
                       value={
-                        <StatusBadge tone={driver.subscriptionStatus === "ativa" ? "success" : "warning"} dot={undefined} className={undefined}>
+                        <StatusBadge tone={driver.subscriptionStatus === "ativa" ? "success" : "warning"}>
                           {driver.subscriptionStatus === "ativa" ? "Ativa" : driver.subscriptionStatus === "cancelada" ? "Cancelada" : "Pendente"}
                         </StatusBadge>
                       }
@@ -167,8 +167,6 @@ function DriverDetailPage() {
                   value={(driver.sessionCount90d || 0).toString()}
                   tone="neutral"
                   className={undefined}
-                  sublabel={undefined}
-                  hint={undefined}
                 />
                 <MetricCard
                   label="Alertas"
