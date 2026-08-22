@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Edit2, ShieldOff, Car, History, FileText } from "lucide-react";
+import { Edit2, ShieldOff, Car, History, FileText, Ban, ShieldCheck, User, Clock, MapPin, ChevronRight } from "lucide-react";
 
 import { KirvraAppShell, BackLink } from "@/components/kirvra/app-shell";
 import {
@@ -7,6 +7,7 @@ import {
   DriverAvatar,
   StatusBadge,
   Panel,
+  PageHeader,
 } from "@/components/kirvra/primitives";
 import { Button } from "@/components/ui/button";
 import { drivers, vehicles, sessions, alerts } from "@/mocks/kirvra-central";
@@ -225,7 +226,7 @@ function TimelineItem({
   number: number;
   title: string;
   time: string;
-  tone?: "neutral" | "critical" | "primary" | undefined;
+  tone?: "neutral" | "critical" | "primary" | "success" | "warning" | undefined;
   className?: string | undefined;
 }) {
   return (
