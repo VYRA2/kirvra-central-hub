@@ -209,6 +209,8 @@ function SessionPage() {
               title="Trajeto e localização atual"
               description={data.session.location.address}
               bodyClassName="p-0"
+              className={undefined}
+              actions={undefined}
             >
               <LiveMapPanel
                 className="min-h-[400px] rounded-none border-0"
