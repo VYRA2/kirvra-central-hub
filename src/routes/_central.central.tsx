@@ -53,6 +53,7 @@ function CommandCenterPage() {
       <PageHeader
         title="Visão operacional"
         description="Panorama em tempo real das sessões protegidas, dos alertas em fila e da saúde dos serviços que sustentam a Central."
+        className={undefined}
         actions={
           <>
             <Button asChild>

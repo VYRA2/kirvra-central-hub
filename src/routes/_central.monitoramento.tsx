@@ -66,6 +66,7 @@ function MonitoringPage() {
       <PageHeader
         title="Motoristas protegidos"
         description="Localização, nível de risco e conectividade das sessões em execução, atualizados continuamente pela Central."
+        className={undefined}
         actions={
           <>
             <Button
