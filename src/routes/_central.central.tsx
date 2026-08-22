@@ -93,6 +93,8 @@ function CommandCenterPage() {
               title="Mapa operacional"
               description="Sessões protegidas em execução · destaque para o alerta crítico"
               bodyClassName="p-0"
+              actions={undefined}
+              className={undefined}
             >
               <LiveMapPanel
                 className="min-h-[420px] rounded-none border-0"
