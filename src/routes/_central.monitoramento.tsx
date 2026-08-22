@@ -190,7 +190,7 @@ function MonitoringPage() {
                 fullscreen ? "min-h-[calc(100vh-330px)]" : "min-h-[520px]",
               )}
               activeId={selectedId}
-              onSelect={(id) => setSelectedId(id)}
+              onSelect={(id: string) => setSelectedId(id)}
               track={selected?.session.track ?? undefined}
               markers={rows.map((row) => ({
                 id: row.session.id,
