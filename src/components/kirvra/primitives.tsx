@@ -34,17 +34,17 @@ export function StatusBadge({
   dot = true,
   className,
 }: {
-  children: ReactNode;
-  tone?: BadgeTone;
-  dot?: boolean;
-  className?: string;
+  children?: ReactNode;
+  tone?: BadgeTone | undefined;
+  dot?: boolean | undefined;
+  className?: string | undefined;
 }) {
   return (
     <span
       className={cn(
         "inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-[11px] font-medium whitespace-nowrap",
-        TONE_CLASS[tone],
-        className,
+        TONE_CLASS[tone] || TONE_CLASS.neutral,
+        className || undefined,
       )}
     >
       {dot ? (
@@ -77,10 +77,10 @@ export function RiskBadge({
   className,
 }: {
   level: RiskLevel;
-  className?: string;
+  className?: string | undefined;
 }) {
   return (
-    <StatusBadge tone={RISK_TONE[level]} className={className}>
+    <StatusBadge tone={RISK_TONE[level]} className={className || undefined}>
       {RISK_LABEL[level]}
     </StatusBadge>
   );
@@ -100,7 +100,7 @@ const SEVERITY_LABEL: Record<AlertSeverity, string> = {
 
 export function SeverityBadge({ severity }: { severity: AlertSeverity }) {
   return (
-    <StatusBadge tone={SEVERITY_TONE[severity]}>
+    <StatusBadge tone={SEVERITY_TONE[severity]} dot={undefined} className={undefined}>
       {SEVERITY_LABEL[severity]}
     </StatusBadge>
   );
@@ -126,7 +126,7 @@ const ALERT_STATE_TONE: Record<AlertState, BadgeTone> = {
 
 export function AlertStateBadge({ state }: { state: AlertState }) {
   return (
-    <StatusBadge tone={ALERT_STATE_TONE[state]}>
+    <StatusBadge tone={ALERT_STATE_TONE[state]} dot={undefined} className={undefined}>
       {ALERT_STATE_LABEL[state]}
     </StatusBadge>
   );
@@ -158,12 +158,16 @@ export function MetricCard({
   label,
   value,
   hint,
-  tone = "neutral",
+  sublabel,
+  tone = "neutral" as BadgeTone,
+  className,
 }: {
   label: string;
   value: string;
-  hint?: string;
-  tone?: BadgeTone;
+  hint?: string | undefined;
+  sublabel?: string | undefined;
+  tone?: BadgeTone | undefined;
+  className?: string | undefined;
 }) {
   const valueTone =
     tone === "critical"
@@ -177,13 +181,16 @@ export function MetricCard({
             : "text-foreground";
 
   return (
-    <div className="rounded-lg border border-border bg-card px-4 py-3">
+    <div className={cn("rounded-lg border border-border bg-card px-4 py-3", className || undefined)}>
       <p className="text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
         {label}
       </p>
       <p className={cn("tabular mt-1.5 text-2xl font-semibold", valueTone)}>
         {value}
       </p>
+      {sublabel ? (
+        <p className="mt-1 text-xs text-muted-foreground">{sublabel}</p>
+      ) : null}
       {hint ? (
         <p className="mt-1 text-xs text-muted-foreground">{hint}</p>
       ) : null}
@@ -195,13 +202,15 @@ export function PageHeader({
   title,
   description,
   actions,
+  className,
 }: {
   title: string;
-  description?: string;
-  actions?: ReactNode;
+  description?: string | undefined;
+  actions?: ReactNode | undefined;
+  className?: string | undefined;
 }) {
   return (
-    <header className="flex flex-wrap items-start justify-between gap-4">
+    <header className={cn("flex flex-wrap items-start justify-between gap-4", className)}>
       <div className="min-w-0">
         <h1 className="text-xl font-semibold text-foreground">{title}</h1>
         {description ? (
@@ -225,18 +234,18 @@ export function Panel({
   className,
   bodyClassName,
 }: {
-  title?: string;
-  description?: string;
-  actions?: ReactNode;
+  title?: string | undefined;
+  description?: string | undefined;
+  actions?: ReactNode | undefined;
   children: ReactNode;
-  className?: string;
-  bodyClassName?: string;
+  className?: string | undefined;
+  bodyClassName?: string | undefined;
 }) {
   return (
     <section
       className={cn(
         "flex min-w-0 flex-col overflow-hidden rounded-lg border border-border bg-card",
-        className,
+        className || undefined,
       )}
     >
       {title ? (
@@ -267,13 +276,14 @@ export function DriverAvatar({
   className,
 }: {
   initials: string;
-  size?: "sm" | "md" | "lg";
-  className?: string;
+  size?: "sm" | "md" | "lg" | "xl" | undefined;
+  className?: string | null | undefined;
 }) {
   const sizes = {
     sm: "h-7 w-7 text-[10px]",
     md: "h-9 w-9 text-xs",
     lg: "h-14 w-14 text-base",
+    xl: "h-20 w-20 text-xl",
   };
   return (
     <span
@@ -281,7 +291,7 @@ export function DriverAvatar({
       className={cn(
         "inline-flex shrink-0 items-center justify-center rounded-full border border-primary/30 bg-primary/12 font-semibold text-primary",
         sizes[size],
-        className,
+        className || undefined,
       )}
     >
       {initials}
@@ -297,12 +307,14 @@ function StateShell({
   description,
   action,
   tone = "neutral",
+  className,
 }: {
   icon: ReactNode;
   title: string;
-  description?: string;
-  action?: ReactNode;
-  tone?: BadgeTone;
+  description?: string | undefined;
+  action?: ReactNode | undefined;
+  tone?: BadgeTone | undefined;
+  className?: string | undefined;
 }) {
   const toneClass =
     tone === "critical"
@@ -311,7 +323,7 @@ function StateShell({
         ? "text-warning"
         : "text-muted-foreground";
   return (
-    <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-border bg-card/40 px-6 py-10 text-center">
+    <div className={cn("flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-border bg-card/40 px-6 py-10 text-center", className || undefined)}>
       <span className={toneClass}>{icon}</span>
       <div>
         <p className="text-sm font-medium text-foreground">{title}</p>
@@ -330,17 +342,21 @@ export function EmptyState({
   title = "Nenhum registro encontrado",
   description,
   action,
+  className,
 }: {
-  title?: string;
-  description?: string;
-  action?: ReactNode;
+  title?: string | undefined;
+  description?: string | undefined;
+  action?: ReactNode | undefined;
+  className?: string | undefined;
 }) {
   return (
     <StateShell
       icon={<Inbox className="h-6 w-6" />}
       title={title}
-      description={description}
-      action={action}
+      description={description || undefined}
+      action={action || undefined}
+      tone={undefined}
+      className={className || undefined}
     />
   );
 }
@@ -349,18 +365,21 @@ export function ErrorState({
   title = "Não foi possível carregar os dados",
   description = "Tente novamente. Se o erro persistir, acione o suporte da Central.",
   action,
+  className,
 }: {
-  title?: string;
-  description?: string;
-  action?: ReactNode;
+  title?: string | undefined;
+  description?: string | undefined;
+  action?: ReactNode | undefined;
+  className?: string | undefined;
 }) {
   return (
     <StateShell
       icon={<AlertTriangle className="h-6 w-6" />}
       title={title}
-      description={description}
-      action={action}
+      description={description || undefined}
+      action={action || undefined}
       tone="critical"
+      className={className || undefined}
     />
   );
 }
@@ -369,15 +388,17 @@ export function OfflineState({
   title = "Sem conexão com a Central",
   description = "Exibindo o último estado conhecido. A reconexão é automática.",
 }: {
-  title?: string;
-  description?: string;
+  title?: string | undefined;
+  description?: string | undefined;
 }) {
   return (
     <StateShell
       icon={<WifiOff className="h-6 w-6" />}
       title={title}
-      description={description}
+      description={description || undefined}
+      action={undefined}
       tone="warning"
+      className={undefined}
     />
   );
 }
@@ -391,8 +412,10 @@ export function PermissionDeniedState({
     <StateShell
       icon={<Lock className="h-6 w-6" />}
       title="Sem permissão"
-      description={description}
+      description={description || undefined}
+      action={undefined}
       tone="warning"
+      className={undefined}
     />
   );
 }
@@ -403,8 +426,9 @@ export function SessionExpiredState({ action }: { action?: ReactNode }) {
       icon={<Ban className="h-6 w-6" />}
       title="Sessão expirada"
       description="Por segurança, autentique-se novamente para continuar."
-      action={action}
+      action={action || undefined}
       tone="warning"
+      className={undefined}
     />
   );
 }

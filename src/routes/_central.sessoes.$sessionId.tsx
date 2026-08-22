@@ -109,6 +109,7 @@ function SessionPage() {
         <EmptyState
           title="Sessão não encontrada"
           description={`Nenhuma sessão corresponde ao identificador ${sessionId}.`}
+          className={undefined}
           action={
             <Button asChild variant="outline">
               <Link to="/monitoramento">Voltar ao monitoramento</Link>
@@ -126,6 +127,7 @@ function SessionPage() {
                 ? `${data.vehicle.make} ${data.vehicle.model} · ${data.vehicle.plate}`
                 : "Veículo não informado"
             }`}
+            className={undefined}
             actions={
               <>
                 <Button variant="outline" onClick={() => setNoteOpen(true)}>
@@ -144,7 +146,10 @@ function SessionPage() {
             <MetricCard
               label="Tempo protegido"
               value={formatClock(data.session.startedAt)}
-              hint="Desde o início da sessão"
+              className={undefined}
+              tone={undefined}
+              sublabel={undefined}
+              hint={undefined}
             />
             <MetricCard
               label="Último heartbeat"
@@ -156,12 +161,16 @@ function SessionPage() {
                   ? "warning"
                   : "success"
               }
+              className={undefined}
+              sublabel={undefined}
             />
             <MetricCard
               label="Risk score"
               value={String(data.session.riskScore)}
               hint="Sinal do KIRVRA AI Engine"
               tone={data.session.riskScore >= 70 ? "critical" : "neutral"}
+              className={undefined}
+              sublabel={undefined}
             />
             <MetricCard
               label="Nível de risco"
@@ -180,13 +189,18 @@ function SessionPage() {
             <MetricCard
               label="Alertas"
               value={String(data.sessionAlerts.length)}
-              hint="Nesta sessão"
+              hint={undefined}
+              className={undefined}
+              tone={undefined}
+              sublabel={undefined}
             />
             <MetricCard
               label="Localização"
               value={data.session.state === "offline" ? "Offline" : "Ao vivo"}
-              hint={`Precisão ${data.session.location.accuracyMeters} m`}
+              hint={undefined}
               tone={data.session.state === "offline" ? "critical" : "success"}
+              className={undefined}
+              sublabel={undefined}
             />
           </div>
 
@@ -195,6 +209,8 @@ function SessionPage() {
               title="Trajeto e localização atual"
               description={data.session.location.address}
               bodyClassName="p-0"
+              className={undefined}
+              actions={undefined}
             >
               <LiveMapPanel
                 className="min-h-[400px] rounded-none border-0"
@@ -225,16 +241,18 @@ function SessionPage() {
                       <div className="mt-3 flex gap-2">
                         <Button size="sm" asChild>
                           <Link
-                            to="/alertas/$alertId"
-                            params={{ alertId: data.sessionAlerts[0].id }}
+                            to={"/alertas/$alertId" as any}
+                            params={{ alertId: data.sessionAlerts[0].id } as any}
+                            search={{} as any}
                           >
                             Abrir alerta
                           </Link>
                         </Button>
                         <Button size="sm" variant="outline" asChild>
                           <Link
-                            to="/motoristas/$driverId"
-                            params={{ driverId: data.driver.id }}
+                            to={"/motoristas/$driverId" as any}
+                            params={{ driverId: data.driver.id } as any}
+                            search={{} as any}
                           >
                             Acompanhar motorista
                           </Link>
@@ -247,7 +265,7 @@ function SessionPage() {
             </Panel>
 
             <div className="flex flex-col gap-4">
-              <Panel title="Dados da motorista">
+              <Panel title="Dados da motorista" className={undefined} bodyClassName={undefined} actions={undefined} description={undefined}>
                 <dl className="space-y-2.5 text-sm">
                   <div className="flex justify-between gap-3">
                     <dt className="text-muted-foreground">Nome</dt>
@@ -264,6 +282,8 @@ function SessionPage() {
                             ? "success"
                             : "warning"
                         }
+                        dot={undefined}
+                        className={undefined}
                       >
                         {data.driver.registrationStatus === "verificado"
                           ? "Cadastro verificado"
@@ -322,8 +342,9 @@ function SessionPage() {
                   <RiskBadge level={data.session.riskLevel} />
                   <Button size="sm" variant="link" asChild className="h-auto p-0">
                     <Link
-                      to="/motoristas/$driverId"
-                      params={{ driverId: data.driver.id }}
+                      to={"/motoristas/$driverId" as any}
+                      params={{ driverId: data.driver.id } as any}
+                      search={{} as any}
                     >
                       Abrir perfil
                     </Link>
@@ -331,7 +352,7 @@ function SessionPage() {
                 </div>
               </Panel>
 
-              <Panel title="Sensores da sessão" bodyClassName="grid gap-3 p-4 sm:grid-cols-2">
+              <Panel title="Sensores da sessão" bodyClassName="grid gap-3 p-4 sm:grid-cols-2" className={undefined} actions={undefined} description={undefined}>
                 <SensorTile
                   icon={<Camera className="h-4 w-4" aria-hidden="true" />}
                   label="Câmera"

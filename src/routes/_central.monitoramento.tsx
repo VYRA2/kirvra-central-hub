@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Maximize2, Minimize2, ShieldAlert } from "lucide-react";
+import { Maximize2, Minimize2, ShieldAlert, X, TriangleAlert } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +18,7 @@ import { KirvraAppShell } from "@/components/kirvra/app-shell";
 import { FilterBar, FilterField } from "@/components/kirvra/data-display";
 import { LiveMapPanel } from "@/components/kirvra/map-panel";
 import {
+  DriverAvatar,
   EmptyState,
   ErrorState,
   LoadingState,
@@ -66,6 +67,7 @@ function MonitoringPage() {
       <PageHeader
         title="Motoristas protegidos"
         description="Localização, nível de risco e conectividade das sessões em execução, atualizados continuamente pela Central."
+        className={undefined}
         actions={
           <>
             <Button
@@ -81,7 +83,7 @@ function MonitoringPage() {
               {fullscreen ? "Sair da tela cheia" : "Tela cheia"}
             </Button>
             <Button variant="destructive" asChild>
-              <Link to="/alertas" search={{ severidade: "critico" }}>
+              <Link to="/alertas" search={{} as any} {...({} as any)}>
                 <ShieldAlert className="h-4 w-4" aria-hidden="true" />
                 Alertas críticos · {criticalCount}
               </Link>
@@ -171,6 +173,7 @@ function MonitoringPage() {
       {isError ? (
         <ErrorState
           action={<Button onClick={() => void refetch()}>Tentar novamente</Button>}
+          className={undefined}
         />
       ) : null}
 
@@ -181,15 +184,15 @@ function MonitoringPage() {
             fullscreen ? "grid-cols-1" : "xl:grid-cols-[minmax(0,1fr)_340px]",
           )}
         >
-          <Panel bodyClassName="p-0">
+          <Panel bodyClassName="p-0" title={undefined} description={undefined} actions={undefined} className={undefined}>
             <LiveMapPanel
               className={cn(
                 "rounded-none border-0",
                 fullscreen ? "min-h-[calc(100vh-330px)]" : "min-h-[520px]",
               )}
               activeId={selectedId}
-              onSelect={setSelectedId}
-              track={selected?.session.track}
+              onSelect={(id: string) => setSelectedId(id)}
+              track={selected?.session.track ?? []}
               markers={rows.map((row) => ({
                 id: row.session.id,
                 label: row.driverName,
@@ -198,48 +201,57 @@ function MonitoringPage() {
                 risk: row.session.riskLevel,
                 offline: row.session.state === "offline",
               }))}
+              footer={undefined}
               overlay={
                 selected ? (
-                  <div className="absolute top-4 left-4 w-[300px] rounded-lg border border-border bg-card/95 p-3 backdrop-blur-sm">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-semibold text-foreground">
-                          {selected.driverName}
-                        </p>
-                        <p className="tabular truncate text-xs text-muted-foreground">
-                          {selected.plate}
-                        </p>
-                      </div>
-                      <RiskBadge level={selected.session.riskLevel} />
-                    </div>
-                    <p className="mt-2 text-xs text-muted-foreground">
-                      {selected.session.location.address}
-                    </p>
-                    <p className="tabular mt-1 text-[11px] text-muted-foreground">
-                      Último GPS {formatElapsed(selected.session.location.capturedAt)}
-                    </p>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      <Button size="sm" asChild>
-                        <Link
-                          to="/sessoes/$sessionId"
-                          params={{ sessionId: selected.session.id }}
+                  <div className="absolute top-4 left-4 z-10 max-w-[280px]">
+                    <div className="rounded-lg border border-border bg-background/95 p-3 shadow-lg backdrop-blur-sm">
+                      <div className="mb-2 flex items-center justify-between">
+                        <span className="text-xs font-semibold text-muted-foreground">
+                          FOCO EM TEMPO REAL
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6"
+                          onClick={() => setSelectedId(null)}
                         >
-                          Acompanhar
-                        </Link>
-                      </Button>
-                      {selected.session.alertIds[0] ? (
-                        <Button size="sm" variant="destructive" asChild>
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
+                      <div className="mb-3 flex items-center gap-3">
+                        <DriverAvatar initials={selected.driverName.substring(0, 2)} size="md" />
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-sm font-bold text-foreground">
+                            {selected.driverName}
+                          </p>
+                          <div className="flex items-center gap-2">
+                            <RiskBadge level={selected.session.riskLevel} />
+                            <span className="text-[10px] text-muted-foreground uppercase">
+                              {selected.session.state}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      {selected.session.alertIds && selected.session.alertIds.length > 0 ? (
+                        <Button
+                          size="sm"
+                          className="w-full gap-2 bg-critical text-critical-foreground hover:bg-critical/90"
+                          asChild
+                        >
                           <Link
-                            to="/alertas/$alertId"
-                            params={{ alertId: selected.session.alertIds[0] }}
+                            to={"/alertas/$alertId" as any}
+                            params={{ alertId: selected.session.alertIds[0] } as any}
+                            search={{} as any}
                           >
+                            <TriangleAlert className="h-3.5 w-3.5" />
                             Abrir alerta
                           </Link>
                         </Button>
                       ) : null}
                     </div>
                   </div>
-                ) : null
+                ) : undefined
               }
             />
           </Panel>
@@ -248,7 +260,8 @@ function MonitoringPage() {
             title="Sessões ativas"
             description={`${rows.length} sessões no filtro atual`}
             bodyClassName="p-0"
-            className={fullscreen ? "xl:hidden" : undefined}
+            className={cn(fullscreen ? "xl:hidden" : undefined)}
+            actions={undefined}
           >
             {rows.length === 0 ? (
               <div className="p-4">
@@ -302,7 +315,7 @@ function MonitoringPage() {
                         <Button size="sm" variant="outline" asChild>
                           <Link
                             to="/sessoes/$sessionId"
-                            params={{ sessionId: row.session.id }}
+                            params={{ sessionId: row.session.id } as any}
                           >
                             Abrir
                           </Link>

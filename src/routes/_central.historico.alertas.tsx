@@ -37,10 +37,10 @@ import {
 
 export const Route = createFileRoute("/_central/historico/alertas")({
   validateSearch: (search: Record<string, unknown>): HistoryFilters => ({
-    period: (search["periodo"] as HistoryFilters["period"]) ?? "30d",
-    outcome: (search["resultado"] as HistoryFilters["outcome"]) ?? "todos",
-    page: Number(search["pagina"]) > 0 ? Number(search["pagina"]) : 1,
-    pageSize: DEFAULT_HISTORY_FILTERS.pageSize,
+    period: (search["period"] as any) || "30d",
+    outcome: (search["outcome"] as any) || "all",
+    page: Number(search["page"] || 1),
+    pageSize: Number(search["pageSize"] || 20),
   }),
   component: AlertHistoryPage,
 });
@@ -59,10 +59,11 @@ function AlertHistoryPage() {
     void navigate({
       to: "/historico/alertas",
       search: {
-        periodo: next.period ?? filters.period,
-        resultado: next.outcome ?? filters.outcome,
-        pagina: next.page ?? 1,
-      },
+        period: (next.period || filters.period) as any,
+        outcome: (next.outcome || filters.outcome) as any,
+        page: (next.page || 1) as any,
+        pageSize: (filters.pageSize || 20) as any,
+      } as any,
     });
   };
 
@@ -137,11 +138,14 @@ function AlertHistoryPage() {
       {isError ? (
         <ErrorState
           action={<Button onClick={() => void refetch()}>Tentar novamente</Button>}
+          className={undefined}
+          description={undefined}
+          title={undefined}
         />
       ) : null}
 
       {data ? (
-        <Panel bodyClassName="p-0">
+        <Panel bodyClassName="p-0" className={undefined} title={undefined} description={undefined} actions={undefined}>
           <OperationalTable<AlertRow>
             caption="Histórico de ocorrências concluídas"
             rows={data.rows}

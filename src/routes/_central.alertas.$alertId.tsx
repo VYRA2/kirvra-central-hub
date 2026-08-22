@@ -107,9 +107,10 @@ function AlertHandlingPage() {
           description={`Nenhum alerta corresponde ao identificador ${alertId}.`}
           action={
             <Button variant="outline" asChild>
-              <Link to="/alertas">Voltar à fila</Link>
+              <Link to="/alertas" search={{} as any}>Voltar à fila</Link>
             </Button>
           }
+          className={undefined}
         />
       ) : null}
 
@@ -120,6 +121,7 @@ function AlertHandlingPage() {
             description={`${data.alert.threatType} · detectado ${formatElapsed(
               data.alert.detectedAt,
             )} (${formatTime(data.alert.detectedAt)})`}
+            className={undefined}
             actions={
               data.readOnly ? (
                 <StatusBadge tone="neutral">
@@ -161,11 +163,13 @@ function AlertHandlingPage() {
                     : "Sessão sem localização disponível"
                 }
                 bodyClassName="p-0"
+                className={undefined}
+                actions={undefined}
               >
                 <LiveMapPanel
                   className="min-h-[300px] rounded-none border-0"
                   activeId={session?.id ?? null}
-                  track={session?.track}
+                  track={session?.track ?? []}
                   markers={
                     session
                       ? [
@@ -180,6 +184,8 @@ function AlertHandlingPage() {
                         ]
                       : []
                   }
+                  onSelect={undefined}
+                  overlay={undefined}
                   footer={
                     <div className="flex items-center justify-between gap-2">
                       <span className="tabular text-xs text-muted-foreground">
@@ -190,8 +196,9 @@ function AlertHandlingPage() {
                       {session ? (
                         <Button size="sm" variant="outline" asChild>
                           <Link
-                            to="/sessoes/$sessionId"
-                            params={{ sessionId: session.id }}
+                            to={"/sessoes/$sessionId" as any}
+                            params={{ sessionId: session.id } as any}
+                            search={{} as any}
                           >
                             Abrir sessão
                           </Link>
@@ -211,6 +218,8 @@ function AlertHandlingPage() {
                       )}`
                     : "Sem evidência associada"
                 }
+                className={undefined}
+                bodyClassName={undefined}
                 actions={
                   <div className="flex gap-2">
                     <Button size="sm" variant="outline" disabled={!data.evidence}>
@@ -262,6 +271,9 @@ function AlertHandlingPage() {
                     ? `Duração ${data.audio.durationSeconds}s`
                     : "Sem áudio anexado"
                 }
+                className={undefined}
+                bodyClassName={undefined}
+                actions={undefined}
               >
                 {data.audio ? (
                   <>
@@ -323,14 +335,15 @@ function AlertHandlingPage() {
             </div>
 
             <div className="flex flex-col gap-4">
-              <Panel title="Contexto do atendimento">
+              <Panel title="Contexto do atendimento" className={undefined} bodyClassName={undefined} actions={undefined} description={undefined}>
                 <dl className="space-y-2.5 text-sm">
                   <div className="flex justify-between gap-3">
                     <dt className="text-muted-foreground">Motorista</dt>
                     <dd className="text-right">
                       <Link
-                        to="/motoristas/$driverId"
-                        params={{ driverId: data.driver.id }}
+                        to={"/motoristas/$driverId" as any}
+                        params={{ driverId: data.driver.id } as any}
+                        search={{} as any}
                         className="text-primary hover:underline"
                       >
                         {data.driver.displayName}
@@ -382,6 +395,8 @@ function AlertHandlingPage() {
                 title="Decisão humana"
                 description="A IA nunca decide. Toda ação registra funcionário, horário e contexto."
                 bodyClassName="grid gap-2 p-4"
+                className={undefined}
+                actions={undefined}
               >
                 <Button
                   variant="destructive"

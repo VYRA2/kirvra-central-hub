@@ -12,7 +12,7 @@ export const Route = createFileRoute("/_central")({
   beforeLoad: () => {
     hydrateSession();
     if (!getSession()) {
-      throw redirect({ to: "/login" });
+      throw redirect({ to: "/login", search: {} as any });
     }
   },
   component: () => <Outlet />,

@@ -8,11 +8,13 @@ import { KirvraAppShell } from "@/components/kirvra/app-shell";
 import { AlertCard } from "@/components/kirvra/data-display";
 import { LiveMapPanel } from "@/components/kirvra/map-panel";
 import {
+  DriverAvatar,
   ErrorState,
   LoadingState,
   MetricCard,
   PageHeader,
   Panel,
+  RiskBadge,
   StatusBadge,
 } from "@/components/kirvra/primitives";
 import { formatElapsed } from "@/lib/kirvra-format";
@@ -53,6 +55,7 @@ function CommandCenterPage() {
       <PageHeader
         title="Visão operacional"
         description="Panorama em tempo real das sessões protegidas, dos alertas em fila e da saúde dos serviços que sustentam a Central."
+        className={undefined}
         actions={
           <>
             <Button asChild>
@@ -62,7 +65,7 @@ function CommandCenterPage() {
               </Link>
             </Button>
             <Button variant="outline" asChild>
-              <Link to="/alertas">
+              <Link to="/alertas" search={{} as any}>
                 <ShieldAlert className="h-4 w-4" aria-hidden="true" />
                 Ver alertas
               </Link>
@@ -72,7 +75,7 @@ function CommandCenterPage() {
       />
 
       {isLoading ? <LoadingState rows={5} /> : null}
-      {isError ? <ErrorState action={<Button onClick={() => void refetch()}>Tentar novamente</Button>} /> : null}
+      {isError ? <ErrorState action={<Button onClick={() => void refetch()}>Tentar novamente</Button>} className={undefined} /> : null}
 
       {data ? (
         <>
@@ -93,11 +96,13 @@ function CommandCenterPage() {
               title="Mapa operacional"
               description="Sessões protegidas em execução · destaque para o alerta crítico"
               bodyClassName="p-0"
+              actions={undefined}
+              className={undefined}
             >
               <LiveMapPanel
                 className="min-h-[420px] rounded-none border-0"
                 activeId={focused?.session.id ?? null}
-                track={focused?.session.track}
+                track={focused?.session.track ?? []}
                 markers={data.liveSessions.map((session) => ({
                   id: session.id,
                   label: findDriver(session.driverId)?.displayName ?? "Sessão",
@@ -106,6 +111,8 @@ function CommandCenterPage() {
                   risk: session.riskLevel,
                   offline: session.state === "offline",
                 }))}
+                onSelect={undefined}
+                footer={undefined}
                 overlay={
                   focused?.driver ? (
                     <div className="absolute top-4 right-4 w-[290px] rounded-lg border border-critical/40 bg-card/95 p-3 backdrop-blur-sm">
@@ -133,7 +140,8 @@ function CommandCenterPage() {
                           <Button size="sm" asChild>
                             <Link
                               to="/alertas/$alertId"
-                              params={{ alertId: focused.alertId }}
+                              params={{ alertId: focused.alertId } as any}
+                              search={{} as any}
                             >
                               Abrir alerta
                             </Link>
@@ -142,14 +150,15 @@ function CommandCenterPage() {
                         <Button size="sm" variant="outline" asChild>
                           <Link
                             to="/sessoes/$sessionId"
-                            params={{ sessionId: focused.session.id }}
+                            params={{ sessionId: focused.session.id } as any}
+                            search={{} as any}
                           >
                             Acompanhar
                           </Link>
                         </Button>
                       </div>
                     </div>
-                  ) : null
+                  ) : undefined
                 }
               />
             </Panel>
@@ -159,6 +168,8 @@ function CommandCenterPage() {
                 title="Alertas prioritários"
                 description="Ordenados por severidade e tempo de espera"
                 bodyClassName="space-y-3 p-3"
+                actions={undefined}
+                className={undefined}
               >
                 {data.priorityAlerts.map((alert) => (
                   <AlertCard
