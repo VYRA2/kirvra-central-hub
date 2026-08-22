@@ -181,7 +181,7 @@ function MonitoringPage() {
             fullscreen ? "grid-cols-1" : "xl:grid-cols-[minmax(0,1fr)_340px]",
           )}
         >
-          <Panel bodyClassName="p-0">
+          <Panel bodyClassName="p-0" title={undefined} description={undefined} actions={undefined} className={undefined}>
             <LiveMapPanel
               className={cn(
                 "rounded-none border-0",
