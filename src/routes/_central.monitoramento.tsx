@@ -173,7 +173,6 @@ function MonitoringPage() {
         <ErrorState
           action={<Button onClick={() => void refetch()}>Tentar novamente</Button>}
           className={undefined}
-          tone={undefined}
         />
       ) : null}
 
