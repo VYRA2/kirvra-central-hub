@@ -8,11 +8,13 @@ import { KirvraAppShell } from "@/components/kirvra/app-shell";
 import { AlertCard } from "@/components/kirvra/data-display";
 import { LiveMapPanel } from "@/components/kirvra/map-panel";
 import {
+  DriverAvatar,
   ErrorState,
   LoadingState,
   MetricCard,
   PageHeader,
   Panel,
+  RiskBadge,
   StatusBadge,
 } from "@/components/kirvra/primitives";
 import { formatElapsed } from "@/lib/kirvra-format";

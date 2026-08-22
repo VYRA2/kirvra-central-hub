@@ -233,7 +233,7 @@ function MonitoringPage() {
                           </div>
                         </div>
                       </div>
-                      {selected.session.alertIds.length > 0 ? (
+                      {selected.session.alertIds && selected.session.alertIds.length > 0 ? (
                         <Button
                           size="sm"
                           className="w-full gap-2 bg-critical text-critical-foreground hover:bg-critical/90"
