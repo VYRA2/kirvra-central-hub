@@ -158,12 +158,16 @@ export function MetricCard({
   label,
   value,
   hint,
+  sublabel,
   tone = "neutral",
+  className,
 }: {
   label: string;
   value: string;
   hint?: string;
+  sublabel?: string;
   tone?: BadgeTone;
+  className?: string;
 }) {
   const valueTone =
     tone === "critical"
@@ -177,13 +181,16 @@ export function MetricCard({
             : "text-foreground";
 
   return (
-    <div className="rounded-lg border border-border bg-card px-4 py-3">
+    <div className={cn("rounded-lg border border-border bg-card px-4 py-3", className)}>
       <p className="text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
         {label}
       </p>
       <p className={cn("tabular mt-1.5 text-2xl font-semibold", valueTone)}>
         {value}
       </p>
+      {sublabel ? (
+        <p className="mt-1 text-xs text-muted-foreground">{sublabel}</p>
+      ) : null}
       {hint ? (
         <p className="mt-1 text-xs text-muted-foreground">{hint}</p>
       ) : null}
@@ -267,13 +274,14 @@ export function DriverAvatar({
   className,
 }: {
   initials: string;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
   className?: string;
 }) {
   const sizes = {
     sm: "h-7 w-7 text-[10px]",
     md: "h-9 w-9 text-xs",
     lg: "h-14 w-14 text-base",
+    xl: "h-20 w-20 text-xl",
   };
   return (
     <span
