@@ -76,13 +76,10 @@ function DriversPage() {
       header: "Assinatura",
       render: (driver) => (
         <StatusBadge
-          status={driver.subscriptionStatus}
-          labels={{
-            ativa: "Ativa",
-            pendente: "Pendente",
-            cancelada: "Cancelada",
-          }}
-        />
+          tone={(driver.subscriptionStatus === "ativa" ? "success" : "warning") as any}
+        >
+          {driver.subscriptionStatus === "ativa" ? "Ativa" : driver.subscriptionStatus === "cancelada" ? "Cancelada" : "Pendente"}
+        </StatusBadge>
       ),
     },
     {
@@ -123,13 +120,10 @@ function DriversPage() {
       header: "Cadastro",
       render: (driver) => (
         <StatusBadge
-          status={driver.registrationStatus}
-          labels={{
-            verificado: "Verificado",
-            em_analise: "Em análise",
-            suspenso: "Suspenso",
-          }}
-        />
+          tone={(driver.registrationStatus === "verificado" ? "success" : "warning") as any}
+        >
+          {driver.registrationStatus === "verificado" ? "Verificado" : driver.registrationStatus === "suspenso" ? "Suspenso" : "Em análise"}
+        </StatusBadge>
       ),
     },
     {
@@ -138,7 +132,7 @@ function DriversPage() {
       align: "right",
       render: (driver) => (
         <Button size="sm" variant="outline" asChild>
-          <Link to="/motoristas/$driverId" params={{ driverId: driver.id }}>
+          <Link to="/motoristas/$driverId" params={{ driverId: driver.id } as any}>
             Abrir perfil
           </Link>
         </Button>

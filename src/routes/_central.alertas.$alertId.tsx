@@ -191,7 +191,7 @@ function AlertHandlingPage() {
                         <Button size="sm" variant="outline" asChild>
                           <Link
                             to="/sessoes/$sessionId"
-                            params={{ sessionId: session.id }}
+                            params={{ sessionId: session.id } as any}
                           >
                             Abrir sessão
                           </Link>

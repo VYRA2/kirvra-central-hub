@@ -133,7 +133,7 @@ function CommandCenterPage() {
                           <Button size="sm" asChild>
                             <Link
                               to="/alertas/$alertId"
-                              params={{ alertId: focused.alertId }}
+                              params={{ alertId: focused.alertId } as any}
                             >
                               Abrir alerta
                             </Link>
@@ -142,7 +142,7 @@ function CommandCenterPage() {
                         <Button size="sm" variant="outline" asChild>
                           <Link
                             to="/sessoes/$sessionId"
-                            params={{ sessionId: focused.session.id }}
+                            params={{ sessionId: focused.session.id } as any}
                           >
                             Acompanhar
                           </Link>

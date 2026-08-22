@@ -81,7 +81,7 @@ function MonitoringPage() {
               {fullscreen ? "Sair da tela cheia" : "Tela cheia"}
             </Button>
             <Button variant="destructive" asChild>
-              <Link to="/alertas" search={{ severidade: "critico" }}>
+              <Link to="/alertas" search={{} as any}>
                 <ShieldAlert className="h-4 w-4" aria-hidden="true" />
                 Alertas críticos · {criticalCount}
               </Link>
@@ -222,7 +222,7 @@ function MonitoringPage() {
                       <Button size="sm" asChild>
                         <Link
                           to="/sessoes/$sessionId"
-                          params={{ sessionId: selected.session.id }}
+                          params={{ sessionId: selected.session.id } as any}
                         >
                           Acompanhar
                         </Link>
@@ -231,7 +231,7 @@ function MonitoringPage() {
                         <Button size="sm" variant="destructive" asChild>
                           <Link
                             to="/alertas/$alertId"
-                            params={{ alertId: selected.session.alertIds[0] }}
+                            params={{ alertId: selected.session.alertIds[0] } as any}
                           >
                             Abrir alerta
                           </Link>
@@ -302,7 +302,7 @@ function MonitoringPage() {
                         <Button size="sm" variant="outline" asChild>
                           <Link
                             to="/sessoes/$sessionId"
-                            params={{ sessionId: row.session.id }}
+                            params={{ sessionId: row.session.id } as any}
                           >
                             Abrir
                           </Link>
