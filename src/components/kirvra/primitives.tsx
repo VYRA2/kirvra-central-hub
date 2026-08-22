@@ -39,7 +39,7 @@ export function StatusBadge({
   children?: ReactNode;
   tone?: BadgeTone;
   dot?: boolean;
-  className?: string | null;
+  className?: string;
   status?: string;
   labels?: Record<string, string>;
 }) {
@@ -59,7 +59,7 @@ export function StatusBadge({
       className={cn(
         "inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-[11px] font-medium whitespace-nowrap",
         TONE_CLASS[computedTone],
-        className || undefined,
+        className,
       )}
     >
       {dot ? (
@@ -92,10 +92,10 @@ export function RiskBadge({
   className,
 }: {
   level: RiskLevel;
-  className?: string | null;
+  className?: string;
 }) {
   return (
-    <StatusBadge tone={RISK_TONE[level]} className={className || undefined}>
+    <StatusBadge tone={RISK_TONE[level]} className={className}>
       {RISK_LABEL[level]}
     </StatusBadge>
   );
@@ -251,7 +251,7 @@ export function Panel({
   description?: string;
   actions?: ReactNode;
   children: ReactNode;
-  className?: string | null;
+  className?: string;
   bodyClassName?: string;
 }) {
   return (
@@ -323,7 +323,7 @@ function StateShell({
 }: {
   icon: ReactNode;
   title: string;
-  description?: string | null;
+  description?: string;
   action?: ReactNode;
   tone?: BadgeTone;
 }) {
