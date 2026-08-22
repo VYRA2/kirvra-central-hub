@@ -77,13 +77,9 @@ function DriverDetailPage() {
                 <div className="flex flex-col items-center gap-3">
                   <DriverAvatar initials={driver.initials} size={"xl" as any} />
                   <StatusBadge
-                    status={driver.registrationStatus}
-                    labels={{
-                      verificado: "Verificado",
-                      em_analise: "Em análise",
-                      suspenso: "Suspenso",
-                    }}
-                  />
+                  <StatusBadge tone={driver.registrationStatus === "verificado" ? "success" : "warning"}>
+                    {driver.registrationStatus === "verificado" ? "Verificado" : driver.registrationStatus === "suspenso" ? "Suspenso" : "Em análise"}
+                  </StatusBadge>
                 </div>
 
                 <div className="flex-1">
@@ -102,13 +98,9 @@ function DriverDetailPage() {
                       label="Assinatura"
                       value={
                         <StatusBadge
-                          status={driver.subscriptionStatus}
-                          labels={{
-                            ativa: "Ativa",
-                            pendente: "Pendente",
-                            cancelada: "Cancelada",
-                          }}
-                        />
+                          <StatusBadge tone={driver.subscriptionStatus === "ativa" ? "success" : "warning"}>
+                            {driver.subscriptionStatus === "ativa" ? "Ativa" : driver.subscriptionStatus === "cancelada" ? "Cancelada" : "Pendente"}
+                          </StatusBadge>
                       }
                     />
                     <DataField
@@ -117,7 +109,7 @@ function DriverDetailPage() {
                     />
                     <DataField
                       label="Contato emergencial"
-                      value={driver.emergencyContact ? `${driver.emergencyContact.name} (${driver.emergencyContact.relationship ?? "Outro"})` : "—"}
+                      value={driver.emergencyContact ? `${driver.emergencyContact.name} (${driver.emergencyContact.relationship || "Outro"})` : "—"}
                     />
                   </div>
                 </div>
@@ -180,7 +172,7 @@ function DriverDetailPage() {
                 <MetricCard
                   label="Alertas"
                   value={driver.alertCount.toString()}
-                  sublabel={`${driver.confirmedAlertCount} confirmado`}
+                  sublabel={(driver.confirmedAlertCount || 0) + " confirmado"}
                   className="bg-surface-raised"
                 />
               </div>
