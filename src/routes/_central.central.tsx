@@ -114,46 +114,6 @@ function CommandCenterPage() {
                 onSelect={undefined}
                 footer={undefined}
                 overlay={
-                  focused ? (
-                    <div className="absolute top-4 left-4 z-10 max-w-[280px]">
-                      <div className="rounded-lg border border-border bg-background/95 p-3 shadow-lg backdrop-blur-sm">
-                        <div className="mb-2 flex items-center justify-between">
-                          <span className="text-xs font-semibold text-muted-foreground uppercase">
-                            Foco em Tempo Real
-                          </span>
-                        </div>
-                        <div className="mb-3 flex items-center gap-3">
-                          <DriverAvatar
-                            initials={
-                              findDriver(focused.session.driverId)?.initials ?? "??"
-                            }
-                            size="md"
-                          />
-                          <div className="min-w-0 flex-1">
-                            <p className="truncate text-sm font-bold text-foreground">
-                              {findDriver(focused.session.driverId)?.displayName ??
-                                "Desconhecido"}
-                            </p>
-                            <div className="flex items-center gap-2">
-                              <RiskBadge level={focused.session.riskLevel} />
-                            </div>
-                          </div>
-                        </div>
-                        <Button size="sm" className="w-full" asChild>
-                          <Link
-                            to="/sessoes/$sessionId"
-                            params={{ sessionId: focused.session.id } as any}
-                            search={{} as any}
-                          >
-                            Acompanhar
-                          </Link>
-                        </Button>
-                      </div>
-                    </div>
-                  ) : undefined
-                }
-              />
-                overlay={
                   focused?.driver ? (
                     <div className="absolute top-4 right-4 w-[290px] rounded-lg border border-critical/40 bg-card/95 p-3 backdrop-blur-sm">
                       <div className="flex items-start justify-between gap-2">
@@ -201,6 +161,7 @@ function CommandCenterPage() {
                   ) : undefined
                 }
               />
+            </Panel>
 
             <div className="flex flex-col gap-4">
               <Panel
