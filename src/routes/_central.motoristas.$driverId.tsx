@@ -172,7 +172,6 @@ function DriverDetailPage() {
                   label="Alertas"
                   value={String(driver.alertCount || 0)}
                   tone="neutral"
-                  sublabel={undefined}
                   className={undefined}
                 />
               </div>
