@@ -258,8 +258,6 @@ function AlertHandlingPage() {
                 )}
               </Panel>
 
-              <Panel title="Áudio e Transcrição" className={undefined} bodyClassName={undefined} actions={undefined} description={undefined}>
-
               <Panel
                 title="Áudio e transcrição"
                 description={
@@ -267,6 +265,9 @@ function AlertHandlingPage() {
                     ? `Duração ${data.audio.durationSeconds}s`
                     : "Sem áudio anexado"
                 }
+                className={undefined}
+                bodyClassName={undefined}
+                actions={undefined}
               >
                 {data.audio ? (
                   <>
