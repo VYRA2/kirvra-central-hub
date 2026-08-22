@@ -146,7 +146,6 @@ function SessionPage() {
             <MetricCard
               label="Tempo protegido"
               value={formatClock(data.session.startedAt)}
-              hint="Desde o início da sessão"
               className={undefined}
               tone={undefined}
               sublabel={undefined}
@@ -190,13 +189,18 @@ function SessionPage() {
             <MetricCard
               label="Alertas"
               value={String(data.sessionAlerts.length)}
-              hint="Nesta sessão"
+              hint={undefined}
+              className={undefined}
+              tone={undefined}
+              sublabel={undefined}
             />
             <MetricCard
               label="Localização"
               value={data.session.state === "offline" ? "Offline" : "Ao vivo"}
-              hint={`Precisão ${data.session.location.accuracyMeters} m`}
+              hint={undefined}
               tone={data.session.state === "offline" ? "critical" : "success"}
+              className={undefined}
+              sublabel={undefined}
             />
           </div>
 
@@ -258,7 +262,7 @@ function SessionPage() {
             </Panel>
 
             <div className="flex flex-col gap-4">
-              <Panel title="Dados da motorista">
+              <Panel title="Dados da motorista" className={undefined} bodyClassName={undefined} actions={undefined} description={undefined}>
                 <dl className="space-y-2.5 text-sm">
                   <div className="flex justify-between gap-3">
                     <dt className="text-muted-foreground">Nome</dt>
