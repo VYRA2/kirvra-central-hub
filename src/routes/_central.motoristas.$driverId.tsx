@@ -91,7 +91,7 @@ function DriverDetailPage() {
                     <DataField label="Telefone" value={driver.phone} />
                     <DataField
                       label="Nascimento"
-                      value={driver.birthDate ? format(new Date(driver.birthDate), "dd/MM/yyyy") : "—"}
+                      value={driver.birthDate ? format(new Date(driver.birthDate as any), "dd/MM/yyyy") : "—"}
                     />
                     <DataField
                       label="Assinatura"
