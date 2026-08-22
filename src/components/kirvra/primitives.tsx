@@ -33,17 +33,32 @@ export function StatusBadge({
   tone = "neutral",
   dot = true,
   className,
+  status,
+  labels,
 }: {
-  children: ReactNode;
+  children?: ReactNode;
   tone?: BadgeTone;
   dot?: boolean;
   className?: string;
+  status?: string;
+  labels?: Record<string, string>;
 }) {
+  const displayLabel = status && labels ? labels[status] : children;
+
+  let computedTone = tone;
+  if (status) {
+    if (["ativa", "verificado", "online"].includes(status))
+      computedTone = "success";
+    else if (["pendente", "em_analise", "atencao", "suspeito"].includes(status))
+      computedTone = "warning";
+    else if (["cancelada", "suspenso", "critico", "offline"].includes(status))
+      computedTone = "critical";
+  }
   return (
     <span
       className={cn(
         "inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-[11px] font-medium whitespace-nowrap",
-        TONE_CLASS[tone],
+        TONE_CLASS[computedTone],
         className,
       )}
     >
@@ -53,7 +68,7 @@ export function StatusBadge({
           className="h-1.5 w-1.5 shrink-0 rounded-full bg-current"
         />
       ) : null}
-      {children}
+      {displayLabel}
     </span>
   );
 }

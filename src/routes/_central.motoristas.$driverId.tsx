@@ -96,7 +96,7 @@ function DriverDetailPage() {
                     <DataField label="Telefone" value={driver.phone} />
                     <DataField
                       label="Nascimento"
-                      value={format(new Date(driver.birthDate), "dd/MM/yyyy")}
+                      value={driver.birthDate ? format(new Date(driver.birthDate), "dd/MM/yyyy") : "—"}
                     />
                     <DataField
                       label="Assinatura"
@@ -117,7 +117,7 @@ function DriverDetailPage() {
                     />
                     <DataField
                       label="Contato emergencial"
-                      value={`${driver.emergencyContact.name} (${driver.emergencyContact.relationship})`}
+                      value={driver.emergencyContact ? `${driver.emergencyContact.name} (${driver.emergencyContact.relationship ?? "Outro"})` : "—"}
                     />
                   </div>
                 </div>

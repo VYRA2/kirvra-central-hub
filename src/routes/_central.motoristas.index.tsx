@@ -106,9 +106,7 @@ function DriversPage() {
       header: "Última proteção",
       render: (driver) => (
         <span className="text-xs text-muted-foreground">
-          {driver.lastProtectionAt.includes("Ago")
-            ? driver.lastProtectionAt
-            : "Há pouco"}
+          {driver.lastProtectionAt ? (driver.lastProtectionAt.includes("Ago") ? driver.lastProtectionAt : "Há pouco") : "—"}
         </span>
       ),
     },
