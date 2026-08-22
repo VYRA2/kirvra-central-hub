@@ -118,9 +118,13 @@ function DriverDetailPage() {
             <Panel
               title="Veículos"
               className={undefined}
-              actions={
               bodyClassName={undefined}
               description={undefined}
+              actions={
+                <Button variant="ghost" size="sm" className="h-8 text-xs">
+                  Ver todos
+                </Button>
+              }
             >
               <div className="space-y-3">
                 {driverVehicles.map((v) => (

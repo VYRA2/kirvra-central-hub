@@ -105,6 +105,7 @@ function AlertHandlingPage() {
         <EmptyState
           title="Alerta não encontrado"
           description={`Nenhum alerta corresponde ao identificador ${alertId}.`}
+          tone={undefined}
           action={
             <Button variant="outline" asChild>
               <Link to="/alertas" search={{} as any}>Voltar à fila</Link>
@@ -121,6 +122,7 @@ function AlertHandlingPage() {
             description={`${data.alert.threatType} · detectado ${formatElapsed(
               data.alert.detectedAt,
             )} (${formatTime(data.alert.detectedAt)})`}
+            className={undefined}
             actions={
               data.readOnly ? (
                 <StatusBadge tone="neutral">
@@ -214,6 +216,8 @@ function AlertHandlingPage() {
                       )}`
                     : "Sem evidência associada"
                 }
+                className={undefined}
+                bodyClassName={undefined}
                 actions={
                   <div className="flex gap-2">
                     <Button size="sm" variant="outline" disabled={!data.evidence}>
