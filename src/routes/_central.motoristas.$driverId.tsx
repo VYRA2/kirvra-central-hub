@@ -75,8 +75,8 @@ function DriverDetailPage() {
             <Panel className="relative overflow-hidden">
               <div className="flex flex-col gap-6 md:flex-row md:items-start">
                 <div className="flex flex-col items-center gap-3">
-                  <DriverAvatar initials={driver.initials} size={"lg" as any} />
-                  <StatusBadge tone={(driver.registrationStatus === "verificado" ? "success" : "warning") as any}>
+                  <DriverAvatar initials={driver.initials} size="xl" />
+                  <StatusBadge tone={driver.registrationStatus === "verificado" ? "success" : "warning"}>
                     {driver.registrationStatus === "verificado" ? "Verificado" : driver.registrationStatus === "suspenso" ? "Suspenso" : "Em análise"}
                   </StatusBadge>
                 </div>
@@ -96,7 +96,7 @@ function DriverDetailPage() {
                     <DataField
                       label="Assinatura"
                       value={
-                        <StatusBadge tone={(driver.subscriptionStatus === "ativa" ? "success" : "warning") as any}>
+                        <StatusBadge tone={driver.subscriptionStatus === "ativa" ? "success" : "warning"}>
                           {driver.subscriptionStatus === "ativa" ? "Ativa" : driver.subscriptionStatus === "cancelada" ? "Cancelada" : "Pendente"}
                         </StatusBadge>
                       }
@@ -170,6 +170,7 @@ function DriverDetailPage() {
                   label="Alertas"
                   value={(driver.alertCount || 0).toString()}
                   tone="neutral"
+                  className=""
                 />
               </div>
             </Panel>
@@ -181,12 +182,14 @@ function DriverDetailPage() {
                   number={1}
                   title="Proteção iniciada"
                   time="Hoje, 19:47 · Honda Civic"
+                  className=""
                 />
                 <TimelineItem
                   number={2}
                   title="Alerta crítico recebido"
                   time="Hoje, 20:14 · possível arma"
                   tone="critical"
+                  className=""
                 />
                 <TimelineItem
                   number={3}

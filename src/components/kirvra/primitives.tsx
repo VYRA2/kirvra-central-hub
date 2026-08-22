@@ -309,10 +309,10 @@ function StateShell({
 }: {
   icon: ReactNode;
   title: string;
-  description: string | undefined;
-  action: ReactNode | undefined;
-  tone: BadgeTone | undefined;
-  className: string | undefined;
+  description: string | null | undefined;
+  action: ReactNode | null | undefined;
+  tone: BadgeTone | null | undefined;
+  className: string | null | undefined;
 }) {
   const toneClass =
     tone === "critical"
