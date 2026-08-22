@@ -95,7 +95,7 @@ export function RiskBadge({
   className?: string;
 }) {
   return (
-    <StatusBadge tone={RISK_TONE[level]} className={className}>
+    <StatusBadge tone={RISK_TONE[level]} className={className || undefined}>
       {RISK_LABEL[level]}
     </StatusBadge>
   );
@@ -362,7 +362,7 @@ export function EmptyState({
     <StateShell
       icon={<Inbox className="h-6 w-6" />}
       title={title}
-      description={description}
+      description={description || undefined}
       action={action}
     />
   );
