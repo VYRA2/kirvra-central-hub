@@ -252,7 +252,7 @@ export function BackLink({
 }: {
   to: string;
   label: string;
-  params?: Record<string, string>;
+  params?: Record<string, string> | undefined;
 }) {
   return (
     <Link

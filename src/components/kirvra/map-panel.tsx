@@ -26,7 +26,7 @@ export function MapMarker({
 }: {
   marker: MapMarkerData;
   active?: boolean;
-  onSelect?: (id: string) => void;
+  onSelect?: ((id: string) => void) | undefined;
 }) {
   return (
     <button
@@ -70,11 +70,11 @@ export function LiveMapPanel({
 }: {
   markers: MapMarkerData[];
   activeId?: string | null;
-  onSelect?: (id: string) => void;
+  onSelect?: ((id: string) => void) | undefined;
   track?: Array<{ x: number; y: number }> | undefined;
   overlay?: ReactNode;
   footer?: ReactNode;
-  className?: string;
+  className?: string | undefined;
 }) {
   return (
     <div
