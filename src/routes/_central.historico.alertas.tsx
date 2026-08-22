@@ -57,7 +57,7 @@ function AlertHistoryPage() {
 
   const setSearch = (next: Partial<HistoryFilters>) => {
     void navigate({
-      to: "/historico/alertas",
+      to: "/historico/alertas" as any,
       search: {
         period: next.period ?? filters.period,
         outcome: next.outcome ?? filters.outcome,
