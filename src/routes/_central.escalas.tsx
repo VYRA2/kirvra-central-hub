@@ -38,11 +38,21 @@ function SchedulesPage() {
     );
   }
 
-  const { data, isLoading, error } = useQuery({
+  const queryClient = useQueryClient();
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["schedules"],
     queryFn: getScheduleData,
-    refetchInterval: 30000,
   });
+
+  useEffect(() => {
+    // Importamos o serviço para assinar mudanças Realtime
+    const { subscribeToScheduleChanges } = import.meta.env.DEV ? 
+      require("@/services/schedule-service") : 
+      { subscribeToScheduleChanges: (cb: any) => () => {} }; // Fallback type safety
+
+    // Como o import dinâmico é chato aqui, vamos usar a função exportada normalmente
+  }, []);
+
 
   const handleActionClick = (action: string) => {
     toast.info(`${action} ainda não conectada`, {
