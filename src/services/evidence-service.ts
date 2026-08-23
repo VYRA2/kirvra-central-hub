@@ -51,7 +51,7 @@ export async function listEvidence(filters: EvidenceFilters) {
       *,
       drivers(full_name),
       protection_sessions(started_at),
-      alerts(protocol),
+      alerts(id),
       security_alerts(id)
     `, { count: "exact" });
 
@@ -66,9 +66,20 @@ export async function listEvidence(filters: EvidenceFilters) {
   }
 
   if (filters.search) {
-    // Busca simplificada por ID ou driver_id (PostgREST limitations)
-    // Em produção, isso seria um search RPC ou FTS
-    query = query.or(`id.ilike.%${filters.search}%,driver_id.ilike.%${filters.search}%`);
+    // Busca segura por UUID ou nome de motorista
+    if (filters.search.length === 36 && filters.search.includes("-")) {
+      query = query.or(`id.eq.${filters.search},driver_id.eq.${filters.search},alert_id.eq.${filters.search},security_alert_id.eq.${filters.search},session_id.eq.${filters.search}`);
+    } else {
+      query = query.ilike("drivers.full_name", `%${filters.search}%`);
+    }
+  }
+
+  // Filtro de período real (captured_at)
+  const days = parseInt(filters.period);
+  if (!isNaN(days)) {
+    const date = new Date();
+    date.setDate(date.getDate() - days);
+    query = query.gte("captured_at", date.toISOString());
   }
 
   const from = (filters.page - 1) * filters.pageSize;
@@ -97,7 +108,7 @@ export async function listEvidence(filters: EvidenceFilters) {
     created_at: row.created_at,
     driver_name: row.drivers?.full_name,
     session_label: row.protection_sessions?.started_at ? `Sessão ${new Date(row.protection_sessions.started_at).toLocaleDateString()}` : null,
-    alert_protocol: row.alerts?.protocol,
+    alert_protocol: null, // Protocolo removido conforme schema real
     alert_origin: row.security_alert_id ? "IA" : "Comum",
   }));
 

@@ -231,7 +231,7 @@ function AuditoriaPage() {
               <SelectValue placeholder="Todas as ações" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="todas">Todas as ações</SelectItem>
+              <SelectItem value="todos">Todos os operadores</SelectItem>
               <SelectItem value="create">Criação</SelectItem>
               <SelectItem value="update">Edição</SelectItem>
               <SelectItem value="delete">Exclusão</SelectItem>
@@ -250,7 +250,7 @@ function AuditoriaPage() {
               <SelectValue placeholder="Todas as entidades" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="todas">Todas as entidades</SelectItem>
+              <SelectItem value="todos">Todas as entidades</SelectItem>
               <SelectItem value="alerts">Alertas</SelectItem>
               <SelectItem value="drivers">Motoristas</SelectItem>
               <SelectItem value="profiles">Operadores</SelectItem>

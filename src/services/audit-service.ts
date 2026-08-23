@@ -42,10 +42,7 @@ export async function listAuditLogs(filters: AuditFilters) {
 
   let query = client
     .from("central_audit_logs")
-    .select(`
-      *,
-      operator:central_profiles!operator_id(full_name, employee_code)
-    `, { count: "exact" });
+    .select(`*`, { count: "exact" });
 
   if (filters.operator_id !== "todos") {
     query = query.eq("operator_id", filters.operator_id);
@@ -76,11 +73,28 @@ export async function listAuditLogs(filters: AuditFilters) {
 
   if (error) throw error;
 
-  const rows: AuditRow[] = (data || []).map((row: any) => ({
-    ...row,
-    operator_name: row.operator?.full_name,
-    operator_code: row.operator?.employee_code,
-  }));
+  const operatorIds = [...new Set(data.map((r: any) => r.operator_id).filter(Boolean))];
+  let profilesMap = new Map<string, { full_name: string; employee_code: string }>();
+
+  if (operatorIds.length > 0) {
+    const { data: profiles } = await client
+      .from("central_profiles")
+      .select("id, full_name, employee_code")
+      .in("id", operatorIds);
+    
+    if (profiles) {
+      profiles.forEach(p => profilesMap.set(p.id, { full_name: p.full_name, employee_code: p.employee_code }));
+    }
+  }
+
+  const rows: AuditRow[] = (data || []).map((row: any) => {
+    const profile = profilesMap.get(row.operator_id);
+    return {
+      ...row,
+      operator_name: profile?.full_name,
+      operator_code: profile?.employee_code,
+    };
+  });
 
   return { rows, count: count || 0 };
 }
