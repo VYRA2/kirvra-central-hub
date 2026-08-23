@@ -58,10 +58,15 @@ export async function listAuditLogs(filters: AuditFilters) {
 
   if (filters.search) {
     if (filters.search.length === 36 && filters.search.includes("-")) {
-      query = query.eq("entity_id", filters.search);
+      query = query.or(`id.eq.${filters.search},entity_id.eq.${filters.search},operator_id.eq.${filters.search}`);
     } else {
+      // Busca segura: Apenas em campos de texto direto
       query = query.or(`action.ilike.%${filters.search}%,entity_type.ilike.%${filters.search}%`);
-      // Nota: Busca por nome do operador feita no cliente pós-filtro ou via RPC se necessário
+      
+      // Se precisarmos buscar por nome do operador, teríamos que:
+      // 1. Buscar IDs de perfis que batem com o nome
+      // 2. Adicionar .in('operator_id', matchingIds)
+      // Para esta correção cirúrgica, focaremos em action e entity_type no or direto
     }
   }
 
