@@ -1,4 +1,4 @@
-import { supabase } from "@/integrations/vyra/client";
+import { getVyraClient } from "@/integrations/vyra/client";
 import type { EmployeeRole } from "@/integrations/vyra/types";
 
 export interface ScheduleOperator {
@@ -34,6 +34,23 @@ export interface ScheduleData {
  */
 export async function getScheduleData(): Promise<ScheduleData> {
   try {
+    const supabase = getVyraClient();
+    if (!supabase) {
+      return {
+        status: "integrationPending",
+        metrics: {
+          onlineCount: 0,
+          scaledTotal: 0,
+          availableCount: 0,
+          inProgressCount: 0,
+          criticalCount: 0,
+          coveredRegions: 0,
+          totalRegions: 0,
+        },
+        operators: [],
+      };
+    }
+
     // Tentamos buscar perfis reais para mostrar que a conexão VYRA2 está ativa,
     // mesmo que a lógica de escalas não exista.
     const { data: profiles, error } = await supabase
@@ -41,12 +58,11 @@ export async function getScheduleData(): Promise<ScheduleData> {
       .select(`
         id,
         full_name,
-        status,
-        central_user_roles(
-          central_roles(code)
-        )
+        status
       `)
       .limit(20);
+
+    if (error) throw error;
 
     if (error) throw error;
 
