@@ -93,7 +93,7 @@ function AlertHandlingPage() {
           description={`Nenhum alerta corresponde ao identificador ${alertId}.`}
           action={
             <Button variant="outline" asChild>
-              <Link to="/alertas" search={{}}>
+              <Link to="/alertas" search={DEFAULT_QUEUE_FILTERS}>
                 Voltar à fila
               </Link>
             </Button>

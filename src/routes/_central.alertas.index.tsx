@@ -36,8 +36,11 @@ import {
 import { operators } from "@/mocks/kirvra-central";
 
 export const Route = createFileRoute("/_central/alertas/")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    severidade:
+  validateSearch: (search: Record<string, unknown>): AlertQueueFilters => ({
+    severity: (search.severity as AlertSeverity | undefined) || "todos",
+    state: (search.state as AlertState | undefined) || "todos",
+    operatorId: (search.operatorId as string | undefined) || "todos",
+  }),
       typeof search["severidade"] === "string"
         ? (search["severidade"] as AlertQueueFilters["severity"])
         : ("todos" as const),

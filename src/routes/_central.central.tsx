@@ -109,7 +109,7 @@ function CommandCenterPage() {
               </Link>
             </Button>
             <Button variant="outline" asChild>
-              <Link to="/alertas" search={{}}>
+              <Link to="/alertas" search={DEFAULT_QUEUE_FILTERS}>
                 <ShieldAlert className="h-4 w-4" aria-hidden="true" />
                 Ver alertas
               </Link>
