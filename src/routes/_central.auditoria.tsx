@@ -48,6 +48,7 @@ import {
   type AuditFilters,
   type AuditRow,
 } from "@/services/audit-service";
+import { Json } from "@/integrations/vyra/types";
 
 export const Route = createFileRoute("/_central/auditoria")({
   component: () => (
@@ -68,7 +69,7 @@ function AuditDetailsSheet({
 }) {
   if (!log) return null;
 
-  const renderJson = (data: import("@/integrations/vyra/types").Json) => {
+  const renderJson = (data: Json) => {
     if (!data) return <span className="text-muted-foreground">Sem dados</span>;
     return (
       <pre className="max-h-[300px] overflow-auto rounded-md bg-surface-raised p-3 font-mono text-[10px] text-foreground scrollbar-thin scrollbar-thumb-border">
@@ -183,7 +184,7 @@ function AuditoriaPage() {
       const client = getVyraClient();
       if (!client) return [];
       const { data } = await client.from("central_profiles").select("id, full_name, employee_code");
-      return data || [];
+      return (data as { id: string; full_name: string; employee_code: string }[] | null) || [];
     },
   });
 
