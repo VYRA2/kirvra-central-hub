@@ -12,12 +12,7 @@ import type { RealtimeChannel } from "@supabase/supabase-js";
 
 import { getVyraClient } from "@/integrations/vyra/client";
 
-export type RealtimeStatus =
-  | "indisponivel"
-  | "conectando"
-  | "conectado"
-  | "reconectando"
-  | "erro";
+export type RealtimeStatus = "indisponivel" | "conectando" | "conectado" | "reconectando" | "erro";
 
 export interface RealtimeTableSpec {
   table: string;

@@ -1,16 +1,7 @@
 import { useState, useMemo } from "react";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { 
-  Camera, 
-  Eye, 
-  FileAudio, 
-  FileVideo, 
-  Info, 
-  RefreshCw,
-  Search,
-  Download
-} from "lucide-react";
+import { Camera, Eye, FileAudio, FileVideo, Info, RefreshCw, Search, Download } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -32,11 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import { KirvraAppShell } from "@/components/kirvra/app-shell";
 import { RequirePermission } from "@/components/kirvra/access-control";
-import { 
-  FilterBar, 
-  FilterField, 
-  OperationalTable 
-} from "@/components/kirvra/data-display";
+import { FilterBar, FilterField, OperationalTable } from "@/components/kirvra/data-display";
 import {
   EmptyState,
   ErrorState,
@@ -48,12 +35,14 @@ import {
   DriverAvatar,
 } from "@/components/kirvra/primitives";
 import { formatDateTime, formatElapsed } from "@/lib/kirvra-format";
-import { 
-  listEvidence, 
-  getEvidenceSignedUrl, 
-  DEFAULT_EVIDENCE_FILTERS, 
-  type EvidenceFilters, 
-  type EvidenceRow 
+import {
+  listEvidence,
+  getEvidenceSignedUrl,
+  getEvidenceStats,
+  getEvidenceTypes,
+  DEFAULT_EVIDENCE_FILTERS,
+  type EvidenceFilters,
+  type EvidenceRow,
 } from "@/services/evidence-service";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -65,17 +54,18 @@ export const Route = createFileRoute("/_central/evidencias")({
   ),
 });
 
-function EvidenceDetailsDialog({ 
-  evidence, 
-  open, 
-  onOpenChange 
-}: { 
-  evidence: EvidenceRow | null; 
-  open: boolean; 
+function EvidenceDetailsDialog({
+  evidence,
+  open,
+  onOpenChange,
+}: {
+  evidence: EvidenceRow | null;
+  open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
   const { can } = useAuth();
   const [signedUrl, setSignedUrl] = useState<string | null>(null);
+  const [urlStatus, setUrlStatus] = useState<"available" | "error" | "missing" | "idle">("idle");
   const [loadingUrl, setLoadingUrl] = useState(false);
 
   const canView = useMemo(() => {
@@ -90,9 +80,19 @@ function EvidenceDetailsDialog({
     if (!evidence || !evidence.storage_path) return;
     setLoadingUrl(true);
     try {
-      const url = await getEvidenceSignedUrl(evidence.storage_bucket || "alert-evidence", evidence.storage_path);
-      setSignedUrl(url);
+      const result = await getEvidenceSignedUrl(
+        evidence.storage_bucket || "alert-evidence",
+        evidence.storage_path,
+      );
+      setSignedUrl(result.url);
+      setUrlStatus(result.status);
+      if (result.status !== "available") {
+        toast.error(
+          result.status === "missing" ? "Arquivo não vinculado." : "Erro ao gerar URL segura.",
+        );
+      }
     } catch (error) {
+      setUrlStatus("error");
       toast.error("Erro ao gerar URL segura.");
     } finally {
       setLoadingUrl(false);
@@ -101,6 +101,7 @@ function EvidenceDetailsDialog({
 
   const reset = () => {
     setSignedUrl(null);
+    setUrlStatus("idle");
     setLoadingUrl(false);
   };
 
@@ -127,7 +128,9 @@ function EvidenceDetailsDialog({
               <div className="flex aspect-video items-center justify-center bg-muted/20">
                 {!canView ? (
                   <div className="p-4 text-center">
-                    <p className="text-xs text-critical">Sem permissão para visualizar este tipo de mídia.</p>
+                    <p className="text-xs text-critical">
+                      Sem permissão para visualizar este tipo de mídia.
+                    </p>
                   </div>
                 ) : signedUrl ? (
                   evidence.mime_type?.startsWith("image/") ? (
@@ -148,7 +151,11 @@ function EvidenceDetailsDialog({
                   )
                 ) : (
                   <Button onClick={loadUrl} disabled={loadingUrl}>
-                    {loadingUrl ? <RefreshCw className="mr-2 h-4 w-4 animate-spin" /> : <Eye className="mr-2 h-4 w-4" />}
+                    {loadingUrl ? (
+                      <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <Eye className="mr-2 h-4 w-4" />
+                    )}
                     Gerar URL assinada
                   </Button>
                 )}
@@ -158,8 +165,11 @@ function EvidenceDetailsDialog({
             <Panel title="Metadados">
               <div className="space-y-2 text-xs">
                 {evidence.metadata ? (
-                  Object.entries(evidence.metadata).map(([k, v]) => (
-                    <div key={k} className="flex justify-between border-b border-border/50 py-1 last:border-0">
+                  Object.entries(evidence.metadata as Record<string, import("@/integrations/vyra/types").Json>).map(([k, v]) => (
+                    <div
+                      key={k}
+                      className="flex justify-between border-b border-border/50 py-1 last:border-0"
+                    >
                       <span className="text-muted-foreground">{k}</span>
                       <span className="font-medium text-foreground">{String(v)}</span>
                     </div>
@@ -170,7 +180,9 @@ function EvidenceDetailsDialog({
                 {evidence.sha256 && (
                   <div className="mt-2 flex flex-col gap-1 border-t border-border pt-2">
                     <span className="text-muted-foreground">SHA256 Integrity</span>
-                    <span className="break-all font-mono text-[10px] text-foreground">{evidence.sha256}</span>
+                    <span className="break-all font-mono text-[10px] text-foreground">
+                      {evidence.sha256}
+                    </span>
                   </div>
                 )}
               </div>
@@ -186,49 +198,60 @@ function EvidenceDetailsDialog({
                     {evidence.driver_name ? (
                       <>
                         <DriverAvatar initials={evidence.driver_name.slice(0, 2)} size="sm" />
-                        <Link 
-                          to={"/motoristas/$driverId" as any} 
-                          params={{ driverId: evidence.driver_id || "" } as any}
+                        <Link
+                          to="/motoristas/$driverId"
+                          params={{ driverId: evidence.driver_id || "" }}
                           className="font-medium text-primary hover:underline"
                         >
                           {evidence.driver_name}
                         </Link>
                       </>
-                    ) : "—"}
+                    ) : (
+                      "—"
+                    )}
                   </dd>
                 </div>
                 <div>
                   <dt className="text-xs text-muted-foreground">Sessão</dt>
                   <dd className="mt-1">
                     {evidence.session_id ? (
-                      <Link 
-                        to={"/sessoes/$sessionId" as any} 
-                        params={{ sessionId: evidence.session_id } as any}
+                      <Link
+                        to="/sessoes/$sessionId"
+                        params={{ sessionId: evidence.session_id || "" }}
                         className="text-primary hover:underline"
                       >
                         {evidence.session_label || evidence.session_id}
                       </Link>
-                    ) : "—"}
+                    ) : (
+                      "—"
+                    )}
                   </dd>
                 </div>
                 <div>
                   <dt className="text-xs text-muted-foreground">Alerta Relacionado</dt>
                   <dd className="mt-1">
-                    {evidence.alert_id ? (
-                      <Link 
-                        to={"/alertas/$alertId" as any} 
-                        params={{ alertId: evidence.alert_id } as any}
+                    {evidence.alert_id || evidence.security_alert_id ? (
+                      <Link
+                        to="/alertas/$alertId"
+                        params={{ alertId: evidence.alert_id || evidence.security_alert_id || "" }}
                         className="text-primary hover:underline"
                       >
-                        {evidence.alert_protocol || "Protocolo desconhecido"}
+                        {evidence.alert_id
+                          ? `ID ${evidence.alert_id.slice(0, 8)}`
+                          : `IA ${evidence.security_alert_id?.slice(0, 8)}`}
                       </Link>
-                    ) : "—"}
+                    ) : (
+                      "—"
+                    )}
                   </dd>
                 </div>
                 <div>
                   <dt className="text-xs text-muted-foreground">Origem do Alerta</dt>
                   <dd className="mt-1">
-                    <StatusBadge tone={evidence.alert_origin === "IA" ? "critical" : "neutral"} dot={false}>
+                    <StatusBadge
+                      tone={evidence.alert_origin === "IA" ? "critical" : "neutral"}
+                      dot={false}
+                    >
                       {evidence.alert_origin === "IA" ? "KIRVRA AI Engine" : "Alerta Comum"}
                     </StatusBadge>
                   </dd>
@@ -245,7 +268,9 @@ function EvidenceDetailsDialog({
                 <div>
                   <dt className="text-muted-foreground">Tamanho</dt>
                   <dd className="font-medium">
-                    {evidence.size_bytes ? `${(evidence.size_bytes / 1024 / 1024).toFixed(2)} MB` : "—"}
+                    {evidence.size_bytes
+                      ? `${(evidence.size_bytes / 1024 / 1024).toFixed(2)} MB`
+                      : "—"}
                   </dd>
                 </div>
                 <div>
@@ -255,7 +280,15 @@ function EvidenceDetailsDialog({
                 <div>
                   <dt className="text-muted-foreground">Status</dt>
                   <dd className="font-medium">
-                    <StatusBadge tone="success">Disponível</StatusBadge>
+                    {urlStatus === "available" ? (
+                      <StatusBadge tone="success">Disponível</StatusBadge>
+                    ) : urlStatus === "missing" ? (
+                      <StatusBadge tone="neutral">Sem Arquivo</StatusBadge>
+                    ) : urlStatus === "error" ? (
+                      <StatusBadge tone="critical">Indisponível</StatusBadge>
+                    ) : (
+                      <span className="text-muted-foreground italic">Pendente</span>
+                    )}
                   </dd>
                 </div>
               </dl>
@@ -277,20 +310,29 @@ function EvidenciasPage() {
     queryFn: () => listEvidence(filters),
   });
 
+  const { data: evidenceStats } = useQuery({
+    queryKey: ["evidence-stats"],
+    queryFn: () => getEvidenceStats(),
+  });
+
+  const { data: evidenceTypes } = useQuery({
+    queryKey: ["evidence-types"],
+    queryFn: () => getEvidenceTypes(),
+  });
+
   const handleOpenDetails = (evidence: EvidenceRow) => {
     setSelectedEvidence(evidence);
     setDetailsOpen(true);
   };
 
   const stats = useMemo(() => {
-    const rows = data?.rows || [];
     return {
-      total: data?.count || 0,
-      images: rows.filter(r => r.mime_type?.startsWith("image/")).length,
-      media: rows.filter(r => r.mime_type?.startsWith("audio/") || r.mime_type?.startsWith("video/")).length,
-      recent24h: rows.filter(r => r.captured_at && new Date(r.captured_at).getTime() > Date.now() - 24*60*60*1000).length,
+      total: evidenceStats?.total || 0,
+      images: evidenceStats?.images || 0,
+      media: evidenceStats?.media || 0,
+      recent24h: evidenceStats?.recent24h || 0,
     };
-  }, [data]);
+  }, [evidenceStats]);
 
   return (
     <KirvraAppShell title="Evidências">
@@ -321,7 +363,7 @@ function EvidenciasPage() {
               placeholder="ID, motorista ou alerta"
               className="pl-8"
               value={filters.search}
-              onChange={(e) => setFilters(f => ({ ...f, search: e.target.value, page: 1 }))}
+              onChange={(e) => setFilters((f) => ({ ...f, search: e.target.value, page: 1 }))}
             />
           </div>
         </FilterField>
@@ -329,16 +371,19 @@ function EvidenciasPage() {
         <FilterField label="Tipo" htmlFor="type">
           <Select
             value={filters.type}
-            onValueChange={(v) => setFilters(f => ({ ...f, type: v, page: 1 }))}
+            onValueChange={(v) => setFilters((f) => ({ ...f, type: v, page: 1 }))}
           >
             <SelectTrigger id="type">
               <SelectValue placeholder="Todos os tipos" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="todos">Todos os tipos</SelectItem>
-              <SelectItem value="frame">Imagens (Frames)</SelectItem>
-              <SelectItem value="clipe">Clippes / Vídeos</SelectItem>
-              <SelectItem value="audio">Áudios</SelectItem>
+              {evidenceTypes?.map((type) => (
+                <SelectItem key={type} value={type}>
+                  {type === "todos"
+                    ? "Todos os tipos"
+                    : type.charAt(0).toUpperCase() + type.slice(1)}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </FilterField>
@@ -346,7 +391,7 @@ function EvidenciasPage() {
         <FilterField label="Origem" htmlFor="origin">
           <Select
             value={filters.origin}
-            onValueChange={(v) => setFilters(f => ({ ...f, origin: v, page: 1 }))}
+            onValueChange={(v) => setFilters((f) => ({ ...f, origin: v, page: 1 }))}
           >
             <SelectTrigger id="origin">
               <SelectValue placeholder="Todas as origens" />
@@ -362,7 +407,7 @@ function EvidenciasPage() {
         <FilterField label="Período" htmlFor="period">
           <Select
             value={filters.period}
-            onValueChange={(v) => setFilters(f => ({ ...f, period: v, page: 1 }))}
+            onValueChange={(v) => setFilters((f) => ({ ...f, period: v, page: 1 }))}
           >
             <SelectTrigger id="period">
               <SelectValue placeholder="Últimos 30 dias" />
@@ -378,9 +423,7 @@ function EvidenciasPage() {
 
       {isLoading ? <LoadingState rows={5} /> : null}
       {isError ? (
-        <ErrorState
-          action={<Button onClick={() => void refetch()}>Tentar novamente</Button>}
-        />
+        <ErrorState action={<Button onClick={() => void refetch()}>Tentar novamente</Button>} />
       ) : null}
 
       {!isLoading && !isError && data ? (
@@ -400,9 +443,12 @@ function EvidenciasPage() {
                 header: "Tipo",
                 width: "80px",
                 render: (row) => {
-                  if (row.mime_type?.startsWith("image/")) return <Camera className="h-4 w-4 text-primary" />;
-                  if (row.mime_type?.startsWith("audio/")) return <FileAudio className="h-4 w-4 text-warning" />;
-                  if (row.mime_type?.startsWith("video/")) return <FileVideo className="h-4 w-4 text-warning" />;
+                  if (row.mime_type?.startsWith("image/"))
+                    return <Camera className="h-4 w-4 text-primary" />;
+                  if (row.mime_type?.startsWith("audio/"))
+                    return <FileAudio className="h-4 w-4 text-warning" />;
+                  if (row.mime_type?.startsWith("video/"))
+                    return <FileVideo className="h-4 w-4 text-warning" />;
                   return <Info className="h-4 w-4 text-muted-foreground" />;
                 },
               },
@@ -411,9 +457,7 @@ function EvidenciasPage() {
                 header: "Data e Hora",
                 width: "180px",
                 render: (row) => (
-                  <span className="tabular text-xs">
-                    {formatDateTime(row.captured_at)}
-                  </span>
+                  <span className="tabular text-xs">{formatDateTime(row.captured_at)}</span>
                 ),
               },
               {
@@ -440,7 +484,11 @@ function EvidenciasPage() {
                 header: "Alerta",
                 render: (row) => (
                   <span className="text-xs font-medium truncate">
-                    {row.alert_protocol || "—"}
+                    {row.alert_id
+                      ? row.alert_id.slice(0, 8)
+                      : row.security_alert_id
+                        ? `IA ${row.security_alert_id.slice(0, 8)}`
+                        : "—"}
                   </span>
                 ),
               },
@@ -448,7 +496,10 @@ function EvidenciasPage() {
                 key: "origin",
                 header: "Origem",
                 render: (row) => (
-                  <StatusBadge tone={row.alert_origin === "IA" ? "critical" : "neutral"} dot={false}>
+                  <StatusBadge
+                    tone={row.alert_origin === "IA" ? "critical" : "neutral"}
+                    dot={false}
+                  >
                     {row.alert_origin === "IA" ? "IA" : "Comum"}
                   </StatusBadge>
                 ),
@@ -458,7 +509,8 @@ function EvidenciasPage() {
                 header: "MIME / Tamanho",
                 render: (row) => (
                   <span className="text-[10px] text-muted-foreground">
-                    {row.mime_type} · {row.size_bytes ? `${(row.size_bytes / 1024).toFixed(0)} KB` : "—"}
+                    {row.mime_type} ·{" "}
+                    {row.size_bytes ? `${(row.size_bytes / 1024).toFixed(0)} KB` : "—"}
                   </span>
                 ),
               },
@@ -474,7 +526,7 @@ function EvidenciasPage() {
               },
             ]}
           />
-          
+
           <div className="flex items-center justify-between border-t border-border px-4 py-3">
             <span className="text-xs text-muted-foreground">
               Mostrando {data.rows.length} de {data.count} evidências
@@ -484,7 +536,7 @@ function EvidenciasPage() {
                 size="sm"
                 variant="outline"
                 disabled={filters.page === 1}
-                onClick={() => setFilters(f => ({ ...f, page: f.page - 1 }))}
+                onClick={() => setFilters((f) => ({ ...f, page: f.page - 1 }))}
               >
                 Anterior
               </Button>
@@ -492,7 +544,7 @@ function EvidenciasPage() {
                 size="sm"
                 variant="outline"
                 disabled={filters.page * filters.pageSize >= data.count}
-                onClick={() => setFilters(f => ({ ...f, page: f.page + 1 }))}
+                onClick={() => setFilters((f) => ({ ...f, page: f.page + 1 }))}
               >
                 Próxima
               </Button>
@@ -501,10 +553,10 @@ function EvidenciasPage() {
         </Panel>
       ) : null}
 
-      <EvidenceDetailsDialog 
-        evidence={selectedEvidence} 
-        open={detailsOpen} 
-        onOpenChange={setDetailsOpen} 
+      <EvidenceDetailsDialog
+        evidence={selectedEvidence}
+        open={detailsOpen}
+        onOpenChange={setDetailsOpen}
       />
     </KirvraAppShell>
   );

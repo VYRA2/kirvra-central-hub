@@ -30,8 +30,7 @@ export const Route = createFileRoute("/primeiro-acesso")({
       { property: "og:title", content: "Primeiro acesso · KIRVRA Central" },
       {
         property: "og:description",
-        content:
-          "Substitua a senha provisória e ative seu acesso operacional à KIRVRA Central.",
+        content: "Substitua a senha provisória e ative seu acesso operacional à KIRVRA Central.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -83,8 +82,7 @@ function FirstAccessPage() {
 
   const problems = validatePasswordPolicy(newPassword);
   const matches = newPassword.length > 0 && newPassword === confirmPassword;
-  const canSubmit =
-    problems.length === 0 && matches && acceptedTerms && !submitting;
+  const canSubmit = problems.length === 0 && matches && acceptedTerms && !submitting;
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -112,9 +110,7 @@ function FirstAccessPage() {
   return (
     <KirvraAuthLayout>
       <div className="rounded-xl border border-border bg-card p-6 shadow-[0_24px_60px_-30px_rgba(0,0,0,0.9)]">
-        <h2 className="text-lg font-semibold text-foreground">
-          Primeiro acesso
-        </h2>
+        <h2 className="text-lg font-semibold text-foreground">Primeiro acesso</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           Substitua a senha provisória para ativar seu acesso operacional.
         </p>
@@ -135,9 +131,7 @@ function FirstAccessPage() {
             <dl className="mt-4 rounded-md border border-border bg-surface px-3 py-2 text-xs">
               <div className="flex items-center justify-between gap-2">
                 <dt className="text-muted-foreground">Funcionário</dt>
-                <dd className="font-medium text-foreground">
-                  {session.employee.employeeCode}
-                </dd>
+                <dd className="font-medium text-foreground">{session.employee.employeeCode}</dd>
               </div>
               <div className="mt-1 flex items-center justify-between gap-2">
                 <dt className="text-muted-foreground">Nome</dt>
@@ -213,8 +207,8 @@ function FirstAccessPage() {
                   onChange={(event) => setAcceptedTerms(event.target.checked)}
                   className="mt-0.5 h-3.5 w-3.5 accent-primary"
                 />
-                Declaro ciência dos termos internos de operação: todas as ações
-                na Central são auditadas e o uso indevido de dados é proibido.
+                Declaro ciência dos termos internos de operação: todas as ações na Central são
+                auditadas e o uso indevido de dados é proibido.
               </label>
 
               {error ? (

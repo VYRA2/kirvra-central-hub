@@ -8,11 +8,7 @@ import {
   OperationalTable,
   type TableColumn,
 } from "@/components/kirvra/data-display";
-import {
-  DriverAvatar,
-  PageHeader,
-  StatusBadge,
-} from "@/components/kirvra/primitives";
+import { DriverAvatar, PageHeader, StatusBadge } from "@/components/kirvra/primitives";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -42,13 +38,8 @@ function DriversPage() {
 
   const filteredDrivers = drivers.filter((d) => {
     if (q && !d.fullName.toLowerCase().includes(q.toLowerCase())) return false;
-    if (status && status !== "all" && d.registrationStatus !== status)
-      return false;
-    if (
-      subscription &&
-      subscription !== "all" &&
-      d.subscriptionStatus !== subscription
-    )
+    if (status && status !== "all" && d.registrationStatus !== status) return false;
+    if (subscription && subscription !== "all" && d.subscriptionStatus !== subscription)
       return false;
     return true;
   });
@@ -75,10 +66,12 @@ function DriversPage() {
       key: "subscription",
       header: "Assinatura",
       render: (driver) => (
-        <StatusBadge
-          tone={(driver.subscriptionStatus === "ativa" ? "success" : "warning") as any}
-        >
-          {driver.subscriptionStatus === "ativa" ? "Ativa" : driver.subscriptionStatus === "cancelada" ? "Cancelada" : "Pendente"}
+        <StatusBadge tone={driver.subscriptionStatus === "ativa" ? "success" : "warning"}>
+          {driver.subscriptionStatus === "ativa"
+            ? "Ativa"
+            : driver.subscriptionStatus === "cancelada"
+              ? "Cancelada"
+              : "Pendente"}
         </StatusBadge>
       ),
     },
@@ -103,7 +96,11 @@ function DriversPage() {
       header: "Última proteção",
       render: (driver) => (
         <span className="text-xs text-muted-foreground">
-          {driver.lastProtectionAt ? (driver.lastProtectionAt.includes("Ago") ? driver.lastProtectionAt : "Há pouco") : "—"}
+          {driver.lastProtectionAt
+            ? driver.lastProtectionAt.includes("Ago")
+              ? driver.lastProtectionAt
+              : "Há pouco"
+            : "—"}
         </span>
       ),
     },
@@ -111,18 +108,20 @@ function DriversPage() {
       key: "alerts",
       header: "Alertas",
       align: "center",
-      render: (driver) => (
-        <span className="font-medium text-foreground">{driver.alertCount}</span>
-      ),
+      render: (driver) => <span className="font-medium text-foreground">{driver.alertCount}</span>,
     },
     {
       key: "status",
       header: "Cadastro",
       render: (driver) => (
         <StatusBadge
-          tone={(driver.registrationStatus === "verificado" ? "success" : "warning") as any}
+          tone={driver.registrationStatus === "verificado" ? "success" : "warning"}
         >
-          {driver.registrationStatus === "verificado" ? "Verificado" : driver.registrationStatus === "suspenso" ? "Suspenso" : "Em análise"}
+          {driver.registrationStatus === "verificado"
+            ? "Verificado"
+            : driver.registrationStatus === "suspenso"
+              ? "Suspenso"
+              : "Em análise"}
         </StatusBadge>
       ),
     },
@@ -132,7 +131,10 @@ function DriversPage() {
       align: "right",
       render: (driver) => (
         <Button size="sm" variant="outline" asChild>
-          <Link to="/motoristas/$driverId" params={{ driverId: driver.id } as any} search={{} as any}>
+          <Link
+            to="/motoristas/$driverId"
+            params={{ driverId: driver.id }}
+            search={{}}>
             Abrir perfil
           </Link>
         </Button>

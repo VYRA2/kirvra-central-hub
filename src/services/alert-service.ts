@@ -60,26 +60,19 @@ function decorate(list: Alert[]): AlertRow[] {
   }));
 }
 
-export async function listAlertQueue(
-  filters: AlertQueueFilters,
-): Promise<AlertRow[]> {
+export async function listAlertQueue(filters: AlertQueueFilters): Promise<AlertRow[]> {
   assertDemoData();
   return decorate(
     [...alerts]
       .filter((a) => filters.state === "todos" || a.state === filters.state)
+      .filter((a) => filters.severity === "todos" || a.severity === filters.severity)
       .filter(
-        (a) => filters.severity === "todos" || a.severity === filters.severity,
-      )
-      .filter(
-        (a) =>
-          filters.operatorId === "todos" ||
-          a.assignment.operatorId === filters.operatorId,
+        (a) => filters.operatorId === "todos" || a.assignment.operatorId === filters.operatorId,
       )
       .sort(
         (a, b) =>
           SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity] ||
-          new Date(a.waitingSince).getTime() -
-            new Date(b.waitingSince).getTime(),
+          new Date(a.waitingSince).getTime() - new Date(b.waitingSince).getTime(),
       ),
   );
 }
@@ -112,23 +105,15 @@ const PERIOD_DAYS: Record<HistoryFilters["period"], number | null> = {
   todos: null,
 };
 
-export async function listAlertHistory(
-  filters: HistoryFilters,
-): Promise<HistoryPage> {
+export async function listAlertHistory(filters: HistoryFilters): Promise<HistoryPage> {
   assertDemoData();
   const days = PERIOD_DAYS[filters.period];
   const cutoff = days ? Date.now() - days * 86_400_000 : null;
 
   const filtered = alertHistory
     .filter((a) => (cutoff ? new Date(a.detectedAt).getTime() >= cutoff : true))
-    .filter(
-      (a) =>
-        filters.outcome === "todos" || a.decision?.outcome === filters.outcome,
-    )
-    .sort(
-      (a, b) =>
-        new Date(b.detectedAt).getTime() - new Date(a.detectedAt).getTime(),
-    );
+    .filter((a) => filters.outcome === "todos" || a.decision?.outcome === filters.outcome)
+    .sort((a, b) => new Date(b.detectedAt).getTime() - new Date(a.detectedAt).getTime());
 
   const start = (filters.page - 1) * filters.pageSize;
   return {
@@ -149,9 +134,7 @@ export interface AlertDetail {
   readOnly: boolean;
 }
 
-export async function getAlertDetail(
-  alertId: string,
-): Promise<AlertDetail | null> {
+export async function getAlertDetail(alertId: string): Promise<AlertDetail | null> {
   assertDemoData();
   const alert = findAlert(alertId);
   if (!alert) return null;
@@ -173,11 +156,8 @@ export function nextUnassignedCritical(): Alert | null {
   return (
     [...alerts]
       .filter((a) => a.severity === "critico" && !a.assignment.operatorId)
-      .sort(
-        (a, b) =>
-          new Date(a.waitingSince).getTime() -
-          new Date(b.waitingSince).getTime(),
-      )[0] ?? null
+      .sort((a, b) => new Date(a.waitingSince).getTime() - new Date(b.waitingSince).getTime())[0] ??
+    null
   );
 }
 
@@ -193,23 +173,15 @@ export async function claimAlert(_alertId: string): Promise<ServiceResult> {
   return PENDING;
 }
 
-export async function confirmThreat(
-  _alertId: string,
-  notes: string,
-): Promise<ServiceResult> {
+export async function confirmThreat(_alertId: string, notes: string): Promise<ServiceResult> {
   assertDemoData();
-  if (!notes.trim())
-    return { status: "error", message: "Descreva a confirmação da ameaça." };
+  if (!notes.trim()) return { status: "error", message: "Descreva a confirmação da ameaça." };
   return PENDING;
 }
 
-export async function markFalsePositive(
-  _alertId: string,
-  reason: string,
-): Promise<ServiceResult> {
+export async function markFalsePositive(_alertId: string, reason: string): Promise<ServiceResult> {
   assertDemoData();
-  if (!reason.trim())
-    return { status: "error", message: "O motivo é obrigatório." };
+  if (!reason.trim()) return { status: "error", message: "O motivo é obrigatório." };
   return PENDING;
 }
 
@@ -232,13 +204,9 @@ export async function startProtocol(_alertId: string): Promise<ServiceResult> {
   return PENDING;
 }
 
-export async function addAlertNote(
-  _alertId: string,
-  note: string,
-): Promise<ServiceResult> {
+export async function addAlertNote(_alertId: string, note: string): Promise<ServiceResult> {
   assertDemoData();
-  if (!note.trim())
-    return { status: "error", message: "A nota não pode ficar vazia." };
+  if (!note.trim()) return { status: "error", message: "A nota não pode ficar vazia." };
   return PENDING;
 }
 
@@ -247,8 +215,7 @@ export async function transferAlert(
   targetOperatorId: string,
 ): Promise<ServiceResult> {
   assertDemoData();
-  if (!targetOperatorId)
-    return { status: "error", message: "Selecione o operador de destino." };
+  if (!targetOperatorId) return { status: "error", message: "Selecione o operador de destino." };
   return PENDING;
 }
 
@@ -257,8 +224,7 @@ export async function escalateAlert(
   supervisorId: string,
 ): Promise<ServiceResult> {
   assertDemoData();
-  if (!supervisorId)
-    return { status: "error", message: "Selecione o supervisor." };
+  if (!supervisorId) return { status: "error", message: "Selecione o supervisor." };
   return PENDING;
 }
 
@@ -266,7 +232,6 @@ export async function exportAlertHistory(): Promise<ServiceResult> {
   assertDemoData();
   return {
     status: "pending",
-    message:
-      "Integração pendente: exportação exige permissões e backend seguro.",
+    message: "Integração pendente: exportação exige permissões e backend seguro.",
   };
 }

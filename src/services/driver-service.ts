@@ -46,9 +46,7 @@ export interface DriverPage {
   pageSize: number;
 }
 
-export async function listDrivers(
-  filters: DriverFilters,
-): Promise<DriverPage> {
+export async function listDrivers(filters: DriverFilters): Promise<DriverPage> {
   assertDemoData();
   const term = filters.search.trim().toLowerCase();
   const filtered = drivers
@@ -58,21 +56,16 @@ export async function listDrivers(
         d.displayName.toLowerCase().includes(term) ||
         d.fullName.toLowerCase().includes(term),
     )
+    .filter((d) => filters.status === "todos" || d.registrationStatus === filters.status)
     .filter(
-      (d) => filters.status === "todos" || d.registrationStatus === filters.status,
-    )
-    .filter(
-      (d) =>
-        filters.subscription === "todos" ||
-        d.subscriptionStatus === filters.subscription,
+      (d) => filters.subscription === "todos" || d.subscriptionStatus === filters.subscription,
     );
 
   const start = (filters.page - 1) * filters.pageSize;
   return {
     rows: filtered.slice(start, start + filters.pageSize).map((driver) => ({
       driver,
-      primaryVehicle:
-        vehicles.find((v) => v.id === driver.primaryVehicleId) ?? null,
+      primaryVehicle: vehicles.find((v) => v.id === driver.primaryVehicleId) ?? null,
     })),
     total: filtered.length,
     page: filters.page,
@@ -87,9 +80,7 @@ export interface DriverDetail {
   activity: DriverActivityEntry[];
 }
 
-export async function getDriverDetail(
-  driverId: string,
-): Promise<DriverDetail | null> {
+export async function getDriverDetail(driverId: string): Promise<DriverDetail | null> {
   assertDemoData();
   const driver = findDriver(driverId);
   if (!driver) return null;
@@ -102,13 +93,9 @@ export async function getDriverDetail(
   };
 }
 
-export async function suspendDriver(
-  _driverId: string,
-  reason: string,
-): Promise<ServiceResult> {
+export async function suspendDriver(_driverId: string, reason: string): Promise<ServiceResult> {
   assertDemoData();
-  if (!reason.trim())
-    return { status: "error", message: "O motivo da suspensão é obrigatório." };
+  if (!reason.trim()) return { status: "error", message: "O motivo da suspensão é obrigatório." };
   return {
     status: "pending",
     message:
@@ -120,7 +107,6 @@ export async function exportDriverList(): Promise<ServiceResult> {
   assertDemoData();
   return {
     status: "pending",
-    message:
-      "Integração pendente: exportação depende de permissão e backend seguro.",
+    message: "Integração pendente: exportação depende de permissão e backend seguro.",
   };
 }

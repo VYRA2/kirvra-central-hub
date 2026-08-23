@@ -18,11 +18,7 @@ import {
   type LiveSession,
 } from "@/integrations/vyra/live";
 
-export type VyraDataErrorCode =
-  | "not_configured"
-  | "missing_table"
-  | "denied"
-  | "unknown";
+export type VyraDataErrorCode = "not_configured" | "missing_table" | "denied" | "unknown";
 
 export class VyraDataError extends Error {
   readonly code: VyraDataErrorCode;
@@ -36,27 +32,15 @@ export class VyraDataError extends Error {
 function classify(error: { code?: string; message?: string }): VyraDataError {
   const code = error.code ?? "";
   if (code === "42P01" || code === "PGRST205") {
-    return new VyraDataError(
-      "missing_table",
-      "Tabela ausente no VYRA2 para esta consulta.",
-    );
+    return new VyraDataError("missing_table", "Tabela ausente no VYRA2 para esta consulta.");
   }
   if (code === "42501" || code === "PGRST301") {
-    return new VyraDataError(
-      "denied",
-      "Sem permissão de leitura para estes dados no VYRA2.",
-    );
+    return new VyraDataError("denied", "Sem permissão de leitura para estes dados no VYRA2.");
   }
-  return new VyraDataError(
-    "unknown",
-    "Falha ao consultar os dados operacionais do VYRA2.",
-  );
+  return new VyraDataError("unknown", "Falha ao consultar os dados operacionais do VYRA2.");
 }
 
-async function selectAll(
-  table: string,
-  limit: number,
-): Promise<Record<string, unknown>[]> {
+async function selectAll(table: string, limit: number): Promise<Record<string, unknown>[]> {
   const client = getVyraClient();
   if (!client) {
     throw new VyraDataError(
@@ -110,9 +94,7 @@ export async function fetchLiveContext(): Promise<LiveContext> {
     sessions,
     alerts: alerts.map((alert) => ({
       ...alert,
-      driverName: alert.driverId
-        ? (driverById.get(alert.driverId)?.name ?? null)
-        : null,
+      driverName: alert.driverId ? (driverById.get(alert.driverId)?.name ?? null) : null,
     })),
     updatedAt: new Date().toISOString(),
   };

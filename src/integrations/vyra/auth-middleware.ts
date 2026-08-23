@@ -15,9 +15,7 @@ import type { EmployeeRole } from "./types";
 
 export class VyraIntegrationPendingError extends Error {
   constructor() {
-    super(
-      "Integração pendente: credenciais do Supabase VYRA2 não configuradas.",
-    );
+    super("Integração pendente: credenciais do Supabase VYRA2 não configuradas.");
     this.name = "VyraIntegrationPendingError";
   }
 }
@@ -42,50 +40,46 @@ export function roleFromAppMetadata(claims: unknown): EmployeeRole | null {
     : null;
 }
 
-export const requireVyraAuth = createMiddleware({ type: "function" }).server(
-  async ({ next }) => {
-    if (!readVyraServerConfig()) {
-      throw new VyraIntegrationPendingError();
-    }
+export const requireVyraAuth = createMiddleware({ type: "function" }).server(async ({ next }) => {
+  if (!readVyraServerConfig()) {
+    throw new VyraIntegrationPendingError();
+  }
 
-    const request = getRequest();
-    const authHeader = request?.headers?.get("authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      throw new Error("Não autorizado: sessão ausente.");
-    }
+  const request = getRequest();
+  const authHeader = request?.headers?.get("authorization");
+  if (!authHeader?.startsWith("Bearer ")) {
+    throw new Error("Não autorizado: sessão ausente.");
+  }
 
-    const token = authHeader.slice("Bearer ".length);
-    if (!token || token.split(".").length !== 3) {
-      throw new Error("Não autorizado: token inválido.");
-    }
+  const token = authHeader.slice("Bearer ".length);
+  if (!token || token.split(".").length !== 3) {
+    throw new Error("Não autorizado: token inválido.");
+  }
 
-    const supabase = createVyraServerClient(token);
-    if (!supabase) throw new VyraIntegrationPendingError();
+  const supabase = createVyraServerClient(token);
+  if (!supabase) throw new VyraIntegrationPendingError();
 
-    const { data, error } = await supabase.auth.getUser(token);
-    if (error || !data.user) {
-      throw new Error("Não autorizado: sessão inválida ou expirada.");
-    }
+  const { data, error } = await supabase.auth.getUser(token);
+  if (error || !data.user) {
+    throw new Error("Não autorizado: sessão inválida ou expirada.");
+  }
 
-    return next({
-      context: {
-        supabase,
-        userId: data.user.id,
-        role: roleFromAppMetadata(data.user),
-      },
-    });
-  },
-);
+  return next({
+    context: {
+      supabase,
+      userId: data.user.id,
+      role: roleFromAppMetadata(data.user),
+    },
+  });
+});
 
 /** Middleware de cliente que anexa o bearer token do VYRA2 às chamadas. */
-export const attachVyraAuth = createMiddleware({ type: "function" }).client(
-  async ({ next }) => {
-    if (typeof window === "undefined") return next({ headers: {} });
-    const { getVyraClient } = await import("./client");
-    const client = getVyraClient();
-    if (!client) return next({ headers: {} });
-    const { data } = await client.auth.getSession();
-    const token = data.session?.access_token;
-    return next({ headers: token ? { Authorization: `Bearer ${token}` } : {} });
-  },
-);
+export const attachVyraAuth = createMiddleware({ type: "function" }).client(async ({ next }) => {
+  if (typeof window === "undefined") return next({ headers: {} });
+  const { getVyraClient } = await import("./client");
+  const client = getVyraClient();
+  if (!client) return next({ headers: {} });
+  const { data } = await client.auth.getSession();
+  const token = data.session?.access_token;
+  return next({ headers: token ? { Authorization: `Bearer ${token}` } : {} });
+});

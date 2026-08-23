@@ -5,7 +5,12 @@
  * existentes (protection_sessions, alerts). Quando um dado não existe no
  * esquema, o indicador devolve `null` e o cartão mostra estado vazio.
  */
-import { isHandlingAlert, isOpenAlert, type LiveAlert, type LiveSession } from "@/integrations/vyra/live";
+import {
+  isHandlingAlert,
+  isOpenAlert,
+  type LiveAlert,
+  type LiveSession,
+} from "@/integrations/vyra/live";
 import { buildDemoContext } from "./demo-live";
 import { isDemoModeEnabled } from "./demo-mode";
 import { fetchLiveContext, VyraDataError } from "./vyra-live-service";
@@ -59,26 +64,18 @@ function buildOverview(
   );
   const openAlerts = context.alerts.filter(isOpenAlert);
   const handlingAlerts = context.alerts.filter(isHandlingAlert);
-  const criticalAlerts = context.alerts.filter(
-    (alert) => alert.severity === "critico",
-  );
+  const criticalAlerts = context.alerts.filter((alert) => alert.severity === "critico");
 
   const priorityAlerts = [...openAlerts, ...handlingAlerts]
     .sort((a, b) => {
       const severity =
-        (SEVERITY_WEIGHT[a.severity ?? ""] ?? 3) -
-        (SEVERITY_WEIGHT[b.severity ?? ""] ?? 3);
+        (SEVERITY_WEIGHT[a.severity ?? ""] ?? 3) - (SEVERITY_WEIGHT[b.severity ?? ""] ?? 3);
       if (severity !== 0) return severity;
-      return (
-        new Date(a.detectedAt ?? 0).getTime() -
-        new Date(b.detectedAt ?? 0).getTime()
-      );
+      return new Date(a.detectedAt ?? 0).getTime() - new Date(b.detectedAt ?? 0).getTime();
     })
     .slice(0, 5);
 
-  const withHeartbeat = activeSessions.filter(
-    (session) => session.lastHeartbeatAt !== null,
-  ).length;
+  const withHeartbeat = activeSessions.filter((session) => session.lastHeartbeatAt !== null).length;
 
   return {
     source,
@@ -113,18 +110,12 @@ function buildOverview(
     priorityAlerts,
     recentEvents: context.alerts
       .slice()
-      .sort(
-        (a, b) =>
-          new Date(b.detectedAt ?? 0).getTime() -
-          new Date(a.detectedAt ?? 0).getTime(),
-      )
+      .sort((a, b) => new Date(b.detectedAt ?? 0).getTime() - new Date(a.detectedAt ?? 0).getTime())
       .slice(0, 6)
       .map((alert) => ({
         id: alert.id,
         label: alert.threatType ?? "Alerta registrado",
-        detail: [alert.driverName, alert.locationLabel]
-          .filter(Boolean)
-          .join(" · "),
+        detail: [alert.driverName, alert.locationLabel].filter(Boolean).join(" · "),
         at: alert.detectedAt,
         tone:
           alert.severity === "critico"

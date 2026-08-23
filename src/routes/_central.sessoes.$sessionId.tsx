@@ -1,14 +1,7 @@
 import { useState } from "react";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import {
-  Camera,
-  Mic,
-  Navigation,
-  NotebookPen,
-  Signal,
-  TriangleAlert,
-} from "lucide-react";
+import { Camera, Mic, Navigation, NotebookPen, Signal, TriangleAlert } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -25,17 +18,8 @@ import {
   RiskBadge,
   StatusBadge,
 } from "@/components/kirvra/primitives";
-import {
-  formatClock,
-  formatElapsed,
-  formatTime,
-  maskPhone,
-} from "@/lib/kirvra-format";
-import {
-  addSessionNote,
-  escalateSession,
-  getSessionDetail,
-} from "@/services/session-service";
+import { formatClock, formatElapsed, formatTime, maskPhone } from "@/lib/kirvra-format";
+import { addSessionNote, escalateSession, getSessionDetail } from "@/services/session-service";
 import type { SensorState } from "@/integrations/vyra/types";
 
 export const Route = createFileRoute("/_central/sessoes/$sessionId")({
@@ -72,9 +56,7 @@ function SensorTile({
           <span className="text-muted-foreground">{icon}</span>
           {label}
         </span>
-        <StatusBadge tone={SENSOR_TONE[state]}>
-          {SENSOR_LABEL[state]}
-        </StatusBadge>
+        <StatusBadge tone={SENSOR_TONE[state]}>{SENSOR_LABEL[state]}</StatusBadge>
       </div>
       <p className="tabular mt-2 text-[11px] text-muted-foreground">
         {state === "indisponivel"
@@ -101,9 +83,7 @@ function SessionPage() {
 
       {isLoading ? <LoadingState rows={4} /> : null}
       {isError ? (
-        <ErrorState
-          action={<Button onClick={() => void refetch()}>Tentar novamente</Button>}
-        />
+        <ErrorState action={<Button onClick={() => void refetch()}>Tentar novamente</Button>} />
       ) : null}
       {!isLoading && !isError && !data ? (
         <EmptyState
@@ -156,8 +136,7 @@ function SessionPage() {
               value={formatElapsed(data.session.lastHeartbeatAt)}
               hint={formatTime(data.session.lastHeartbeatAt)}
               tone={
-                Date.now() - new Date(data.session.lastHeartbeatAt).getTime() >
-                60_000
+                Date.now() - new Date(data.session.lastHeartbeatAt).getTime() > 60_000
                   ? "warning"
                   : "success"
               }
@@ -241,18 +220,18 @@ function SessionPage() {
                       <div className="mt-3 flex gap-2">
                         <Button size="sm" asChild>
                           <Link
-                            to={"/alertas/$alertId" as any}
-                            params={{ alertId: data.sessionAlerts[0].id } as any}
-                            search={{} as any}
+                            to="/alertas/$alertId"
+                            params={{ alertId: data.sessionAlerts[0].id }}
+                            search={{}}
                           >
                             Abrir alerta
                           </Link>
                         </Button>
                         <Button size="sm" variant="outline" asChild>
                           <Link
-                            to={"/motoristas/$driverId" as any}
-                            params={{ driverId: data.driver.id } as any}
-                            search={{} as any}
+                            to="/motoristas/$driverId"
+                            params={{ driverId: data.driver.id }}
+                            search={{}}
                           >
                             Acompanhar motorista
                           </Link>
@@ -265,22 +244,24 @@ function SessionPage() {
             </Panel>
 
             <div className="flex flex-col gap-4">
-              <Panel title="Dados da motorista" className={undefined} bodyClassName={undefined} actions={undefined} description={undefined}>
+              <Panel
+                title="Dados da motorista"
+                className={undefined}
+                bodyClassName={undefined}
+                actions={undefined}
+                description={undefined}
+              >
                 <dl className="space-y-2.5 text-sm">
                   <div className="flex justify-between gap-3">
                     <dt className="text-muted-foreground">Nome</dt>
-                    <dd className="text-right text-foreground">
-                      {data.driver.fullName}
-                    </dd>
+                    <dd className="text-right text-foreground">{data.driver.fullName}</dd>
                   </div>
                   <div className="flex justify-between gap-3">
                     <dt className="text-muted-foreground">Verificação</dt>
                     <dd>
                       <StatusBadge
                         tone={
-                          data.driver.registrationStatus === "verificado"
-                            ? "success"
-                            : "warning"
+                          data.driver.registrationStatus === "verificado" ? "success" : "warning"
                         }
                         dot={undefined}
                         className={undefined}
@@ -295,37 +276,25 @@ function SessionPage() {
                     <dt className="text-muted-foreground">Assinatura</dt>
                     <dd>
                       <StatusBadge
-                        tone={
-                          data.driver.subscriptionStatus === "ativa"
-                            ? "success"
-                            : "warning"
-                        }
+                        tone={data.driver.subscriptionStatus === "ativa" ? "success" : "warning"}
                       >
-                        {data.driver.subscriptionStatus === "ativa"
-                          ? "Ativa"
-                          : "Pendente"}
+                        {data.driver.subscriptionStatus === "ativa" ? "Ativa" : "Pendente"}
                       </StatusBadge>
                     </dd>
                   </div>
                   <div className="flex justify-between gap-3">
                     <dt className="text-muted-foreground">Telefone</dt>
-                    <dd className="tabular text-foreground">
-                      {maskPhone(data.driver.phone)}
-                    </dd>
+                    <dd className="tabular text-foreground">{maskPhone(data.driver.phone)}</dd>
                   </div>
                   <div className="flex justify-between gap-3">
                     <dt className="text-muted-foreground">Veículo</dt>
                     <dd className="text-right text-foreground">
-                      {data.vehicle
-                        ? `${data.vehicle.make} ${data.vehicle.model}`
-                        : "—"}
+                      {data.vehicle ? `${data.vehicle.make} ${data.vehicle.model}` : "—"}
                     </dd>
                   </div>
                   <div className="flex justify-between gap-3">
                     <dt className="text-muted-foreground">Placa</dt>
-                    <dd className="tabular text-foreground">
-                      {data.vehicle?.plate ?? "—"}
-                    </dd>
+                    <dd className="tabular text-foreground">{data.vehicle?.plate ?? "—"}</dd>
                   </div>
                   <div className="flex justify-between gap-3">
                     <dt className="text-muted-foreground">Contato emergencial</dt>
@@ -342,17 +311,22 @@ function SessionPage() {
                   <RiskBadge level={data.session.riskLevel} />
                   <Button size="sm" variant="link" asChild className="h-auto p-0">
                     <Link
-                      to={"/motoristas/$driverId" as any}
-                      params={{ driverId: data.driver.id } as any}
-                      search={{} as any}
-                    >
+                      to="/motoristas/$driverId"
+                      params={{ driverId: data.driver.id }}
+                      search={{}}>
                       Abrir perfil
                     </Link>
                   </Button>
                 </div>
               </Panel>
 
-              <Panel title="Sensores da sessão" bodyClassName="grid gap-3 p-4 sm:grid-cols-2" className={undefined} actions={undefined} description={undefined}>
+              <Panel
+                title="Sensores da sessão"
+                bodyClassName="grid gap-3 p-4 sm:grid-cols-2"
+                className={undefined}
+                actions={undefined}
+                description={undefined}
+              >
                 <SensorTile
                   icon={<Camera className="h-4 w-4" aria-hidden="true" />}
                   label="Câmera"

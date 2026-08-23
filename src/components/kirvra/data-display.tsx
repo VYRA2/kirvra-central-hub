@@ -10,13 +10,7 @@ import { DriverAvatar, SeverityBadge } from "./primitives";
 
 /* ------------------------------------------------------------- FilterBar */
 
-export function FilterBar({
-  children,
-  className,
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
+export function FilterBar({ children, className }: { children: ReactNode; className?: string }) {
   return (
     <div
       className={cn(
@@ -154,16 +148,12 @@ export function AlertCard({
     <article
       className={cn(
         "rounded-lg border bg-surface px-3 py-3",
-        alert.severity === "critico"
-          ? "border-critical/40"
-          : "border-border",
+        alert.severity === "critico" ? "border-critical/40" : "border-border",
       )}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-foreground">
-            {alert.threatType}
-          </p>
+          <p className="truncate text-sm font-semibold text-foreground">{alert.threatType}</p>
           <p className="mt-0.5 flex items-center gap-1.5 truncate text-xs text-muted-foreground">
             <DriverAvatar initials={driverName.slice(0, 2)} size="sm" />
             {driverName}
@@ -188,12 +178,16 @@ export function AlertCard({
       {!compact ? (
         <div className="mt-3 flex flex-wrap gap-2">
           <Button size="sm" asChild>
-            <Link to="/alertas/$alertId" params={{ alertId: alert.id } as any} search={{} as any}>
+            <Link to="/alertas/$alertId" params={{ alertId: alert.id }} search={{}}>
               Abrir alerta
             </Link>
           </Button>
           <Button size="sm" variant="outline" asChild>
-            <Link to="/sessoes/$sessionId" params={{ sessionId: alert.sessionId } as any} search={{} as any}>
+            <Link
+              to="/sessoes/$sessionId"
+              params={{ sessionId: alert.sessionId }}
+              search={{}}
+            >
               Acompanhar
             </Link>
           </Button>

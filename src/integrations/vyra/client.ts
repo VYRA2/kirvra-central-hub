@@ -13,9 +13,7 @@ const VYRA_STORAGE_KEY = "kirvra-central-auth";
 
 function readBrowserConfig() {
   const url = import.meta.env["VITE_VYRA_SUPABASE_URL"] as string | undefined;
-  const key = import.meta.env["VITE_VYRA_SUPABASE_PUBLISHABLE_KEY"] as
-    | string
-    | undefined;
+  const key = import.meta.env["VITE_VYRA_SUPABASE_PUBLISHABLE_KEY"] as string | undefined;
   return { url, key };
 }
 
@@ -37,14 +35,10 @@ function isNewSupabaseApiKey(value: string): boolean {
 function createVyraFetch(supabaseKey: string): typeof fetch {
   return (input, init) => {
     const headers = new Headers(
-      typeof Request !== "undefined" && input instanceof Request
-        ? input.headers
-        : undefined,
+      typeof Request !== "undefined" && input instanceof Request ? input.headers : undefined,
     );
     if (init?.headers) {
-      new Headers(init.headers).forEach((value, name) =>
-        headers.set(name, value),
-      );
+      new Headers(init.headers).forEach((value, name) => headers.set(name, value));
     }
     // Chaves sb_* são opacas, não são JWT: só o header apikey deve ir.
     if (

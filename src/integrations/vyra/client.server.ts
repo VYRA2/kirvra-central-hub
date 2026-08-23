@@ -14,14 +14,10 @@ function isNewSupabaseApiKey(value: string): boolean {
 function createVyraFetch(supabaseKey: string): typeof fetch {
   return (input, init) => {
     const headers = new Headers(
-      typeof Request !== "undefined" && input instanceof Request
-        ? input.headers
-        : undefined,
+      typeof Request !== "undefined" && input instanceof Request ? input.headers : undefined,
     );
     if (init?.headers) {
-      new Headers(init.headers).forEach((value, name) =>
-        headers.set(name, value),
-      );
+      new Headers(init.headers).forEach((value, name) => headers.set(name, value));
     }
     if (
       isNewSupabaseApiKey(supabaseKey) &&
@@ -51,9 +47,7 @@ export function readVyraServerConfig(): VyraServerConfig | null {
  * Cria um cliente sem sessão persistida para uso dentro de handlers.
  * Retorna `null` quando as variáveis de ambiente ainda não foram definidas.
  */
-export function createVyraServerClient(
-  accessToken?: string,
-): SupabaseClient | null {
+export function createVyraServerClient(accessToken?: string): SupabaseClient | null {
   const config = readVyraServerConfig();
   if (!config) return null;
 

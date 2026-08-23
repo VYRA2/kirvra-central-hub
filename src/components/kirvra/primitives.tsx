@@ -1,20 +1,9 @@
 import type { ReactNode } from "react";
-import {
-  AlertTriangle,
-  Ban,
-  Inbox,
-  Loader2,
-  Lock,
-  WifiOff,
-} from "lucide-react";
+import { AlertTriangle, Ban, Inbox, Loader2, Lock, WifiOff } from "lucide-react";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import type {
-  AlertSeverity,
-  AlertState,
-  RiskLevel,
-} from "@/integrations/vyra/types";
+import type { AlertSeverity, AlertState, RiskLevel } from "@/integrations/vyra/types";
 
 /* ---------------------------------------------------------------- badges */
 
@@ -48,10 +37,7 @@ export function StatusBadge({
       )}
     >
       {dot ? (
-        <span
-          aria-hidden="true"
-          className="h-1.5 w-1.5 shrink-0 rounded-full bg-current"
-        />
+        <span aria-hidden="true" className="h-1.5 w-1.5 shrink-0 rounded-full bg-current" />
       ) : null}
       {children}
     </span>
@@ -181,19 +167,15 @@ export function MetricCard({
             : "text-foreground";
 
   return (
-    <div className={cn("rounded-lg border border-border bg-card px-4 py-3", className || undefined)}>
+    <div
+      className={cn("rounded-lg border border-border bg-card px-4 py-3", className || undefined)}
+    >
       <p className="text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
         {label}
       </p>
-      <p className={cn("tabular mt-1.5 text-2xl font-semibold", valueTone)}>
-        {value}
-      </p>
-      {sublabel ? (
-        <p className="mt-1 text-xs text-muted-foreground">{sublabel}</p>
-      ) : null}
-      {hint ? (
-        <p className="mt-1 text-xs text-muted-foreground">{hint}</p>
-      ) : null}
+      <p className={cn("tabular mt-1.5 text-2xl font-semibold", valueTone)}>{value}</p>
+      {sublabel ? <p className="mt-1 text-xs text-muted-foreground">{sublabel}</p> : null}
+      {hint ? <p className="mt-1 text-xs text-muted-foreground">{hint}</p> : null}
     </div>
   );
 }
@@ -214,14 +196,10 @@ export function PageHeader({
       <div className="min-w-0">
         <h1 className="text-xl font-semibold text-foreground">{title}</h1>
         {description ? (
-          <p className="mt-1 max-w-3xl text-sm text-muted-foreground">
-            {description}
-          </p>
+          <p className="mt-1 max-w-3xl text-sm text-muted-foreground">{description}</p>
         ) : null}
       </div>
-      {actions ? (
-        <div className="flex flex-wrap items-center gap-2">{actions}</div>
-      ) : null}
+      {actions ? <div className="flex flex-wrap items-center gap-2">{actions}</div> : null}
     </header>
   );
 }
@@ -251,21 +229,15 @@ export function Panel({
       {title ? (
         <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
           <div className="min-w-0">
-            <h2 className="truncate text-sm font-semibold text-foreground">
-              {title}
-            </h2>
+            <h2 className="truncate text-sm font-semibold text-foreground">{title}</h2>
             {description ? (
-              <p className="truncate text-xs text-muted-foreground">
-                {description}
-              </p>
+              <p className="truncate text-xs text-muted-foreground">{description}</p>
             ) : null}
           </div>
           {actions}
         </div>
       ) : null}
-      <div className={cn("min-w-0 flex-1", bodyClassName ?? "p-4")}>
-        {children}
-      </div>
+      <div className={cn("min-w-0 flex-1", bodyClassName ?? "p-4")}>{children}</div>
     </section>
   );
 }
@@ -323,14 +295,17 @@ function StateShell({
         ? "text-warning"
         : "text-muted-foreground";
   return (
-    <div className={cn("flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-border bg-card/40 px-6 py-10 text-center", className || undefined)}>
+    <div
+      className={cn(
+        "flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-border bg-card/40 px-6 py-10 text-center",
+        className || undefined,
+      )}
+    >
       <span className={toneClass}>{icon}</span>
       <div>
         <p className="text-sm font-medium text-foreground">{title}</p>
         {description ? (
-          <p className="mt-1 max-w-md text-xs text-muted-foreground">
-            {description}
-          </p>
+          <p className="mt-1 max-w-md text-xs text-muted-foreground">{description}</p>
         ) : null}
       </div>
       {action}
@@ -441,12 +416,7 @@ export function LoadingState({
   rows?: number;
 }) {
   return (
-    <div
-      className="space-y-3"
-      role="status"
-      aria-live="polite"
-      aria-busy="true"
-    >
+    <div className="space-y-3" role="status" aria-live="polite" aria-busy="true">
       <p className="flex items-center gap-2 text-xs text-muted-foreground">
         <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
         {label}
@@ -482,11 +452,7 @@ export function RealtimeIndicator({
   lastUpdate: string;
 }) {
   const tone: BadgeTone =
-    status === "conectado"
-      ? "success"
-      : status === "pendente"
-        ? "warning"
-        : "critical";
+    status === "conectado" ? "success" : status === "pendente" ? "warning" : "critical";
   const label =
     status === "conectado"
       ? "Atualização ao vivo"
@@ -496,9 +462,7 @@ export function RealtimeIndicator({
   return (
     <span className="inline-flex items-center gap-2">
       <StatusBadge tone={tone}>{label}</StatusBadge>
-      <span className="tabular text-[11px] text-muted-foreground">
-        Último dado {lastUpdate}
-      </span>
+      <span className="tabular text-[11px] text-muted-foreground">Último dado {lastUpdate}</span>
     </span>
   );
 }

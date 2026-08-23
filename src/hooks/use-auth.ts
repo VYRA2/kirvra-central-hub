@@ -30,9 +30,7 @@ export interface UseAuthResult {
  * para decidir o que renderizar — a autorização real é garantida por RLS.
  */
 export function useAuth(): UseAuthResult {
-  const [session, setSession] = useState<CentralSession | null>(() =>
-    getSession(),
-  );
+  const [session, setSession] = useState<CentralSession | null>(() => getSession());
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -63,8 +61,7 @@ export function useAuth(): UseAuthResult {
       demoMode: isDemoAvailable(),
       isDemoSession: session?.kind === "demo",
       can: (permission) => permissions.includes(permission),
-      canAll: (required) =>
-        required.every((permission) => permissions.includes(permission)),
+      canAll: (required) => required.every((permission) => permissions.includes(permission)),
     }),
     // permissions é derivado de session; a dependência é a própria sessão.
     // eslint-disable-next-line react-hooks/exhaustive-deps

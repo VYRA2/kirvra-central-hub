@@ -35,11 +35,7 @@ import type { PermissionCode } from "@/integrations/vyra/access";
 import { DemoModeBanner } from "./access-control";
 import { signOut } from "@/services/auth-service";
 import { KirvraWordmark } from "./brand";
-import {
-  DriverAvatar,
-  PendingIntegrationNotice,
-  SystemOnlineBadge,
-} from "./primitives";
+import { DriverAvatar, PendingIntegrationNotice, SystemOnlineBadge } from "./primitives";
 
 interface NavItem {
   label: string;
@@ -53,8 +49,18 @@ const NAV_GROUPS: Array<{ label: string; items: NavItem[] }> = [
   {
     label: "Operação",
     items: [
-      { label: "Central de Comando", to: "/central", permissions: ["dashboard.view"], icon: LayoutDashboard },
-      { label: "Monitoramento", to: "/monitoramento", permissions: ["sessions.view", "location.view"], icon: Radar },
+      {
+        label: "Central de Comando",
+        to: "/central",
+        permissions: ["dashboard.view"],
+        icon: LayoutDashboard,
+      },
+      {
+        label: "Monitoramento",
+        to: "/monitoramento",
+        permissions: ["sessions.view", "location.view"],
+        icon: Radar,
+      },
       { label: "Alertas", to: "/alertas", permissions: ["alerts.view"], icon: ShieldAlert },
       { label: "Motoristas", to: "/motoristas", permissions: ["drivers.view"], icon: Users },
       { label: "Veículos", to: "/veiculos", permissions: ["vehicles.view"], icon: Car },
@@ -68,8 +74,18 @@ const NAV_GROUPS: Array<{ label: string; items: NavItem[] }> = [
       { label: "Escalas", to: "/escalas", permissions: ["schedules.manage"], icon: CalendarClock },
       { label: "Relatórios", to: "/relatorios", permissions: ["reports.view"], icon: FileBarChart },
       { label: "Auditoria", to: "/auditoria", permissions: ["audit.view"], icon: ScrollText },
-      { label: "Saúde do sistema", to: "/saude-do-sistema", permissions: ["health.view"], icon: Gauge },
-      { label: "Configurações", to: "/configuracoes", permissions: ["settings.manage"], icon: Settings },
+      {
+        label: "Saúde do sistema",
+        to: "/saude-do-sistema",
+        permissions: ["health.view"],
+        icon: Gauge,
+      },
+      {
+        label: "Configurações",
+        to: "/configuracoes",
+        permissions: ["settings.manage"],
+        icon: Settings,
+      },
     ],
   },
 ];
@@ -97,59 +113,52 @@ export function KirvraSidebar({
       className="flex h-full flex-col gap-6 overflow-y-auto bg-sidebar px-3 py-4"
     >
       <div className={cn("px-1", collapsed && "flex justify-center px-0")}>
-        {collapsed ? (
-          <KirvraWordmark className="[&>div]:hidden" />
-        ) : (
-          <KirvraWordmark />
-        )}
+        {collapsed ? <KirvraWordmark className="[&>div]:hidden" /> : <KirvraWordmark />}
       </div>
 
       {NAV_GROUPS.map((group) => {
         const items = group.items.filter((item) => canAll(item.permissions));
         if (items.length === 0) return null;
         return (
-        <div key={group.label}>
-          {!collapsed ? (
-            <p className="px-2 pb-2 text-[10px] font-semibold tracking-[0.18em] text-muted-foreground uppercase">
-              {group.label}
-            </p>
-          ) : null}
-          <ul className="space-y-0.5">
-            {items.map((item) => {
-              const active = isItemActive(pathname, item.to);
-              return (
-                <li key={item.to}>
-                  <Link
-                    to={item.to}
-                    onClick={onNavigate}
-                    aria-current={active ? "page" : undefined}
-                    title={collapsed ? item.label : undefined}
-                    className={cn(
-                      "flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm transition-colors",
-                      collapsed && "justify-center px-0",
-                      active
-                        ? "bg-sidebar-accent font-medium text-sidebar-accent-foreground"
-                        : "text-sidebar-foreground/75 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground",
-                    )}
-                  >
-                    <item.icon
+          <div key={group.label}>
+            {!collapsed ? (
+              <p className="px-2 pb-2 text-[10px] font-semibold tracking-[0.18em] text-muted-foreground uppercase">
+                {group.label}
+              </p>
+            ) : null}
+            <ul className="space-y-0.5">
+              {items.map((item) => {
+                const active = isItemActive(pathname, item.to);
+                return (
+                  <li key={item.to}>
+                    <Link
+                      to={item.to}
+                      onClick={onNavigate}
+                      aria-current={active ? "page" : undefined}
+                      title={collapsed ? item.label : undefined}
                       className={cn(
-                        "h-4 w-4 shrink-0",
-                        active && "text-primary",
+                        "flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm transition-colors",
+                        collapsed && "justify-center px-0",
+                        active
+                          ? "bg-sidebar-accent font-medium text-sidebar-accent-foreground"
+                          : "text-sidebar-foreground/75 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground",
                       )}
-                      aria-hidden="true"
-                    />
-                    {!collapsed ? (
-                      <span className="truncate">{item.label}</span>
-                    ) : (
-                      <span className="sr-only">{item.label}</span>
-                    )}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
+                    >
+                      <item.icon
+                        className={cn("h-4 w-4 shrink-0", active && "text-primary")}
+                        aria-hidden="true"
+                      />
+                      {!collapsed ? (
+                        <span className="truncate">{item.label}</span>
+                      ) : (
+                        <span className="sr-only">{item.label}</span>
+                      )}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
         );
       })}
     </nav>
@@ -188,9 +197,7 @@ export function UserMenu() {
         >
           <DriverAvatar initials={employee.initials} size="sm" />
           <span className="hidden leading-tight md:block">
-            <span className="block text-xs font-medium text-foreground">
-              {employee.fullName}
-            </span>
+            <span className="block text-xs font-medium text-foreground">{employee.fullName}</span>
             <span className="block text-[10px] text-muted-foreground">
               {EMPLOYEE_ROLE_LABEL[employee.role]} · {employee.employeeCode}
             </span>
@@ -204,8 +211,7 @@ export function UserMenu() {
             {EMPLOYEE_ROLE_LABEL[employee.role]} · {employee.employeeCode}
           </span>
           <span className="mt-1 block">
-            Sessão {session?.backed ? "autenticada" : "de demonstração"} ·
-            auditada
+            Sessão {session?.backed ? "autenticada" : "de demonstração"} · auditada
           </span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
@@ -243,9 +249,7 @@ export function KirvraTopbar({
         >
           <Menu className="h-4 w-4" aria-hidden="true" />
         </Button>
-        <h2 className="truncate text-sm font-semibold tracking-wide text-foreground">
-          {title}
-        </h2>
+        <h2 className="truncate text-sm font-semibold tracking-wide text-foreground">{title}</h2>
       </div>
       <div className="flex items-center gap-2 sm:gap-3">
         <SystemOnlineBadge />
@@ -267,9 +271,9 @@ export function BackLink({
 }) {
   return (
     <Link
-      to={to as any}
-      params={(params || {}) as any}
-      search={{} as any}
+      to={to as "/"}
+      params={params as Record<string, string>}
+      search={{}}
       className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
     >
       <ChevronLeft className="h-3.5 w-3.5" aria-hidden="true" />
@@ -278,13 +282,7 @@ export function BackLink({
   );
 }
 
-export function KirvraAppShell({
-  title,
-  children,
-}: {
-  title: string;
-  children: ReactNode;
-}) {
+export function KirvraAppShell({ title, children }: { title: string; children: ReactNode }) {
   const { session, loading, backendAvailable } = useAuth();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -311,10 +309,7 @@ export function KirvraAppShell({
       {mobileOpen ? (
         <div className="fixed inset-0 z-50 flex md:hidden">
           <div className="w-64 border-r border-sidebar-border">
-            <KirvraSidebar
-              collapsed={false}
-              onNavigate={() => setMobileOpen(false)}
-            />
+            <KirvraSidebar collapsed={false} onNavigate={() => setMobileOpen(false)} />
           </div>
           <button
             type="button"
@@ -339,13 +334,9 @@ export function KirvraAppShell({
         <main className="min-h-0 flex-1 overflow-y-auto p-4 lg:p-5">
           <div className="mx-auto flex max-w-[1600px] flex-col gap-4">
             {session && !session.backed ? <DemoModeBanner /> : null}
-            {session?.backed === true && !backendAvailable ? (
-              <PendingIntegrationNotice />
-            ) : null}
+            {session?.backed === true && !backendAvailable ? <PendingIntegrationNotice /> : null}
             {loading && !session ? (
-              <p className="text-xs text-muted-foreground">
-                Restaurando sessão…
-              </p>
+              <p className="text-xs text-muted-foreground">Restaurando sessão…</p>
             ) : (
               children
             )}

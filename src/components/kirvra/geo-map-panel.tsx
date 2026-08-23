@@ -14,13 +14,7 @@ import type { GeoMarker } from "./geo-map";
 
 const GeoMap = lazy(() => import("./geo-map"));
 
-function Frame({
-  className,
-  children,
-}: {
-  className?: string | undefined;
-  children: ReactNode;
-}) {
+function Frame({ className, children }: { className?: string | undefined; children: ReactNode }) {
   return (
     <div
       className={cn(
@@ -40,7 +34,6 @@ function Centered({ children }: { children: ReactNode }) {
     </div>
   );
 }
-
 
 export function GeoMapPanel({
   markers,
@@ -74,8 +67,8 @@ export function GeoMapPanel({
       <Frame className={className}>
         <Centered>
           <TriangleAlert className="h-5 w-5 text-warning" aria-hidden="true" />
-          Não foi possível carregar o mapa. Verifique a conexão com o provedor de
-          tiles e tente novamente.
+          Não foi possível carregar o mapa. Verifique a conexão com o provedor de tiles e tente
+          novamente.
         </Centered>
       </Frame>
     );
@@ -96,18 +89,11 @@ export function GeoMapPanel({
     <Frame className={className}>
       {/* absolute inset-0: o Leaflet exige altura resolvida, não percentual de auto. */}
       <div className="absolute inset-0">
-      <ClientOnly
-        fallback={<Centered>Carregando mapa operacional…</Centered>}
-      >
-        <Suspense fallback={<Centered>Carregando mapa operacional…</Centered>}>
-          <GeoMap
-            markers={markers}
-            activeId={activeId}
-            track={track}
-            onSelect={onSelect}
-          />
-        </Suspense>
-      </ClientOnly>
+        <ClientOnly fallback={<Centered>Carregando mapa operacional…</Centered>}>
+          <Suspense fallback={<Centered>Carregando mapa operacional…</Centered>}>
+            <GeoMap markers={markers} activeId={activeId} track={track} onSelect={onSelect} />
+          </Suspense>
+        </ClientOnly>
       </div>
       {overlay}
     </Frame>

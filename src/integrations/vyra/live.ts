@@ -75,7 +75,7 @@ const RISK_MAP: Record<string, RiskLevel> = {
   low: "normal",
   baixo: "normal",
   atencao: "atencao",
-  "atenção": "atencao",
+  atenção: "atencao",
   medium: "atencao",
   medio: "atencao",
   warning: "atencao",
@@ -84,7 +84,7 @@ const RISK_MAP: Record<string, RiskLevel> = {
   high: "suspeito",
   alto: "suspeito",
   critico: "critico",
-  "crítico": "critico",
+  crítico: "critico",
   critical: "critico",
 };
 
@@ -219,9 +219,7 @@ export function isOpenAlert(alert: LiveAlert): boolean {
 }
 
 export function isHandlingAlert(alert: LiveAlert): boolean {
-  return Boolean(
-    alert.status && HANDLING_STATUS.includes(alert.status.toLowerCase()),
-  );
+  return Boolean(alert.status && HANDLING_STATUS.includes(alert.status.toLowerCase()));
 }
 
 export function normalizeAlert(row: Row): LiveAlert | null {
@@ -232,12 +230,7 @@ export function normalizeAlert(row: Row): LiveAlert | null {
     protocol: readString(row, ["protocol", "code", "reference"]),
     driverId: readString(row, ["driver_id", "user_id"]),
     sessionId: readString(row, ["session_id", "protection_session_id"]),
-    threatType: readString(row, [
-      "threat_type",
-      "alert_type",
-      "type",
-      "category",
-    ]),
+    threatType: readString(row, ["threat_type", "alert_type", "type", "category"]),
     confidence: readNumber(row, ["confidence", "score", "ai_confidence"]),
     severity: readRiskLevel(row),
     status: readString(row, ["status", "state"]),
@@ -297,17 +290,14 @@ export function joinSessionContext(
     const driver = session.driverId ? driverById.get(session.driverId) : null;
     const vehicle = session.vehicleId
       ? vehicleById.get(session.vehicleId)
-      : (vehicles.find((v) => v.driverId && v.driverId === session.driverId) ??
-        null);
+      : (vehicles.find((v) => v.driverId && v.driverId === session.driverId) ?? null);
 
     return {
       ...session,
       driverName: driver?.name ?? null,
       vehicleLabel: vehicle?.label ?? null,
       plate: vehicle?.plate ?? null,
-      alertIds: alerts
-        .filter((alert) => alert.sessionId === session.id)
-        .map((alert) => alert.id),
+      alertIds: alerts.filter((alert) => alert.sessionId === session.id).map((alert) => alert.id),
     };
   });
 }

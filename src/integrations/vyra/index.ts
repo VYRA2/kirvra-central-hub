@@ -1,8 +1,4 @@
-export {
-  getVyraClient,
-  getVyraUrl,
-  isVyraConfigured,
-} from "./client";
+export { getVyraClient, getVyraUrl, isVyraConfigured } from "./client";
 export type * from "./types";
 export { EMPLOYEE_ROLE_LABEL } from "./types";
 
