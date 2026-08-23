@@ -178,15 +178,15 @@ export function AlertCard({
       {!compact ? (
         <div className="mt-3 flex flex-wrap gap-2">
           <Button size="sm" asChild>
-            <Link to="/alertas/$alertId" params={{ alertId: alert.id } as any} search={{} as any}>
+            <Link to="/alertas/$alertId" params={{ alertId: alert.id }} search={{}}>
               Abrir alerta
             </Link>
           </Button>
           <Button size="sm" variant="outline" asChild>
             <Link
               to="/sessoes/$sessionId"
-              params={{ sessionId: alert.sessionId } as any}
-              search={{} as any}
+              params={{ sessionId: alert.sessionId }}
+              search={{}}
             >
               Acompanhar
             </Link>
