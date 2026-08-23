@@ -399,7 +399,11 @@ function EmployeeModal({
             </div>
             <div className="space-y-2">
               <Label htmlFor="role" className="text-xs font-semibold uppercase text-muted-foreground">Cargo</Label>
-              <Select defaultValue={profile?.role_id ?? undefined} disabled={!isCreate && !isReview}>
+              <Select 
+                key={profile?.id || "new"} 
+                defaultValue={profile?.role_id || undefined} 
+                disabled={!isCreate && !isReview}
+              >
                 <SelectTrigger id="role" className="h-9">
                   <SelectValue placeholder="Selecione..." />
                 </SelectTrigger>
