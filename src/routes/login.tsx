@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
-import { Loader2, MonitorPlay, ShieldCheck } from "lucide-react";
+import { Eye, EyeOff, Loader2, MonitorPlay, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -26,18 +26,20 @@ export const Route = createFileRoute("/login")({
   }),
   head: () => ({
     meta: [
-      { title: "Acesso à Central | Kirvra Central de Vigilância" },
+      { title: "Acesso à Central | KIRVRA Central" },
       {
         name: "description",
         content:
-          "Acesso interno restrito da Central KIRVRA. Somente credenciais corporativas, sem cadastro público ou login social.",
+          "Acesso interno restrito da KIRVRA Central. Somente credenciais corporativas: sem cadastro público e sem login social.",
       },
-      { property: "og:title", content: "Acesso à Central KIRVRA" },
+      { property: "og:title", content: "Acesso à KIRVRA Central" },
       {
         property: "og:description",
         content:
           "Ambiente operacional restrito de vigilância KIRVRA. Sessão protegida e auditada.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: LoginPage,
@@ -47,8 +49,10 @@ function LoginPage() {
   const navigate = useNavigate();
   const router = useRouter();
   const { redirect: redirectTo } = Route.useSearch();
-  const [employeeCode, setEmployeeCode] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [remember, setRemember] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [demoStarting, setDemoStarting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -68,7 +72,12 @@ function LoginPage() {
   useEffect(() => {
     let active = true;
     void resolveCentralSession().then((session) => {
-      if (active && session) void goToDestination();
+      if (!active || !session) return;
+      if (session.firstAccessPending) {
+        void navigate({ to: "/primeiro-acesso", replace: true });
+        return;
+      }
+      void goToDestination();
     });
     return () => {
       active = false;
@@ -78,30 +87,21 @@ function LoginPage() {
 
   const handleDemo = async () => {
     setError(null);
-    if (!demoAvailable) {
-      setError("Modo demonstração desabilitado neste ambiente.");
-      return;
-    }
     setDemoStarting(true);
     const demo = startDemoSession();
     if (!demo) {
       setDemoStarting(false);
-      setError("Não foi possível iniciar o modo demonstração.");
+      setError("Modo demonstração desabilitado neste ambiente.");
       return;
     }
     await goToDestination();
     setDemoStarting(false);
   };
 
-
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setError(null);
 
-    if (!employeeCode.trim() || !password) {
-      setError("Informe o ID de funcionário e a senha.");
-      return;
-    }
     if (remainingLockSeconds() > 0) {
       setError(
         `Muitas tentativas. Aguarde ${remainingLockSeconds()} s para tentar novamente.`,
@@ -110,7 +110,7 @@ function LoginPage() {
     }
 
     setSubmitting(true);
-    const result = await signIn(employeeCode, password);
+    const result = await signIn(identifier, password);
     setSubmitting(false);
 
     if (result.status === "error") {
@@ -118,17 +118,14 @@ function LoginPage() {
       return;
     }
     if (result.status === "first_access") {
-      void navigate({
-        to: "/primeiro-acesso",
-        search: { id: result.employeeCode },
-      });
+      void navigate({ to: "/primeiro-acesso", replace: true });
       return;
     }
     void goToDestination();
   };
 
   const handleReset = async () => {
-    const result = await requestPasswordReset(employeeCode);
+    const result = await requestPasswordReset(identifier);
     if (result.status === "error") toast.error(result.message);
     else if (result.status === "pending") toast.warning(result.message);
   };
@@ -140,26 +137,28 @@ function LoginPage() {
           Acesso à Central
         </h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Use suas credenciais internas Kirvra.
+          Use suas credenciais internas KIRVRA.
         </p>
 
         {!backendAvailable ? (
           <div className="mt-4">
-            <PendingIntegrationNotice message="Integração pendente: as variáveis do Supabase VYRA2 ainda não foram definidas. O acesso abaixo abre uma sessão local de demonstração, sem backend e sem gravação." />
+            <PendingIntegrationNotice message="Integração pendente: defina VITE_VYRA_SUPABASE_URL e VITE_VYRA_SUPABASE_PUBLISHABLE_KEY para autenticar no Supabase VYRA2. Sem elas nenhum login real é possível." />
           </div>
         ) : null}
 
         <form onSubmit={handleSubmit} className="mt-5 space-y-4" noValidate>
           <div className="space-y-1.5">
-            <Label htmlFor="employee-code">ID de funcionário</Label>
+            <Label htmlFor="identifier">
+              Identificação interna ou e-mail corporativo
+            </Label>
             <Input
-              id="employee-code"
-              name="employee-code"
+              id="identifier"
+              name="identifier"
               autoComplete="username"
               inputMode="text"
-              placeholder="KRV-0000"
-              value={employeeCode}
-              onChange={(event) => setEmployeeCode(event.target.value)}
+              placeholder="KRV-0000 ou nome@kirvra.com"
+              value={identifier}
+              onChange={(event) => setIdentifier(event.target.value)}
               aria-invalid={Boolean(error)}
               required
             />
@@ -167,17 +166,43 @@ function LoginPage() {
 
           <div className="space-y-1.5">
             <Label htmlFor="password">Senha</Label>
-            <Input
-              id="password"
-              name="password"
-              type="password"
-              autoComplete="current-password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              aria-invalid={Boolean(error)}
-              required
-            />
+            <div className="relative">
+              <Input
+                id="password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                autoComplete="current-password"
+                className="pr-10"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                aria-invalid={Boolean(error)}
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-muted-foreground hover:text-foreground"
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" aria-hidden="true" />
+                ) : (
+                  <Eye className="h-4 w-4" aria-hidden="true" />
+                )}
+              </button>
+            </div>
           </div>
+
+          <label className="flex items-center gap-2 text-xs text-muted-foreground">
+            <input
+              type="checkbox"
+              checked={remember}
+              onChange={(event) => setRemember(event.target.checked)}
+              className="h-3.5 w-3.5 accent-primary"
+            />
+            Manter esta sessão neste dispositivo (persistência segura do
+            Supabase)
+          </label>
 
           {error ? (
             <p
@@ -199,7 +224,7 @@ function LoginPage() {
         </form>
 
         {demoAvailable ? (
-          <div className="mt-4 rounded-md border border-dashed border-border bg-surface px-3 py-3">
+          <div className="mt-4 rounded-md border border-dashed border-warning/50 bg-warning/10 px-3 py-3">
             <Button
               type="button"
               variant="outline"
@@ -215,7 +240,8 @@ function LoginPage() {
               Entrar no modo demonstração
             </Button>
             <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
-              Visualização local das telas, sem dados reais e sem gravação.
+              Habilitado por VITE_KIRVRA_DEMO_MODE. Dados simulados, sem
+              gravação e sem ações críticas.
             </p>
           </div>
         ) : null}
@@ -225,9 +251,7 @@ function LoginPage() {
             type="button"
             variant="link"
             className="h-auto p-0 text-xs"
-            onClick={() =>
-              void navigate({ to: "/primeiro-acesso", search: { id: "" } })
-            }
+            onClick={() => void navigate({ to: "/primeiro-acesso" })}
           >
             Primeiro acesso
           </Button>
@@ -242,7 +266,7 @@ function LoginPage() {
         </div>
 
         <p className="mt-5 border-t border-border pt-4 text-[11px] leading-relaxed text-muted-foreground">
-          Sem cadastro público ou login social. Sessão protegida e auditada.
+          Sem cadastro público e sem login social. Sessão protegida e auditada.
         </p>
       </div>
     </KirvraAuthLayout>
