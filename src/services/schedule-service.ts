@@ -64,8 +64,6 @@ export async function getScheduleData(): Promise<ScheduleData> {
 
     if (error) throw error;
 
-    if (error) throw error;
-
     // Retorna explicitamente que a integração de escalas está pendente.
     // Os indicadores serão zerados e a lista mostrará o aviso conforme solicitado.
     return {
