@@ -1,4 +1,4 @@
-import { supabase } from "@/integrations/vyra/client";
+import { getVyraClient } from "@/integrations/vyra/client";
 import { Database } from "@/integrations/vyra/types";
 import { formatDistanceToNow, isAfter, subMinutes } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -14,6 +14,9 @@ export interface VehicleFilters {
 }
 
 export const listVehicles = async (filters: VehicleFilters) => {
+  const supabase = getVyraClient();
+  if (!supabase) throw new Error("Supabase client not configured");
+
   let query = supabase
     .from("vehicles")
     .select(`
@@ -36,7 +39,7 @@ export const listVehicles = async (filters: VehicleFilters) => {
   if (error) throw error;
 
   // Busca textual no cliente por causa do join e flexibilidade (Placa, Marca, Modelo, Cor, Motorista)
-  let processed = data.map((v: any) => {
+  let processed = (data || []).map((v: any) => {
     // Pegar a sessão mais recente
     const sessions = v.protection_sessions || [];
     const lastSession = sessions.length > 0 
@@ -54,7 +57,7 @@ export const listVehicles = async (filters: VehicleFilters) => {
 
   if (filters.search) {
     const s = filters.search.toLowerCase();
-    processed = processed.filter((v) => 
+    processed = processed.filter((v: any) => 
       (v.plate?.toLowerCase().includes(s)) ||
       (v.brand?.toLowerCase().includes(s)) ||
       (v.model?.toLowerCase().includes(s)) ||
