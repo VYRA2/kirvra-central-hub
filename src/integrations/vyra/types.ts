@@ -7,7 +7,108 @@
  */
 
 /** Placeholder do tipo gerado do banco. Será substituído após o inventário. */
-export type Database = Record<string, never>;
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[];
+
+export interface Database {
+  public: {
+    Tables: {
+      alert_evidence: {
+        Row: {
+          id: string;
+          alert_id: string | null;
+          security_alert_id: string | null;
+          session_id: string | null;
+          driver_id: string | null;
+          evidence_type: string | null;
+          storage_bucket: string | null;
+          storage_path: string | null;
+          mime_type: string | null;
+          size_bytes: number | null;
+          sha256: string | null;
+          metadata: Json | null;
+          captured_at: string | null;
+          created_at: string | null;
+        };
+        Insert: Omit<Database["public"]["Tables"]["alert_evidence"]["Row"], "id" | "created_at"> & { id?: string; created_at?: string };
+        Update: Partial<Database["public"]["Tables"]["alert_evidence"]["Row"]>;
+      };
+      alerts: {
+        Row: {
+          id: string;
+          driver_id: string | null;
+          session_id: string | null;
+          threat_type: string | null;
+          severity: string | null;
+          status: string | null;
+          location_label: string | null;
+          created_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["alerts"]["Row"]>;
+        Update: Partial<Database["public"]["Tables"]["alerts"]["Row"]>;
+      };
+      security_alerts: {
+        Row: {
+          id: string;
+          threat_type: string | null;
+          confidence: number | null;
+          status: string | null;
+          created_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["security_alerts"]["Row"]>;
+        Update: Partial<Database["public"]["Tables"]["security_alerts"]["Row"]>;
+      };
+      protection_sessions: {
+        Row: {
+          id: string;
+          driver_id: string | null;
+          started_at: string;
+          ended_at: string | null;
+        };
+        Insert: Partial<Database["public"]["Tables"]["protection_sessions"]["Row"]>;
+        Update: Partial<Database["public"]["Tables"]["protection_sessions"]["Row"]>;
+      };
+      drivers: {
+        Row: {
+          id: string;
+          full_name: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["drivers"]["Row"]>;
+        Update: Partial<Database["public"]["Tables"]["drivers"]["Row"]>;
+      };
+      central_audit_logs: {
+        Row: {
+          id: string;
+          operator_id: string | null;
+          action: string;
+          entity_type: string;
+          entity_id: string | null;
+          previous_data: Json | null;
+          next_data: Json | null;
+          ip_address: string | null;
+          user_agent: string | null;
+          created_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["central_audit_logs"]["Row"]>;
+        Update: Partial<Database["public"]["Tables"]["central_audit_logs"]["Row"]>;
+      };
+      central_profiles: {
+        Row: {
+          id: string;
+          full_name: string;
+          employee_code: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["central_profiles"]["Row"]>;
+        Update: Partial<Database["public"]["Tables"]["central_profiles"]["Row"]>;
+      };
+    };
+  };
+}
 
 export type EmployeeRole =
   | "super_admin"
