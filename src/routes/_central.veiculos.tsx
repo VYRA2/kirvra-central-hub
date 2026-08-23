@@ -1,8 +1,9 @@
 import { useState, useMemo } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Search, Download, ChevronRight, FileText, CheckCircle2, AlertCircle, XCircle, Info } from "lucide-react";
+import { Search, Download, ChevronRight, FileText, CheckCircle2, AlertCircle, XCircle, Info, Car } from "lucide-react";
 import { z } from "zod";
+import { cn } from "@/lib/utils";
 
 import { KirvraAppShell } from "@/components/kirvra/app-shell";
 import { RequirePermission } from "@/components/kirvra/access-control";
@@ -337,7 +338,7 @@ function VehicleDetailsDrawer({
           <div className="grid grid-cols-2 gap-x-4 gap-y-5">
             <DetailItem label="Marca" value={vehicle.brand} />
             <DetailItem label="Modelo" value={vehicle.model} />
-            <DetailItem label="Ano" value={vehicle.year?.toString()} />
+            <DetailItem label="Ano" value={vehicle.year?.toString() || null} />
             <DetailItem label="Cor" value={vehicle.color} />
             <DetailItem label="Placa" value={vehicle.plate?.toUpperCase()} className="font-mono" />
             <DetailItem label="RENAVAM" value={vehicle.renavam || "—"} className="font-mono" />
