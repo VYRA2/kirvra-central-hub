@@ -115,14 +115,48 @@ export async function listEvidence(filters: EvidenceFilters) {
   return { rows, count: count || 0 };
 }
 
+export async function getEvidenceStats() {
+  const client = getVyraClient();
+  if (!client) throw new Error("VYRA client not configured");
+
+  const since24h = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+
+  const [total, images, media, recent] = await Promise.all([
+    client.from("alert_evidence").select("*", { count: "exact", head: true }),
+    client.from("alert_evidence").select("*", { count: "exact", head: true }).ilike("mime_type", "image/%"),
+    client.from("alert_evidence").select("*", { count: "exact", head: true }).or("mime_type.ilike.audio/%,mime_type.ilike.video/%"),
+    client.from("alert_evidence").select("*", { count: "exact", head: true }).gte("captured_at", since24h),
+  ]);
+
+  return {
+    total: total.count || 0,
+    images: images.count || 0,
+    media: media.count || 0,
+    recent24h: recent.count || 0,
+  };
+}
+
+export async function getEvidenceTypes() {
+  const client = getVyraClient();
+  if (!client) return ["todos"];
+
+  const { data } = await client
+    .from("alert_evidence")
+    .select("evidence_type");
+  
+  const types = [...new Set((data || []).map(d => d.evidence_type).filter(Boolean))];
+  return ["todos", ...types];
+}
+
 export async function getEvidenceSignedUrl(bucket: string, path: string) {
   const client = getVyraClient();
-  if (!client) return null;
+  if (!client) return { url: null, status: "error" as const };
+  if (!path) return { url: null, status: "missing" as const };
 
   const { data, error } = await client.storage
     .from(bucket || "alert-evidence")
     .createSignedUrl(path, 300); // 5 minutos
 
-  if (error) return null;
-  return data.signedUrl;
+  if (error) return { url: null, status: "error" as const };
+  return { url: data.signedUrl, status: "available" as const };
 }
