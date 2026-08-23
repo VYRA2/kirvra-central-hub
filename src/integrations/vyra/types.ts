@@ -131,8 +131,8 @@ export interface Database {
       vehicles: {
         Row: {
           id: string;
-          driver_id: string | null;
-          plate: string;
+          driver_id: string;
+          plate: string | null;
           brand: string | null;
           model: string | null;
           color: string | null;
@@ -140,15 +140,26 @@ export interface Database {
           renavam: string | null;
           photo_path: string | null;
           crlv_path: string | null;
-          owner_type: string | null;
-          authorization_confirmed: boolean | null;
+          owner_type: string;
+          authorization_confirmed: boolean;
           authorization_confirmed_at: string | null;
-          verification_status: string | null;
-          created_at: string | null;
-          updated_at: string | null;
+          verification_status: string;
+          created_at: string;
+          updated_at: string;
         };
         Insert: Partial<Database["public"]["Tables"]["vehicles"]["Row"]>;
         Update: Partial<Database["public"]["Tables"]["vehicles"]["Row"]>;
+      };
+      protection_sessions: {
+        Row: {
+          id: string;
+          vehicle_id: string;
+          driver_id: string | null;
+          started_at: string;
+          ended_at: string | null;
+        };
+        Insert: Partial<Database["public"]["Tables"]["protection_sessions"]["Row"]>;
+        Update: Partial<Database["public"]["Tables"]["protection_sessions"]["Row"]>;
       };
     };
   };
