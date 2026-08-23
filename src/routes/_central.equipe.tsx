@@ -401,7 +401,7 @@ function EmployeeModal({
               <Label htmlFor="role" className="text-xs font-semibold uppercase text-muted-foreground">Cargo</Label>
               <Select 
                 key={profile?.id || "new"} 
-                defaultValue={profile?.role_id || undefined} 
+                {...(profile?.role_id ? { defaultValue: profile.role_id } : {})} 
                 disabled={!isCreate && !isReview}
               >
                 <SelectTrigger id="role" className="h-9">
