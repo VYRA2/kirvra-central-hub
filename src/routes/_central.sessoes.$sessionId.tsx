@@ -220,20 +220,18 @@ function SessionPage() {
                       <div className="mt-3 flex gap-2">
                         <Button size="sm" asChild>
                           <Link
-                          to="/alertas/$alertId"
-                          params={{ alertId: data.sessionAlerts[0].id }}
-                          search={{}}
-                        >
+                            to="/alertas/$alertId"
+                            params={{ alertId: data.sessionAlerts[0].id }}
+                            search={{}}
                           >
                             Abrir alerta
                           </Link>
                         </Button>
                         <Button size="sm" variant="outline" asChild>
                           <Link
-                          to="/motoristas/$driverId"
-                          params={{ driverId: data.driver.id }}
-                          search={{}}
-                        >
+                            to="/motoristas/$driverId"
+                            params={{ driverId: data.driver.id }}
+                            search={{}}
                           >
                             Acompanhar motorista
                           </Link>
