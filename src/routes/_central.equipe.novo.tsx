@@ -36,6 +36,16 @@ export const Route = createFileRoute("/_central/equipe/novo")({
 function NewEmployeePage() {
   const navigate = useNavigate();
   const [selectedRoleId, setSelectedRoleId] = useState<string>("");
+  const [formData, setFormData] = useState({
+    full_name: "",
+    employee_code: "",
+    phone: "",
+    shift: "18h-02h",
+    start_date: "",
+    temp_password: "",
+    require_new_password: true,
+    is_active: true
+  });
   
   const { data: roles = [], isLoading, isError } = useQuery({
     queryKey: ["central-roles-permissions"],
@@ -47,7 +57,14 @@ function NewEmployeePage() {
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await createEmployee({});
+    if (!selectedRoleId) {
+      toast.error("Selecione um cargo para o funcionário.");
+      return;
+    }
+    const res = await createEmployee({
+      ...formData,
+      role_id: selectedRoleId
+    });
     toast.error(res.message);
   };
 
@@ -104,19 +121,19 @@ function NewEmployeePage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="full_name" className="text-xs font-semibold uppercase text-muted-foreground">Nome completo</Label>
-                      <Input id="full_name" placeholder="Ex: Beatriz Martins" className="h-10 bg-sidebar/50" required />
+                      <Input id="full_name" placeholder="Ex: Beatriz Martins" className="h-10 bg-sidebar/50" required value={formData.full_name} onChange={e => setFormData(prev => ({ ...prev, full_name: e.target.value }))} />
                     </div>
                     
                     <div className="space-y-2">
                       <Label htmlFor="employee_code" className="text-xs font-semibold uppercase text-muted-foreground">ID de acesso</Label>
-                      <Input id="employee_code" placeholder="Ex: KRV-OP-0051" className="h-10 bg-sidebar/50" required />
+                      <Input id="employee_code" placeholder="Ex: KRV-OP-0051" className="h-10 bg-sidebar/50" required value={formData.employee_code} onChange={e => setFormData(prev => ({ ...prev, employee_code: e.target.value }))} />
                     </div>
 
                     <div className="space-y-2">
                       <Label htmlFor="phone" className="text-xs font-semibold uppercase text-muted-foreground">Telefone interno</Label>
                       <div className="relative">
                         <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input id="phone" placeholder="(11) 4000-0151" className="pl-9 h-10 bg-sidebar/50" />
+                        <Input id="phone" placeholder="(11) 4000-0151" className="pl-9 h-10 bg-sidebar/50" value={formData.phone} onChange={e => setFormData(prev => ({ ...prev, phone: e.target.value }))} />
                       </div>
                     </div>
 
@@ -139,8 +156,7 @@ function NewEmployeePage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="shift" className="text-xs font-semibold uppercase text-muted-foreground">Turno</Label>
-                      <Select defaultValue="18h-02h">
+                      <Select value={formData.shift} onValueChange={val => setFormData(prev => ({ ...prev, shift: val }))}>
                         <SelectTrigger id="shift" className="h-10 bg-sidebar/50">
                           <SelectValue placeholder="Selecione o turno..." />
                         </SelectTrigger>
@@ -157,7 +173,7 @@ function NewEmployeePage() {
                       <Label htmlFor="start_date" className="text-xs font-semibold uppercase text-muted-foreground">Data de início</Label>
                       <div className="relative">
                         <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input id="start_date" type="date" className="pl-9 h-10 bg-sidebar/50" required />
+                        <Input id="start_date" type="date" className="pl-9 h-10 bg-sidebar/50" required value={formData.start_date} onChange={e => setFormData(prev => ({ ...prev, start_date: e.target.value }))} />
                       </div>
                     </div>
                   </div>
@@ -175,7 +191,7 @@ function NewEmployeePage() {
                   <div className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="temp_password" className="text-xs font-semibold uppercase text-muted-foreground">Senha provisória</Label>
-                      <Input id="temp_password" type="password" placeholder="••••••••" className="h-10 bg-sidebar/50" required />
+                      <Input id="temp_password" type="password" placeholder="••••••••" className="h-10 bg-sidebar/50" required value={formData.temp_password} onChange={e => setFormData(prev => ({ ...prev, temp_password: e.target.value }))} />
                     </div>
 
                     <div className="flex items-center justify-between p-3 rounded-md border border-border bg-sidebar-accent/10">
@@ -183,7 +199,7 @@ function NewEmployeePage() {
                         <Label className="text-sm font-medium">Exigir nova senha</Label>
                         <p className="text-[10px] text-muted-foreground">Obrigatório no primeiro login</p>
                       </div>
-                      <Switch checked />
+                      <Switch checked={formData.require_new_password} onCheckedChange={val => setFormData(prev => ({ ...prev, require_new_password: val }))} />
                     </div>
 
                     <div className="flex items-center justify-between p-3 rounded-md border border-border bg-sidebar-accent/10">
@@ -191,7 +207,7 @@ function NewEmployeePage() {
                         <Label className="text-sm font-medium">Conta ativa</Label>
                         <p className="text-[10px] text-muted-foreground">Permite login após criação</p>
                       </div>
-                      <Switch checked />
+                      <Switch checked={formData.is_active} onCheckedChange={val => setFormData(prev => ({ ...prev, is_active: val }))} />
                     </div>
                   </div>
                 </div>
@@ -229,7 +245,7 @@ function NewEmployeePage() {
                     type="button" 
                     variant="outline" 
                     className="w-full h-9 text-xs border-border/60"
-                    onClick={() => navigate({ to: "/equipe" })} // Placeholder para /equipe/cargos-permissoes
+                    onClick={() => navigate({ to: "/equipe/cargos-permissoes" })}
                   >
                     Revisar permissões
                   </Button>

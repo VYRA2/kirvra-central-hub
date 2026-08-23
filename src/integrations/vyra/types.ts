@@ -106,6 +106,7 @@ export interface Database {
           name: string;
           code: string;
           description: string | null;
+          hierarchy_level: number;
         };
         Insert: Partial<Database["public"]["Tables"]["central_roles"]["Row"]>;
         Update: Partial<Database["public"]["Tables"]["central_roles"]["Row"]>;
