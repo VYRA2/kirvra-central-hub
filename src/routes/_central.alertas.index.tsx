@@ -41,18 +41,14 @@ export const Route = createFileRoute("/_central/alertas/")({
     state: (search.state as AlertState | undefined) || "todos",
     operatorId: (search.operatorId as string | undefined) || "todos",
   }),
-      typeof search["severidade"] === "string"
-        ? (search["severidade"] as AlertQueueFilters["severity"])
-        : ("todos" as const),
-  }),
   component: AlertQueuePage,
 });
 
 function AlertQueuePage() {
-  const { severidade } = Route.useSearch();
+  const search = Route.useSearch();
   const [filters, setFilters] = useState<AlertQueueFilters>({
     ...DEFAULT_QUEUE_FILTERS,
-    severity: severidade,
+    ...search,
   });
   const [soundOn, setSoundOn] = useState(true);
 
