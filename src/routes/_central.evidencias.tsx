@@ -165,7 +165,7 @@ function EvidenceDetailsDialog({
             <Panel title="Metadados">
               <div className="space-y-2 text-xs">
                 {evidence.metadata ? (
-                  Object.entries(evidence.metadata).map(([k, v]) => (
+                  Object.entries(evidence.metadata as Record<string, import("@/integrations/vyra/types").Json>).map(([k, v]) => (
                     <div
                       key={k}
                       className="flex justify-between border-b border-border/50 py-1 last:border-0"
