@@ -68,7 +68,7 @@ function AuditDetailsSheet({
 }) {
   if (!log) return null;
 
-  const renderJson = (data: any) => {
+  const renderJson = (data: import("@/integrations/vyra/types").Json) => {
     if (!data) return <span className="text-muted-foreground">Sem dados</span>;
     return (
       <pre className="max-h-[300px] overflow-auto rounded-md bg-surface-raised p-3 font-mono text-[10px] text-foreground scrollbar-thin scrollbar-thumb-border">

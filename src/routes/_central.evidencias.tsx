@@ -199,8 +199,8 @@ function EvidenceDetailsDialog({
                       <>
                         <DriverAvatar initials={evidence.driver_name.slice(0, 2)} size="sm" />
                         <Link
-                          to={"/motoristas/$driverId" as any}
-                          params={{ driverId: evidence.driver_id || "" } as any}
+                          to="/motoristas/$driverId"
+                          params={{ driverId: evidence.driver_id || "" }}
                           className="font-medium text-primary hover:underline"
                         >
                           {evidence.driver_name}
@@ -216,8 +216,8 @@ function EvidenceDetailsDialog({
                   <dd className="mt-1">
                     {evidence.session_id ? (
                       <Link
-                        to={"/sessoes/$sessionId" as any}
-                        params={{ sessionId: evidence.session_id } as any}
+                        to="/sessoes/$sessionId"
+                        params={{ sessionId: evidence.session_id || "" }}
                         className="text-primary hover:underline"
                       >
                         {evidence.session_label || evidence.session_id}
@@ -232,8 +232,8 @@ function EvidenceDetailsDialog({
                   <dd className="mt-1">
                     {evidence.alert_id || evidence.security_alert_id ? (
                       <Link
-                        to={"/alertas/$alertId" as any}
-                        params={{ alertId: evidence.alert_id || evidence.security_alert_id } as any}
+                        to="/alertas/$alertId"
+                        params={{ alertId: evidence.alert_id || evidence.security_alert_id || "" }}
                         className="text-primary hover:underline"
                       >
                         {evidence.alert_id
