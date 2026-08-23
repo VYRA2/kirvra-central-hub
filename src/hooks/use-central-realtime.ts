@@ -6,14 +6,16 @@ import {
   type RealtimeStatus,
 } from "@/services/realtime-service";
 
+export type CentralRealtimeStatus = RealtimeStatus | "desativado";
+
 /**
  * Assina o realtime das tabelas existentes de sessões e alertas.
  *
- * Um único canal por montagem, com desinscrição no unmount — sem loop de
- * reconexão. No modo demonstração o realtime fica desativado por definição.
+ * Um único canal compartilhado por chave lógica, com desinscrição no unmount —
+ * sem loop de reconexão. No modo demonstração o realtime fica desativado.
  */
 export function useCentralRealtime(onChange: () => void) {
-  const [status, setStatus] = useState<RealtimeStatus>(
+  const [status, setStatus] = useState<CentralRealtimeStatus>(
     isDemoModeEnabled() ? "desativado" : "conectando",
   );
   const handler = useRef(onChange);
@@ -25,6 +27,8 @@ export function useCentralRealtime(onChange: () => void) {
       return;
     }
     const subscription = subscribeCentralRealtime({
+      key: "operacao",
+      tables: [{ table: "protection_sessions" }, { table: "alerts" }],
       onChange: () => handler.current(),
       onStatus: setStatus,
     });
