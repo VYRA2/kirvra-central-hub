@@ -37,9 +37,9 @@ import { operators } from "@/mocks/kirvra-central";
 
 export const Route = createFileRoute("/_central/alertas/")({
   validateSearch: (search: Record<string, unknown>): AlertQueueFilters => ({
-    severity: (search.severity as AlertSeverity | undefined) || "todos",
-    state: (search.state as AlertState | undefined) || "todos",
-    operatorId: (search.operatorId as string | undefined) || "todos",
+    severity: (search["severity"] as any) || "todos",
+    state: (search["state"] as any) || "todos",
+    operatorId: (search["operatorId"] as any) || "todos",
   }),
   component: AlertQueuePage,
 });

@@ -49,6 +49,7 @@ import {
   markFalsePositive,
   startProtocol,
   transferAlert,
+  DEFAULT_QUEUE_FILTERS,
 } from "@/services/alert-service";
 import { findSession, operators } from "@/mocks/kirvra-central";
 import type { ServiceResult } from "@/services/auth-service";

@@ -20,6 +20,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { formatElapsed, initialsFromName } from "@/lib/kirvra-format";
 import { useCentralRealtime } from "@/hooks/use-central-realtime";
 import { describeDataError, getCommandOverview } from "@/services/dashboard-service";
+import { DEFAULT_QUEUE_FILTERS } from "@/services/alert-service";
 
 export const Route = createFileRoute("/_central/central")({
   head: () => ({
