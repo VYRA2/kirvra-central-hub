@@ -1,10 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { isDemoModeEnabled } from "@/services/demo-mode";
-import {
-  subscribeCentralRealtime,
-  type RealtimeStatus,
-} from "@/services/realtime-service";
+import { subscribeCentralRealtime, type RealtimeStatus } from "@/services/realtime-service";
 
 export type CentralRealtimeStatus = RealtimeStatus | "desativado";
 

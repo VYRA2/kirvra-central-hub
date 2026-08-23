@@ -40,9 +40,7 @@ export async function listAuditLogs(filters: AuditFilters) {
   const client = getVyraClient();
   if (!client) throw new Error("VYRA client not configured");
 
-  let query = client
-    .from("central_audit_logs")
-    .select(`*`, { count: "exact" });
+  let query = client.from("central_audit_logs").select(`*`, { count: "exact" });
 
   if (filters.operator_id !== "todos") {
     query = query.eq("operator_id", filters.operator_id);
@@ -58,23 +56,25 @@ export async function listAuditLogs(filters: AuditFilters) {
 
   if (filters.search) {
     if (filters.search.length === 36 && filters.search.includes("-")) {
-      query = query.or(`id.eq.${filters.search},entity_id.eq.${filters.search},operator_id.eq.${filters.search}`);
+      query = query.or(
+        `id.eq.${filters.search},entity_id.eq.${filters.search},operator_id.eq.${filters.search}`,
+      );
     } else {
       // 1. Tentar encontrar IDs de operadores que batem com o nome ou matrícula
       const { data: matchingProfiles } = await client
         .from("central_profiles")
         .select("id")
         .or(`full_name.ilike.%${filters.search}%,employee_code.ilike.%${filters.search}%`);
-      
-      const matchingOperatorIds = matchingProfiles?.map(p => p.id) || [];
-      
+
+      const matchingOperatorIds = matchingProfiles?.map((p) => p.id) || [];
+
       let searchFilter = `action.ilike.%${filters.search}%,entity_type.ilike.%${filters.search}%`;
       if (matchingOperatorIds.length > 0) {
-        matchingOperatorIds.forEach(id => {
+        matchingOperatorIds.forEach((id) => {
           searchFilter += `,operator_id.eq.${id}`;
         });
       }
-      
+
       query = query.or(searchFilter);
     }
   }
@@ -100,9 +100,11 @@ export async function listAuditLogs(filters: AuditFilters) {
       .from("central_profiles")
       .select("id, full_name, employee_code")
       .in("id", operatorIds);
-    
+
     if (profiles) {
-      profiles.forEach(p => profilesMap.set(p.id, { full_name: p.full_name, employee_code: p.employee_code }));
+      profiles.forEach((p) =>
+        profilesMap.set(p.id, { full_name: p.full_name, employee_code: p.employee_code }),
+      );
     }
   }
 
@@ -126,11 +128,16 @@ export async function getAuditStats() {
 
   const [totalRes, recentRes, operatorsRes] = await Promise.all([
     client.from("central_audit_logs").select("*", { count: "exact", head: true }),
-    client.from("central_audit_logs").select("*", { count: "exact", head: true }).gte("created_at", since24h),
+    client
+      .from("central_audit_logs")
+      .select("*", { count: "exact", head: true })
+      .gte("created_at", since24h),
     client.from("central_audit_logs").select("operator_id"),
   ]);
 
-  const uniqueOperatorIds = new Set((operatorsRes.data || []).map((r: any) => r.operator_id).filter(Boolean));
+  const uniqueOperatorIds = new Set(
+    (operatorsRes.data || []).map((r: any) => r.operator_id).filter(Boolean),
+  );
   const uniqueOperatorsCount = uniqueOperatorIds.size;
 
   return {

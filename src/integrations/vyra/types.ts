@@ -7,13 +7,7 @@
  */
 
 /** Placeholder do tipo gerado do banco. Será substituído após o inventário. */
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[];
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export interface Database {
   public: {
@@ -35,7 +29,10 @@ export interface Database {
           captured_at: string | null;
           created_at: string | null;
         };
-        Insert: Omit<Database["public"]["Tables"]["alert_evidence"]["Row"], "id" | "created_at"> & { id?: string; created_at?: string };
+        Insert: Omit<Database["public"]["Tables"]["alert_evidence"]["Row"], "id" | "created_at"> & {
+          id?: string;
+          created_at?: string;
+        };
         Update: Partial<Database["public"]["Tables"]["alert_evidence"]["Row"]>;
       };
       alerts: {
@@ -111,12 +108,7 @@ export interface Database {
 }
 
 export type EmployeeRole =
-  | "super_admin"
-  | "admin"
-  | "gerente"
-  | "supervisor"
-  | "operador"
-  | "auditor";
+  "super_admin" | "admin" | "gerente" | "supervisor" | "operador" | "auditor";
 
 export const EMPLOYEE_ROLE_LABEL: Record<EmployeeRole, string> = {
   super_admin: "Super Admin",
@@ -138,11 +130,7 @@ export interface CentralEmployee {
   lastSeenAt: string | null;
 }
 
-export type DriverRegistrationStatus =
-  | "verificado"
-  | "em_analise"
-  | "suspenso"
-  | "pendente";
+export type DriverRegistrationStatus = "verificado" | "em_analise" | "suspenso" | "pendente";
 
 export type SubscriptionStatus = "ativa" | "pendente" | "cancelada";
 
@@ -227,12 +215,7 @@ export interface ProtectionSession {
 }
 
 export type AlertState =
-  | "novo"
-  | "assumido"
-  | "em_analise"
-  | "confirmado"
-  | "falso_positivo"
-  | "encerrado";
+  "novo" | "assumido" | "em_analise" | "confirmado" | "falso_positivo" | "encerrado";
 
 export type AlertSeverity = "atencao" | "suspeito" | "critico";
 

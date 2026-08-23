@@ -15,12 +15,8 @@ export function KirvraAuthLayout({ children }: { children: ReactNode }) {
           <div className="flex items-center gap-3">
             <KirvraMark className="h-10 w-10 text-primary" />
             <div className="leading-tight">
-              <p className="text-lg font-semibold tracking-[0.24em] text-foreground">
-                KIRVRA
-              </p>
-              <p className="text-xs font-medium tracking-[0.38em] text-primary">
-                CENTRAL
-              </p>
+              <p className="text-lg font-semibold tracking-[0.24em] text-foreground">KIRVRA</p>
+              <p className="text-xs font-medium tracking-[0.38em] text-primary">CENTRAL</p>
             </div>
           </div>
 
@@ -31,10 +27,9 @@ export function KirvraAuthLayout({ children }: { children: ReactNode }) {
           </h1>
 
           <p className="mt-5 text-sm leading-relaxed text-muted-foreground">
-            Ambiente operacional restrito da Central KIRVRA. Aqui a equipe
-            acompanha sessões protegidas em tempo real, analisa evidências
-            enviadas pelo aplicativo KIRVRA Drive e pelo KIRVRA AI Engine e
-            atende alertas de segurança com decisão humana.
+            Ambiente operacional restrito da Central KIRVRA. Aqui a equipe acompanha sessões
+            protegidas em tempo real, analisa evidências enviadas pelo aplicativo KIRVRA Drive e
+            pelo KIRVRA AI Engine e atende alertas de segurança com decisão humana.
           </p>
 
           <ul className="mt-8 space-y-2.5 text-sm text-muted-foreground">

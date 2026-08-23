@@ -34,10 +34,7 @@ export const PERMISSION_CODES = [
 export type PermissionCode = (typeof PERMISSION_CODES)[number];
 
 export function isPermissionCode(value: unknown): value is PermissionCode {
-  return (
-    typeof value === "string" &&
-    (PERMISSION_CODES as readonly string[]).includes(value)
-  );
+  return typeof value === "string" && (PERMISSION_CODES as readonly string[]).includes(value);
 }
 
 export type CentralProfileStatus = "ativo" | "inativo" | "bloqueado";
@@ -61,19 +58,13 @@ export interface CentralAccess {
 
 /** Motivos de negação de acesso. Nenhum deles concede sessão. */
 export type AccessDenialReason =
-  | "no_profile"
-  | "inactive"
-  | "blocked"
-  | "no_role"
-  | "no_permission";
+  "no_profile" | "inactive" | "blocked" | "no_role" | "no_permission";
 
 export const ACCESS_DENIAL_MESSAGE: Record<AccessDenialReason, string> = {
-  no_profile:
-    "Esta conta não possui perfil interno na Central KIRVRA. Acesso negado.",
+  no_profile: "Esta conta não possui perfil interno na Central KIRVRA. Acesso negado.",
   inactive: "Conta inativa. Procure o supervisor responsável.",
   blocked: "Conta bloqueada. Acesso à Central suspenso.",
-  no_role:
-    "Nenhum cargo válido atribuído a esta conta. Acesso à Central negado.",
+  no_role: "Nenhum cargo válido atribuído a esta conta. Acesso à Central negado.",
   no_permission: "Seu cargo não possui permissão para esta área da Central.",
 };
 

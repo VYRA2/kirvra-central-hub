@@ -1,6 +1,6 @@
 /**
  * O Supabase foi conectado e as tabelas do Kirvra já foram criadas: motoristas, sessoes, alertas, evidencias, operadores e acoes_operador. A partir de agora toda funcionalidade da central deve salvar e ler dados dessas tabelas. Pode começar a construir a central usando esse banco.
- * 
+ *
  * IMPORTANTE: os nomes acima representam os domínios funcionais. No banco VYRA2, use exclusivamente os nomes físicos já existentes:
  * motoristas → drivers
  * veículos → vehicles

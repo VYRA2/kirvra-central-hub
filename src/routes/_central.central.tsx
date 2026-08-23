@@ -5,10 +5,7 @@ import { Radar, RefreshCw, ShieldAlert } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { KirvraAppShell } from "@/components/kirvra/app-shell";
-import {
-  AccessDenied,
-  RequirePermission,
-} from "@/components/kirvra/access-control";
+import { AccessDenied, RequirePermission } from "@/components/kirvra/access-control";
 import { GeoMapPanel } from "@/components/kirvra/geo-map-panel";
 import {
   ErrorState,
@@ -22,10 +19,7 @@ import {
 import { useAuth } from "@/hooks/use-auth";
 import { formatElapsed, initialsFromName } from "@/lib/kirvra-format";
 import { useCentralRealtime } from "@/hooks/use-central-realtime";
-import {
-  describeDataError,
-  getCommandOverview,
-} from "@/services/dashboard-service";
+import { describeDataError, getCommandOverview } from "@/services/dashboard-service";
 
 export const Route = createFileRoute("/_central/central")({
   head: () => ({
@@ -55,13 +49,12 @@ export const Route = createFileRoute("/_central/central")({
   ),
 });
 
-const METRIC_TONE: Record<string, "critical" | "warning" | "success" | "neutral"> =
-  {
-    sessoes: "success",
-    novos: "warning",
-    atendimento: "neutral",
-    criticos: "critical",
-  };
+const METRIC_TONE: Record<string, "critical" | "warning" | "success" | "neutral"> = {
+  sessoes: "success",
+  novos: "warning",
+  atendimento: "neutral",
+  criticos: "critical",
+};
 
 function CommandCenterPage() {
   const queryClient = useQueryClient();
@@ -137,20 +130,14 @@ function CommandCenterPage() {
         >
           Tempo real: {realtime.status}
         </StatusBadge>
-        {data ? (
-          <span className="tabular">
-            Atualizado {formatElapsed(data.updatedAt)}
-          </span>
-        ) : null}
+        {data ? <span className="tabular">Atualizado {formatElapsed(data.updatedAt)}</span> : null}
       </div>
 
       {isLoading ? <LoadingState rows={5} /> : null}
       {isError ? (
         <ErrorState
           description={describeDataError(error)}
-          action={
-            <Button onClick={() => void refetch()}>Tentar novamente</Button>
-          }
+          action={<Button onClick={() => void refetch()}>Tentar novamente</Button>}
           className={undefined}
         />
       ) : null}
@@ -178,10 +165,7 @@ function CommandCenterPage() {
               className={undefined}
             >
               {canSeeLocation ? (
-                <GeoMapPanel
-                  className="min-h-[420px] rounded-none border-0"
-                  markers={markers}
-                />
+                <GeoMapPanel className="min-h-[420px] rounded-none border-0" markers={markers} />
               ) : (
                 <div className="p-4">
                   <AccessDenied message="Seu cargo não possui a permissão location.view para visualizar localização em tempo real." />
@@ -217,9 +201,8 @@ function CommandCenterPage() {
                         <RiskBadge level={alert.severity ?? "normal"} />
                       </div>
                       <p className="truncate text-xs text-muted-foreground">
-                        {[alert.driverName, alert.locationLabel]
-                          .filter(Boolean)
-                          .join(" · ") || "Sem detalhes registrados"}
+                        {[alert.driverName, alert.locationLabel].filter(Boolean).join(" · ") ||
+                          "Sem detalhes registrados"}
                       </p>
                       <p className="tabular mt-0.5 text-[11px] text-muted-foreground">
                         {alert.detectedAt
@@ -231,10 +214,7 @@ function CommandCenterPage() {
                 )}
               </Panel>
 
-              <Panel
-                title="Motoristas protegidos agora"
-                bodyClassName="divide-y divide-border p-0"
-              >
+              <Panel title="Motoristas protegidos agora" bodyClassName="divide-y divide-border p-0">
                 {data.protectedDrivers.length === 0 ? (
                   <p className="p-4 text-xs text-muted-foreground">
                     Nenhuma sessão ativa registrada.
@@ -262,20 +242,13 @@ function CommandCenterPage() {
                 )}
               </Panel>
 
-              <Panel
-                title="Eventos recentes"
-                bodyClassName="divide-y divide-border p-0"
-              >
+              <Panel title="Eventos recentes" bodyClassName="divide-y divide-border p-0">
                 {data.recentEvents.length === 0 ? (
-                  <p className="p-4 text-xs text-muted-foreground">
-                    Nenhum evento registrado.
-                  </p>
+                  <p className="p-4 text-xs text-muted-foreground">Nenhum evento registrado.</p>
                 ) : (
                   data.recentEvents.map((event) => (
                     <div key={event.id} className="px-4 py-2.5">
-                      <p className="truncate text-xs text-foreground">
-                        {event.label}
-                      </p>
+                      <p className="truncate text-xs text-foreground">{event.label}</p>
                       <p className="tabular truncate text-[11px] text-muted-foreground">
                         {event.detail || "Sem detalhes"}
                         {event.at ? ` · ${formatElapsed(event.at)}` : ""}

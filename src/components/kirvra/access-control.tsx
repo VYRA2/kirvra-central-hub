@@ -28,16 +28,11 @@ export function AccessLoading({ label = "Validando acesso…" }: { label?: strin
 
 export function AccessDenied({ message }: { message?: string }) {
   return (
-    <section
-      role="alert"
-      className="rounded-lg border border-critical/40 bg-critical/10 p-6"
-    >
+    <section role="alert" className="rounded-lg border border-critical/40 bg-critical/10 p-6">
       <div className="flex items-start gap-3">
         <ShieldOff className="mt-0.5 h-5 w-5 text-critical" aria-hidden="true" />
         <div className="min-w-0">
-          <h2 className="text-sm font-semibold text-foreground">
-            Acesso negado
-          </h2>
+          <h2 className="text-sm font-semibold text-foreground">Acesso negado</h2>
           <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
             {message ?? ACCESS_DENIAL_MESSAGE.no_permission}
           </p>

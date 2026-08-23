@@ -12,11 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { KirvraAppShell } from "@/components/kirvra/app-shell";
-import {
-  FilterBar,
-  FilterField,
-  OperationalTable,
-} from "@/components/kirvra/data-display";
+import { FilterBar, FilterField, OperationalTable } from "@/components/kirvra/data-display";
 import {
   DriverAvatar,
   EmptyState,
@@ -98,9 +94,7 @@ function AlertHistoryPage() {
         <FilterField label="Período" htmlFor="period">
           <Select
             value={filters.period}
-            onValueChange={(value) =>
-              setSearch({ period: value as HistoryFilters["period"] })
-            }
+            onValueChange={(value) => setSearch({ period: value as HistoryFilters["period"] })}
           >
             <SelectTrigger id="period">
               <SelectValue />
@@ -117,9 +111,7 @@ function AlertHistoryPage() {
         <FilterField label="Resultado" htmlFor="outcome">
           <Select
             value={filters.outcome}
-            onValueChange={(value) =>
-              setSearch({ outcome: value as HistoryFilters["outcome"] })
-            }
+            onValueChange={(value) => setSearch({ outcome: value as HistoryFilters["outcome"] })}
           >
             <SelectTrigger id="outcome">
               <SelectValue />
@@ -145,7 +137,13 @@ function AlertHistoryPage() {
       ) : null}
 
       {data ? (
-        <Panel bodyClassName="p-0" className={undefined} title={undefined} description={undefined} actions={undefined}>
+        <Panel
+          bodyClassName="p-0"
+          className={undefined}
+          title={undefined}
+          description={undefined}
+          actions={undefined}
+        >
           <OperationalTable<AlertRow>
             caption="Histórico de ocorrências concluídas"
             rows={data.rows}
@@ -159,9 +157,7 @@ function AlertHistoryPage() {
               {
                 key: "protocol",
                 header: "Protocolo",
-                render: (row) => (
-                  <span className="tabular text-sm">{row.alert.protocol}</span>
-                ),
+                render: (row) => <span className="tabular text-sm">{row.alert.protocol}</span>,
               },
               {
                 key: "date",
@@ -185,9 +181,7 @@ function AlertHistoryPage() {
               {
                 key: "threat",
                 header: "Ameaça",
-                render: (row) => (
-                  <span className="text-sm">{row.alert.threatType}</span>
-                ),
+                render: (row) => <span className="text-sm">{row.alert.threatType}</span>,
               },
               {
                 key: "outcome",
@@ -235,10 +229,7 @@ function AlertHistoryPage() {
                 align: "right",
                 render: (row) => (
                   <Button size="sm" variant="outline" asChild>
-                    <Link
-                      to="/alertas/$alertId"
-                      params={{ alertId: row.alert.id }}
-                    >
+                    <Link to="/alertas/$alertId" params={{ alertId: row.alert.id }}>
                       Abrir
                     </Link>
                   </Button>

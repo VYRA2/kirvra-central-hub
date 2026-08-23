@@ -1,15 +1,15 @@
 import { useState, useMemo } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { 
-  Search, 
+import {
+  Search,
   RefreshCw,
   Calendar,
   User,
   Activity,
   Box,
   ChevronRight,
-  ShieldCheck
+  ShieldCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -31,11 +31,7 @@ import {
 } from "@/components/ui/sheet";
 import { KirvraAppShell } from "@/components/kirvra/app-shell";
 import { RequirePermission } from "@/components/kirvra/access-control";
-import { 
-  FilterBar, 
-  FilterField, 
-  OperationalTable 
-} from "@/components/kirvra/data-display";
+import { FilterBar, FilterField, OperationalTable } from "@/components/kirvra/data-display";
 import {
   EmptyState,
   ErrorState,
@@ -45,12 +41,12 @@ import {
   Panel,
 } from "@/components/kirvra/primitives";
 import { formatDateTime } from "@/lib/kirvra-format";
-import { 
-  listAuditLogs, 
+import {
+  listAuditLogs,
   getAuditStats,
-  DEFAULT_AUDIT_FILTERS, 
-  type AuditFilters, 
-  type AuditRow 
+  DEFAULT_AUDIT_FILTERS,
+  type AuditFilters,
+  type AuditRow,
 } from "@/services/audit-service";
 
 export const Route = createFileRoute("/_central/auditoria")({
@@ -61,13 +57,13 @@ export const Route = createFileRoute("/_central/auditoria")({
   ),
 });
 
-function AuditDetailsSheet({ 
-  log, 
-  open, 
-  onOpenChange 
-}: { 
-  log: AuditRow | null; 
-  open: boolean; 
+function AuditDetailsSheet({
+  log,
+  open,
+  onOpenChange,
+}: {
+  log: AuditRow | null;
+  open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
   if (!log) return null;
@@ -89,9 +85,7 @@ function AuditDetailsSheet({
             <ShieldCheck className="h-5 w-5" />
             <SheetTitle>Detalhes da Auditoria</SheetTitle>
           </div>
-          <SheetDescription>
-            ID do registro: {log.id}
-          </SheetDescription>
+          <SheetDescription>ID do registro: {log.id}</SheetDescription>
         </SheetHeader>
 
         <div className="mt-6 space-y-6">
@@ -101,8 +95,12 @@ function AuditDetailsSheet({
                 <User className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-sm font-semibold">{log.operator_name || "Operador desconhecido"}</p>
-                <p className="text-xs text-muted-foreground">Matrícula: {log.operator_code || "—"}</p>
+                <p className="text-sm font-semibold">
+                  {log.operator_name || "Operador desconhecido"}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Matrícula: {log.operator_code || "—"}
+                </p>
               </div>
             </div>
           </Panel>
@@ -130,11 +128,15 @@ function AuditDetailsSheet({
 
           <div className="space-y-4">
             <div>
-              <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Estado Anterior</h4>
+              <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Estado Anterior
+              </h4>
               {renderJson(log.previous_data)}
             </div>
             <div>
-              <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Estado Posterior</h4>
+              <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Estado Posterior
+              </h4>
               {renderJson(log.next_data)}
             </div>
           </div>
@@ -182,7 +184,7 @@ function AuditoriaPage() {
       if (!client) return [];
       const { data } = await client.from("central_profiles").select("id, full_name, employee_code");
       return data || [];
-    }
+    },
   });
 
   const handleOpenDetails = (log: AuditRow) => {
@@ -206,8 +208,16 @@ function AuditoriaPage() {
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <MetricCard label="Eventos Totais" value={String(stats?.total || 0)} />
         <MetricCard label="Últimas 24 horas" value={String(stats?.recent24h || 0)} tone="primary" />
-        <MetricCard label="Operadores Ativos" value={String(stats?.uniqueOperators || 0)} tone="success" />
-        <MetricCard label="Filtro Ativo" value={filters.action !== "todos" ? "Sim" : "Não"} tone="neutral" />
+        <MetricCard
+          label="Operadores Ativos"
+          value={String(stats?.uniqueOperators || 0)}
+          tone="success"
+        />
+        <MetricCard
+          label="Filtro Ativo"
+          value={filters.action !== "todos" ? "Sim" : "Não"}
+          tone="neutral"
+        />
       </div>
 
       <FilterBar>
@@ -219,7 +229,7 @@ function AuditoriaPage() {
               placeholder="Operador, ID ou Entidade"
               className="pl-8"
               value={filters.search}
-              onChange={(e) => setFilters(f => ({ ...f, search: e.target.value, page: 1 }))}
+              onChange={(e) => setFilters((f) => ({ ...f, search: e.target.value, page: 1 }))}
             />
           </div>
         </FilterField>
@@ -227,14 +237,14 @@ function AuditoriaPage() {
         <FilterField label="Operador" htmlFor="operator">
           <Select
             value={filters.operator_id}
-            onValueChange={(v) => setFilters(f => ({ ...f, operator_id: v, page: 1 }))}
+            onValueChange={(v) => setFilters((f) => ({ ...f, operator_id: v, page: 1 }))}
           >
             <SelectTrigger id="operator">
               <SelectValue placeholder="Todos os operadores" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="todos">Todos os operadores</SelectItem>
-              {profilesData?.map(p => (
+              {profilesData?.map((p) => (
                 <SelectItem key={p.id} value={p.id}>
                   {p.full_name} ({p.employee_code})
                 </SelectItem>
@@ -246,7 +256,7 @@ function AuditoriaPage() {
         <FilterField label="Ação" htmlFor="action">
           <Select
             value={filters.action}
-            onValueChange={(v) => setFilters(f => ({ ...f, action: v, page: 1 }))}
+            onValueChange={(v) => setFilters((f) => ({ ...f, action: v, page: 1 }))}
           >
             <SelectTrigger id="action">
               <SelectValue placeholder="Todas as ações" />
@@ -265,7 +275,7 @@ function AuditoriaPage() {
         <FilterField label="Entidade" htmlFor="entity">
           <Select
             value={filters.entity_type}
-            onValueChange={(v) => setFilters(f => ({ ...f, entity_type: v, page: 1 }))}
+            onValueChange={(v) => setFilters((f) => ({ ...f, entity_type: v, page: 1 }))}
           >
             <SelectTrigger id="entity">
               <SelectValue placeholder="Todas as entidades" />
@@ -284,9 +294,7 @@ function AuditoriaPage() {
 
       {isLoading ? <LoadingState rows={10} /> : null}
       {isError ? (
-        <ErrorState
-          action={<Button onClick={() => void refetch()}>Tentar novamente</Button>}
-        />
+        <ErrorState action={<Button onClick={() => void refetch()}>Tentar novamente</Button>} />
       ) : null}
 
       {!isLoading && !isError && data ? (
@@ -308,9 +316,7 @@ function AuditoriaPage() {
                 render: (row) => (
                   <div className="flex items-center gap-2">
                     <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
-                    <span className="tabular text-xs">
-                      {formatDateTime(row.created_at)}
-                    </span>
+                    <span className="tabular text-xs">{formatDateTime(row.created_at)}</span>
                   </div>
                 ),
               },
@@ -320,7 +326,9 @@ function AuditoriaPage() {
                 render: (row) => (
                   <div>
                     <div className="text-sm font-medium">{row.operator_name || "Desconhecido"}</div>
-                    <div className="text-[10px] text-muted-foreground font-mono">{row.operator_code || "—"}</div>
+                    <div className="text-[10px] text-muted-foreground font-mono">
+                      {row.operator_code || "—"}
+                    </div>
                   </div>
                 ),
               },
@@ -340,7 +348,9 @@ function AuditoriaPage() {
                 render: (row) => (
                   <div className="flex items-center gap-2">
                     <Box className="h-3.5 w-3.5 text-muted-foreground" />
-                    <span className="uppercase text-[10px] font-semibold tracking-wider">{row.entity_type}</span>
+                    <span className="uppercase text-[10px] font-semibold tracking-wider">
+                      {row.entity_type}
+                    </span>
                   </div>
                 ),
               },
@@ -358,7 +368,12 @@ function AuditoriaPage() {
                 header: "Ação",
                 align: "right",
                 render: (row) => (
-                  <Button variant="ghost" size="sm" onClick={() => handleOpenDetails(row)} className="text-primary hover:text-primary-foreground">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleOpenDetails(row)}
+                    className="text-primary hover:text-primary-foreground"
+                  >
                     Ver detalhes
                     <ChevronRight className="ml-1 h-3.5 w-3.5" />
                   </Button>
@@ -366,7 +381,7 @@ function AuditoriaPage() {
               },
             ]}
           />
-          
+
           <div className="flex items-center justify-between border-t border-border px-4 py-3">
             <span className="text-xs text-muted-foreground">
               Mostrando {data.rows.length} de {data.count} logs
@@ -376,7 +391,7 @@ function AuditoriaPage() {
                 size="sm"
                 variant="outline"
                 disabled={filters.page === 1}
-                onClick={() => setFilters(f => ({ ...f, page: f.page - 1 }))}
+                onClick={() => setFilters((f) => ({ ...f, page: f.page - 1 }))}
               >
                 Anterior
               </Button>
@@ -384,7 +399,7 @@ function AuditoriaPage() {
                 size="sm"
                 variant="outline"
                 disabled={filters.page * filters.pageSize >= data.count}
-                onClick={() => setFilters(f => ({ ...f, page: f.page + 1 }))}
+                onClick={() => setFilters((f) => ({ ...f, page: f.page + 1 }))}
               >
                 Próxima
               </Button>
@@ -393,11 +408,7 @@ function AuditoriaPage() {
         </Panel>
       ) : null}
 
-      <AuditDetailsSheet 
-        log={selectedLog} 
-        open={detailsOpen} 
-        onOpenChange={setDetailsOpen} 
-      />
+      <AuditDetailsSheet log={selectedLog} open={detailsOpen} onOpenChange={setDetailsOpen} />
     </KirvraAppShell>
   );
 }

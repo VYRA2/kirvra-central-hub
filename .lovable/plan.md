@@ -3,9 +3,11 @@
 Implementação das telas de **Evidências** (`/evidencias`) e **Auditoria** (`/auditoria`), integradas exclusivamente ao Supabase VYRA2, respeitando permissões, RLS e fidelidade visual.
 
 ## 1. Tela de Evidências (`/evidencias`)
+
 Focada em gerir a biblioteca protegida de imagens, áudios e vídeos vinculados aos alertas.
 
 ### Detalhes Técnicos
+
 - **Tabela Principal**: `alert_evidence` ( bucket `alert-evidence`).
 - **Relacionamentos**: `drivers`, `protection_sessions`, `alerts`, `security_alerts`.
 - **Funcionalidades**:
@@ -15,9 +17,11 @@ Focada em gerir a biblioteca protegida de imagens, áudios e vídeos vinculados 
 - **Segurança**: Permissões `evidence.view`, `evidence.image`, `evidence.audio`.
 
 ## 2. Tela de Auditoria (`/auditoria`)
+
 Registro imutável de todas as ações críticas da Central.
 
 ### Detalhes Técnicos
+
 - **Tabela Principal**: `central_audit_logs`.
 - **Relacionamentos**: `central_profiles` (para nome/código do operador).
 - **Funcionalidades**:
@@ -27,6 +31,7 @@ Registro imutável de todas as ações críticas da Central.
 - **Segurança**: Somente leitura, requer permissão `audit.view`.
 
 ## 3. Infraestrutura e Serviços
+
 - **Serviços**:
   - `src/services/evidence-service.ts`: Listagem e geração de URLs assinadas.
   - `src/services/audit-service.ts`: Listagem e busca de logs de auditoria.
@@ -36,6 +41,7 @@ Registro imutável de todas as ações críticas da Central.
   - `DataDiff`: Visualizador de diferenças JSON para auditoria.
 
 ## 4. Etapas
+
 1. Criar `src/services/evidence-service.ts` e `src/services/audit-service.ts`.
 2. Implementar a rota e componente da Tela de Evidências.
 3. Implementar a rota e componente da Tela de Auditoria.
@@ -43,4 +49,5 @@ Registro imutável de todas as ações críticas da Central.
 5. Verificação final: TypeScript, Lint, Build e testes de permissão.
 
 ---
+
 **Nota**: Não haverá criação de tabelas ou migrations neste lote. O modo demonstração será ignorado nestas telas.

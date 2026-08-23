@@ -97,24 +97,9 @@ export function LiveMapPanel({
           stroke="oklch(0.42 0.03 200)"
           strokeWidth="1.2"
         />
-        <path
-          d="M14 0 L26 40 L34 100"
-          fill="none"
-          stroke="oklch(0.4 0.03 200)"
-          strokeWidth="1"
-        />
-        <path
-          d="M78 0 L70 46 L86 100"
-          fill="none"
-          stroke="oklch(0.4 0.03 200)"
-          strokeWidth="1"
-        />
-        <path
-          d="M0 20 L100 84"
-          fill="none"
-          stroke="oklch(0.38 0.025 200)"
-          strokeWidth="0.8"
-        />
+        <path d="M14 0 L26 40 L34 100" fill="none" stroke="oklch(0.4 0.03 200)" strokeWidth="1" />
+        <path d="M78 0 L70 46 L86 100" fill="none" stroke="oklch(0.4 0.03 200)" strokeWidth="1" />
+        <path d="M0 20 L100 84" fill="none" stroke="oklch(0.38 0.025 200)" strokeWidth="0.8" />
         {track && track.length > 1 ? (
           <polyline
             points={track.map((p) => `${p.x},${p.y}`).join(" ")}

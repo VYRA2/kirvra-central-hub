@@ -176,9 +176,7 @@ function MonitoringPage() {
                   <button
                     key={option.value}
                     type="button"
-                    onClick={() =>
-                      setFilters((prev) => ({ ...prev, risk: option.value }))
-                    }
+                    onClick={() => setFilters((prev) => ({ ...prev, risk: option.value }))}
                     aria-pressed={filters.risk === option.value}
                     className={cn(
                       "rounded-md border px-2 py-1 text-[11px] transition-colors",
@@ -324,11 +322,7 @@ function MonitoringPage() {
                         )}
                       >
                         {label}:{" "}
-                        {state === "ativo"
-                          ? "ok"
-                          : state === "inativo"
-                            ? "falha"
-                            : "sem dado"}
+                        {state === "ativo" ? "ok" : state === "inativo" ? "falha" : "sem dado"}
                       </li>
                     ))}
                   </ul>

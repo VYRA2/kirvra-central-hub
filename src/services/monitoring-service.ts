@@ -29,9 +29,7 @@ export interface MonitoringData {
 }
 
 export async function getMonitoringData(): Promise<MonitoringData> {
-  const context = isDemoModeEnabled()
-    ? buildDemoContext()
-    : await fetchLiveContext();
+  const context = isDemoModeEnabled() ? buildDemoContext() : await fetchLiveContext();
 
   return {
     source: isDemoModeEnabled() ? "demo" : "vyra",

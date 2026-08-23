@@ -45,15 +45,16 @@ export async function listEvidence(filters: EvidenceFilters) {
   const client = getVyraClient();
   if (!client) throw new Error("VYRA client not configured");
 
-  let query = client
-    .from("alert_evidence")
-    .select(`
+  let query = client.from("alert_evidence").select(
+    `
       *,
       drivers(full_name),
       protection_sessions(started_at),
       alerts(id),
       security_alerts(id)
-    `, { count: "exact" });
+    `,
+    { count: "exact" },
+  );
 
   if (filters.type !== "todos") {
     query = query.eq("evidence_type", filters.type);
@@ -67,20 +68,22 @@ export async function listEvidence(filters: EvidenceFilters) {
 
   if (filters.search) {
     if (filters.search.length === 36 && filters.search.includes("-")) {
-      query = query.or(`id.eq.${filters.search},driver_id.eq.${filters.search},alert_id.eq.${filters.search},security_alert_id.eq.${filters.search},session_id.eq.${filters.search}`);
+      query = query.or(
+        `id.eq.${filters.search},driver_id.eq.${filters.search},alert_id.eq.${filters.search},security_alert_id.eq.${filters.search},session_id.eq.${filters.search}`,
+      );
     } else {
       // 1. Tentar encontrar IDs de motoristas que batem com o nome
       const { data: matchingDrivers } = await client
         .from("drivers")
         .select("id")
         .ilike("full_name", `%${filters.search}%`);
-      
-      const matchingDriverIds = matchingDrivers?.map(d => d.id) || [];
-      
+
+      const matchingDriverIds = matchingDrivers?.map((d) => d.id) || [];
+
       // Como não podemos fazer join search complexo no or, usamos IDs se encontrados
       if (matchingDriverIds.length > 0) {
         let orFilter = `evidence_type.ilike.%${filters.search}%`;
-        matchingDriverIds.forEach(id => {
+        matchingDriverIds.forEach((id) => {
           orFilter += `,driver_id.eq.${id}`;
         });
         query = query.or(orFilter);
@@ -123,7 +126,9 @@ export async function listEvidence(filters: EvidenceFilters) {
     captured_at: row.captured_at,
     created_at: row.created_at,
     driver_name: row.drivers?.full_name,
-    session_label: row.protection_sessions?.started_at ? `Sessão ${new Date(row.protection_sessions.started_at).toLocaleDateString()}` : null,
+    session_label: row.protection_sessions?.started_at
+      ? `Sessão ${new Date(row.protection_sessions.started_at).toLocaleDateString()}`
+      : null,
     alert_protocol: null, // Protocolo removido conforme schema real
     alert_origin: row.security_alert_id ? "IA" : "Comum",
   }));
@@ -139,9 +144,18 @@ export async function getEvidenceStats() {
 
   const [total, images, media, recent] = await Promise.all([
     client.from("alert_evidence").select("*", { count: "exact", head: true }),
-    client.from("alert_evidence").select("*", { count: "exact", head: true }).ilike("mime_type", "image/%"),
-    client.from("alert_evidence").select("*", { count: "exact", head: true }).or("mime_type.ilike.audio/%,mime_type.ilike.video/%"),
-    client.from("alert_evidence").select("*", { count: "exact", head: true }).gte("captured_at", since24h),
+    client
+      .from("alert_evidence")
+      .select("*", { count: "exact", head: true })
+      .ilike("mime_type", "image/%"),
+    client
+      .from("alert_evidence")
+      .select("*", { count: "exact", head: true })
+      .or("mime_type.ilike.audio/%,mime_type.ilike.video/%"),
+    client
+      .from("alert_evidence")
+      .select("*", { count: "exact", head: true })
+      .gte("captured_at", since24h),
   ]);
 
   return {
@@ -156,11 +170,9 @@ export async function getEvidenceTypes() {
   const client = getVyraClient();
   if (!client) return ["todos"];
 
-  const { data } = await client
-    .from("alert_evidence")
-    .select("evidence_type");
-  
-  const types = [...new Set((data || []).map(d => d.evidence_type).filter(Boolean))];
+  const { data } = await client.from("alert_evidence").select("evidence_type");
+
+  const types = [...new Set((data || []).map((d) => d.evidence_type).filter(Boolean))];
   return ["todos", ...types];
 }
 

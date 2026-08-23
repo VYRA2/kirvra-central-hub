@@ -39,12 +39,7 @@ import {
   SeverityBadge,
   StatusBadge,
 } from "@/components/kirvra/primitives";
-import {
-  formatClock,
-  formatElapsed,
-  formatTime,
-  maskPhone,
-} from "@/lib/kirvra-format";
+import { formatClock, formatElapsed, formatTime, maskPhone } from "@/lib/kirvra-format";
 import {
   addAlertNote,
   closeAlert,
@@ -63,14 +58,7 @@ export const Route = createFileRoute("/_central/alertas/$alertId")({
 });
 
 type DialogKind =
-  | "confirmar"
-  | "nota"
-  | "protocolo"
-  | "falso"
-  | "encerrar"
-  | "transferir"
-  | "escalar"
-  | null;
+  "confirmar" | "nota" | "protocolo" | "falso" | "encerrar" | "transferir" | "escalar" | null;
 
 function AlertHandlingPage() {
   const { alertId } = Route.useParams();
@@ -97,9 +85,7 @@ function AlertHandlingPage() {
 
       {isLoading ? <LoadingState rows={5} /> : null}
       {isError ? (
-        <ErrorState
-          action={<Button onClick={() => void refetch()}>Tentar novamente</Button>}
-        />
+        <ErrorState action={<Button onClick={() => void refetch()}>Tentar novamente</Button>} />
       ) : null}
       {!isLoading && !isError && !data ? (
         <EmptyState
@@ -107,7 +93,9 @@ function AlertHandlingPage() {
           description={`Nenhum alerta corresponde ao identificador ${alertId}.`}
           action={
             <Button variant="outline" asChild>
-              <Link to="/alertas" search={{} as any}>Voltar à fila</Link>
+              <Link to="/alertas" search={{} as any}>
+                Voltar à fila
+              </Link>
             </Button>
           }
           className={undefined}
@@ -124,9 +112,7 @@ function AlertHandlingPage() {
             className={undefined}
             actions={
               data.readOnly ? (
-                <StatusBadge tone="neutral">
-                  Modo histórico · somente leitura
-                </StatusBadge>
+                <StatusBadge tone="neutral">Modo histórico · somente leitura</StatusBadge>
               ) : (
                 <>
                   <Button variant="outline" onClick={() => setDialog("transferir")}>
@@ -146,8 +132,7 @@ function AlertHandlingPage() {
             <SeverityBadge severity={data.alert.severity} />
             <AlertStateBadge state={data.alert.state} />
             <StatusBadge tone="warning" dot={false}>
-              Confiança da IA {Math.round(data.alert.confidence * 100)}% · sinal
-              para revisão humana
+              Confiança da IA {Math.round(data.alert.confidence * 100)}% · sinal para revisão humana
             </StatusBadge>
           </div>
 
@@ -189,9 +174,7 @@ function AlertHandlingPage() {
                   footer={
                     <div className="flex items-center justify-between gap-2">
                       <span className="tabular text-xs text-muted-foreground">
-                        {session
-                          ? `Precisão ${session.location.accuracyMeters} m`
-                          : "—"}
+                        {session ? `Precisão ${session.location.accuracyMeters} m` : "—"}
                       </span>
                       {session ? (
                         <Button size="sm" variant="outline" asChild>
@@ -213,9 +196,7 @@ function AlertHandlingPage() {
                 title="Evidência visual"
                 description={
                   data.evidence
-                    ? `${data.evidence.cameraLabel} · ${formatTime(
-                        data.evidence.capturedAt,
-                      )}`
+                    ? `${data.evidence.cameraLabel} · ${formatTime(data.evidence.capturedAt)}`
                     : "Sem evidência associada"
                 }
                 className={undefined}
@@ -241,8 +222,8 @@ function AlertHandlingPage() {
                   <figure>
                     <div className="kirvra-map-grid relative flex h-[240px] items-center justify-center overflow-hidden rounded-md border border-border">
                       <span className="text-xs text-muted-foreground">
-                        Frame protegido · carregado por URL assinada de curta
-                        duração (integração pendente)
+                        Frame protegido · carregado por URL assinada de curta duração (integração
+                        pendente)
                       </span>
                       <span
                         aria-hidden="true"
@@ -253,10 +234,8 @@ function AlertHandlingPage() {
                       </span>
                     </div>
                     <figcaption className="tabular mt-2 text-xs text-muted-foreground">
-                      Confiança do modelo{" "}
-                      {Math.round(data.evidence.confidence * 100)}% ·{" "}
-                      {formatTime(data.evidence.capturedAt)} · visualização
-                      registrada em auditoria
+                      Confiança do modelo {Math.round(data.evidence.confidence * 100)}% ·{" "}
+                      {formatTime(data.evidence.capturedAt)} · visualização registrada em auditoria
                     </figcaption>
                   </figure>
                 ) : (
@@ -267,9 +246,7 @@ function AlertHandlingPage() {
               <Panel
                 title="Áudio e transcrição"
                 description={
-                  data.audio
-                    ? `Duração ${data.audio.durationSeconds}s`
-                    : "Sem áudio anexado"
+                  data.audio ? `Duração ${data.audio.durationSeconds}s` : "Sem áudio anexado"
                 }
                 className={undefined}
                 bodyClassName={undefined}
@@ -306,9 +283,7 @@ function AlertHandlingPage() {
                           max={100}
                           step={5}
                         />
-                        <span className="tabular text-xs text-muted-foreground">
-                          {volume[0]}%
-                        </span>
+                        <span className="tabular text-xs text-muted-foreground">{volume[0]}%</span>
                       </div>
                     </div>
                   </>
@@ -335,7 +310,13 @@ function AlertHandlingPage() {
             </div>
 
             <div className="flex flex-col gap-4">
-              <Panel title="Contexto do atendimento" className={undefined} bodyClassName={undefined} actions={undefined} description={undefined}>
+              <Panel
+                title="Contexto do atendimento"
+                className={undefined}
+                bodyClassName={undefined}
+                actions={undefined}
+                description={undefined}
+              >
                 <dl className="space-y-2.5 text-sm">
                   <div className="flex justify-between gap-3">
                     <dt className="text-muted-foreground">Motorista</dt>
@@ -353,22 +334,16 @@ function AlertHandlingPage() {
                   <div className="flex justify-between gap-3">
                     <dt className="text-muted-foreground">Veículo</dt>
                     <dd className="text-right text-foreground">
-                      {data.vehicle
-                        ? `${data.vehicle.make} ${data.vehicle.model}`
-                        : "—"}
+                      {data.vehicle ? `${data.vehicle.make} ${data.vehicle.model}` : "—"}
                     </dd>
                   </div>
                   <div className="flex justify-between gap-3">
                     <dt className="text-muted-foreground">Placa</dt>
-                    <dd className="tabular text-foreground">
-                      {data.vehicle?.plate ?? "—"}
-                    </dd>
+                    <dd className="tabular text-foreground">{data.vehicle?.plate ?? "—"}</dd>
                   </div>
                   <div className="flex justify-between gap-3">
                     <dt className="text-muted-foreground">Risk score</dt>
-                    <dd className="tabular text-critical">
-                      {data.alert.riskScore}
-                    </dd>
+                    <dd className="tabular text-critical">{data.alert.riskScore}</dd>
                   </div>
                   <div className="flex justify-between gap-3">
                     <dt className="text-muted-foreground">Operador responsável</dt>
@@ -384,9 +359,7 @@ function AlertHandlingPage() {
                   </div>
                   <div className="flex justify-between gap-3">
                     <dt className="text-muted-foreground">Telefone</dt>
-                    <dd className="tabular text-foreground">
-                      {maskPhone(data.driver.phone)}
-                    </dd>
+                    <dd className="tabular text-foreground">{maskPhone(data.driver.phone)}</dd>
                   </div>
                 </dl>
               </Panel>
@@ -406,10 +379,7 @@ function AlertHandlingPage() {
                   <ShieldAlert className="h-4 w-4" aria-hidden="true" />
                   Confirmar ameaça
                 </Button>
-                <Button
-                  disabled={data.readOnly}
-                  onClick={() => setDialog("protocolo")}
-                >
+                <Button disabled={data.readOnly} onClick={() => setDialog("protocolo")}>
                   <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
                   Iniciar protocolo
                 </Button>
@@ -481,9 +451,7 @@ function AlertHandlingPage() {
             confirmLabel="Marcar falso positivo"
             reasonLabel="Motivo"
             reasonPlaceholder="Explique por que não houve ameaça real"
-            onConfirm={async (reason) =>
-              report(await markFalsePositive(alertId, reason))
-            }
+            onConfirm={async (reason) => report(await markFalsePositive(alertId, reason))}
           />
 
           <ConfirmActionDialog
@@ -543,9 +511,7 @@ function AlertHandlingPage() {
                   </SelectTrigger>
                   <SelectContent>
                     {operators
-                      .filter(
-                        (o) => o.role === "supervisor" || o.role === "gerente",
-                      )
+                      .filter((o) => o.role === "supervisor" || o.role === "gerente")
                       .map((operator) => (
                         <SelectItem key={operator.id} value={operator.id}>
                           {operator.fullName}
