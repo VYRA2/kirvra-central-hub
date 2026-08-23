@@ -56,8 +56,8 @@ function RolesPermissionsPage() {
     toast.error(res.message);
   };
 
-  if (isLoading) return <LoadingState message="Carregando matriz de acesso..." />;
-  if (isError) return <ErrorState message="Erro ao carregar permissões do sistema." />;
+  if (isLoading) return <LoadingState label="Carregando matriz de acesso..." />;
+  if (isError) return <ErrorState title="Erro ao carregar permissões do sistema." />;
 
   return (
     <KirvraAppShell title="Cargos e permissões">
