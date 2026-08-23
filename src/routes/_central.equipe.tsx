@@ -140,7 +140,7 @@ function TeamPage() {
 
   const handleAction = async () => {
     const res = await manageEmployee();
-    toast.error(res.message);
+    toast.info(res.message);
   };
 
   const columns: Array<TableColumn<TeamProfile>> = [
@@ -243,22 +243,22 @@ function TeamPage() {
             <MetricCard 
               label="Funcionários ativos" 
               value={stats?.active.toString() || "0"} 
-              sublabel="4 cargos operacionais"
+              sublabel="Contas ativas no sistema"
             />
             <MetricCard 
               label="Online agora" 
               value="0" 
-              sublabel="turno noturno"
+              sublabel="Sem dados"
             />
             <MetricCard 
               label="Em atendimento" 
               value="0" 
-              sublabel="2 alertas críticos"
+              sublabel="Sem dados"
             />
             <MetricCard 
               label="Contas suspensas" 
               value={stats?.suspended.toString() || "0"} 
-              sublabel="sem sessões ativas"
+              sublabel="Contas com acesso bloqueado"
               tone={stats?.suspended && stats.suspended > 0 ? "critical" : "neutral"}
             />
           </div>
@@ -455,7 +455,7 @@ function EmployeeModal({
 
         <DialogFooter className="px-6 py-4 border-t border-border bg-sidebar-accent/10">
           <Button variant="ghost" className="h-9" onClick={() => onOpenChange(false)}>Cancelar</Button>
-          <Button className="h-9" onClick={onAction}>
+          <Button className="h-9" onClick={onAction} disabled>
             {isCreate ? "Criar funcionário" : "Salvar alterações"}
           </Button>
         </DialogFooter>

@@ -340,7 +340,7 @@ function VehicleDetailsDrawer({
             <DetailItem label="Modelo" value={vehicle.model} />
             <DetailItem label="Ano" value={vehicle.year?.toString() || null} />
             <DetailItem label="Cor" value={vehicle.color} />
-            <DetailItem label="Placa" value={vehicle.plate?.toUpperCase()} className="font-mono" />
+            <DetailItem label="Placa" value={vehicle.plate?.toUpperCase() ?? null} className="font-mono" />
             <DetailItem label="RENAVAM" value={vehicle.renavam || "—"} className="font-mono" />
             <DetailItem 
               label="Propriedade" 
