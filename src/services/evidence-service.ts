@@ -125,11 +125,11 @@ export async function listEvidence(filters: EvidenceFilters) {
     metadata: row.metadata,
     captured_at: row.captured_at,
     created_at: row.created_at,
-    driver_name: row.drivers?.full_name,
+    driver_name: row.drivers?.full_name ?? null,
     session_label: row.protection_sessions?.started_at
       ? `Sessão ${new Date(row.protection_sessions.started_at).toLocaleDateString()}`
       : null,
-    alert_protocol: null, // Protocolo removido conforme schema real
+    alert_protocol: null,
     alert_origin: row.security_alert_id ? "IA" : "Comum",
   }));
 
