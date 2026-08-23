@@ -220,18 +220,18 @@ function SessionPage() {
                       <div className="mt-3 flex gap-2">
                         <Button size="sm" asChild>
                           <Link
-                            to={"/alertas/$alertId" as any}
-                            params={{ alertId: data.sessionAlerts[0].id } as any}
-                            search={{} as any}
+                          to="/alertas/$alertId"
+                          params={{ alertId: data.sessionAlerts[0].id }}
+                          search={{}}>
                           >
                             Abrir alerta
                           </Link>
                         </Button>
                         <Button size="sm" variant="outline" asChild>
                           <Link
-                            to={"/motoristas/$driverId" as any}
-                            params={{ driverId: data.driver.id } as any}
-                            search={{} as any}
+                          to="/motoristas/$driverId"
+                          params={{ driverId: data.driver.id }}
+                          search={{}}>
                           >
                             Acompanhar motorista
                           </Link>
@@ -311,10 +311,9 @@ function SessionPage() {
                   <RiskBadge level={data.session.riskLevel} />
                   <Button size="sm" variant="link" asChild className="h-auto p-0">
                     <Link
-                      to={"/motoristas/$driverId" as any}
-                      params={{ driverId: data.driver.id } as any}
-                      search={{} as any}
-                    >
+                      to="/motoristas/$driverId"
+                      params={{ driverId: data.driver.id }}
+                      search={{}}>
                       Abrir perfil
                     </Link>
                   </Button>

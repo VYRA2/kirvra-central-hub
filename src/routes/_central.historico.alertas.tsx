@@ -55,11 +55,11 @@ function AlertHistoryPage() {
     void navigate({
       to: "/historico/alertas",
       search: {
-        period: (next.period || filters.period) as any,
-        outcome: (next.outcome || filters.outcome) as any,
-        page: (next.page || 1) as any,
-        pageSize: (filters.pageSize || 20) as any,
-      } as any,
+        period: next.period || filters.period,
+        outcome: next.outcome || filters.outcome,
+        page: next.page || 1,
+        pageSize: filters.pageSize || 20,
+      },
     });
   };
 

@@ -109,7 +109,7 @@ function CommandCenterPage() {
               </Link>
             </Button>
             <Button variant="outline" asChild>
-              <Link to="/alertas" search={{} as any}>
+              <Link to="/alertas" search={{}}>
                 <ShieldAlert className="h-4 w-4" aria-hidden="true" />
                 Ver alertas
               </Link>
@@ -190,8 +190,8 @@ function CommandCenterPage() {
                     <Link
                       key={alert.id}
                       to="/alertas/$alertId"
-                      params={{ alertId: alert.id } as any}
-                      search={{} as any}
+                      params={{ alertId: alert.id }}
+                      search={{}}>
                       className="block px-4 py-3 hover:bg-surface-raised"
                     >
                       <div className="flex items-start justify-between gap-2">

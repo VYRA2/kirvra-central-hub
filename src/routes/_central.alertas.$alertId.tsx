@@ -93,7 +93,7 @@ function AlertHandlingPage() {
           description={`Nenhum alerta corresponde ao identificador ${alertId}.`}
           action={
             <Button variant="outline" asChild>
-              <Link to="/alertas" search={{} as any}>
+              <Link to="/alertas" search={{}}>
                 Voltar à fila
               </Link>
             </Button>
@@ -179,10 +179,9 @@ function AlertHandlingPage() {
                       {session ? (
                         <Button size="sm" variant="outline" asChild>
                           <Link
-                            to={"/sessoes/$sessionId" as any}
-                            params={{ sessionId: session.id } as any}
-                            search={{} as any}
-                          >
+                            to="/sessoes/$sessionId"
+                            params={{ sessionId: session.id }}
+                            search={{}}>
                             Abrir sessão
                           </Link>
                         </Button>
@@ -322,9 +321,9 @@ function AlertHandlingPage() {
                     <dt className="text-muted-foreground">Motorista</dt>
                     <dd className="text-right">
                       <Link
-                        to={"/motoristas/$driverId" as any}
-                        params={{ driverId: data.driver.id } as any}
-                        search={{} as any}
+                        to="/motoristas/$driverId"
+                        params={{ driverId: data.driver.id }}
+                        search={{}}>
                         className="text-primary hover:underline"
                       >
                         {data.driver.displayName}

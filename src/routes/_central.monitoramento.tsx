@@ -279,9 +279,8 @@ function MonitoringPage() {
                   <Button size="sm" variant="outline" asChild>
                     <Link
                       to="/sessoes/$sessionId"
-                      params={{ sessionId: active.id } as any}
-                      search={{} as any}
-                    >
+                      params={{ sessionId: active.id }}
+                      search={{}}>
                       Abrir sessão
                     </Link>
                   </Button>

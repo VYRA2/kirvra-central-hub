@@ -66,7 +66,7 @@ function DriversPage() {
       key: "subscription",
       header: "Assinatura",
       render: (driver) => (
-        <StatusBadge tone={(driver.subscriptionStatus === "ativa" ? "success" : "warning") as any}>
+        <StatusBadge tone={driver.subscriptionStatus === "ativa" ? "success" : "warning"}>
           {driver.subscriptionStatus === "ativa"
             ? "Ativa"
             : driver.subscriptionStatus === "cancelada"
@@ -115,7 +115,7 @@ function DriversPage() {
       header: "Cadastro",
       render: (driver) => (
         <StatusBadge
-          tone={(driver.registrationStatus === "verificado" ? "success" : "warning") as any}
+          tone={driver.registrationStatus === "verificado" ? "success" : "warning"}
         >
           {driver.registrationStatus === "verificado"
             ? "Verificado"
@@ -133,9 +133,8 @@ function DriversPage() {
         <Button size="sm" variant="outline" asChild>
           <Link
             to="/motoristas/$driverId"
-            params={{ driverId: driver.id } as any}
-            search={{} as any}
-          >
+            params={{ driverId: driver.id }}
+            search={{}}>
             Abrir perfil
           </Link>
         </Button>
