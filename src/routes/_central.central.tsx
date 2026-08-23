@@ -191,7 +191,7 @@ function CommandCenterPage() {
                       key={alert.id}
                       to="/alertas/$alertId"
                       params={{ alertId: alert.id }}
-                      search={{}}>
+                      search={{}}
                       className="block px-4 py-3 hover:bg-surface-raised"
                     >
                       <div className="flex items-start justify-between gap-2">

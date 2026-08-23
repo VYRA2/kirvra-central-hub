@@ -324,7 +324,6 @@ function AlertHandlingPage() {
                         to="/motoristas/$driverId"
                         params={{ driverId: data.driver.id }}
                         search={{}}
-                      >
                         className="text-primary hover:underline"
                       >
                         {data.driver.displayName}
