@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { 
   Search, 
@@ -227,11 +227,7 @@ function TeamPage() {
             actions={
               <Button 
                 className="h-9 gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
-                onClick={() => {
-                  setSelectedProfile(null);
-                  setModalMode("create");
-                  setIsModalOpen(true);
-                }}
+                onClick={() => navigate({ to: "/equipe/novo" })}
               >
                 <UserPlus className="h-4 w-4" />
                 Novo funcionário
