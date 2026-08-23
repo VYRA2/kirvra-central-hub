@@ -1,12 +1,16 @@
 import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
 
-import { resolveCentralSession } from "@/services/auth-service";
+import { ROUTE_PERMISSIONS } from "@/integrations/vyra/access";
 import { safeInternalPath } from "@/lib/safe-redirect";
+import { resolveCentralSession } from "@/services/auth-service";
 
 /**
  * Layout protegido da Central.
- * ssr: false porque a sessão vive no navegador; nenhum conteúdo protegido é
- * renderizado antes da validação assíncrona da sessão.
+ *
+ * ssr: false porque a sessão do Supabase vive no navegador. Nenhum conteúdo
+ * protegido é renderizado antes da validação: sessão ausente → /login,
+ * primeiro acesso pendente → /primeiro-acesso, cargo sem permissão → tela de
+ * acesso negado renderizada pela própria rota (não há vazamento de dados).
  */
 export const Route = createFileRoute("/_central")({
   ssr: false,
@@ -18,7 +22,10 @@ export const Route = createFileRoute("/_central")({
         search: { redirect: safeInternalPath(location.href) },
       });
     }
-    return { session };
+    if (session.firstAccessPending) {
+      throw redirect({ to: "/primeiro-acesso" });
+    }
+    return { session, routePermissions: ROUTE_PERMISSIONS };
   },
   component: () => <Outlet />,
 });
