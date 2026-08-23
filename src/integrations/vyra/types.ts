@@ -99,9 +99,34 @@ export interface Database {
           id: string;
           full_name: string;
           employee_code: string;
+          phone: string | null;
+          avatar_url: string | null;
+          status: string;
+          primeiro_acesso: boolean;
+          last_access_at: string | null;
+          created_at: string;
+          updated_at: string;
         };
         Insert: Partial<Database["public"]["Tables"]["central_profiles"]["Row"]>;
         Update: Partial<Database["public"]["Tables"]["central_profiles"]["Row"]>;
+      };
+      central_roles: {
+        Row: {
+          id: string;
+          name: string;
+          code: string;
+          description: string | null;
+        };
+        Insert: Partial<Database["public"]["Tables"]["central_roles"]["Row"]>;
+        Update: Partial<Database["public"]["Tables"]["central_roles"]["Row"]>;
+      };
+      central_user_roles: {
+        Row: {
+          user_id: string;
+          role_id: string;
+        };
+        Insert: Database["public"]["Tables"]["central_user_roles"]["Row"];
+        Update: Partial<Database["public"]["Tables"]["central_user_roles"]["Row"]>;
       };
       vehicles: {
         Row: {
