@@ -1,13 +1,14 @@
 import { getVyraClient } from "@/integrations/vyra/client";
+import { Json } from "@/integrations/vyra/types";
 
 export interface AuditRow {
   id: string;
-  operator_id: string;
+  operator_id: string | null;
   action: string;
   entity_type: string;
   entity_id: string | null;
-  previous_data: any;
-  next_data: any;
+  previous_data: Json;
+  next_data: Json;
   ip_address: string | null;
   user_agent: string | null;
   created_at: string;
