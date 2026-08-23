@@ -20,10 +20,12 @@ import {
   StatusBadge,
 } from "@/components/kirvra/primitives";
 import { useAuth } from "@/hooks/use-auth";
-import { formatElapsed } from "@/lib/kirvra-format";
+import { formatElapsed, initialsFromName } from "@/lib/kirvra-format";
 import { useCentralRealtime } from "@/hooks/use-central-realtime";
-import { describeDataError, getCommandOverview } from "@/services/dashboard-service";
-import { initialsFromName } from "@/lib/kirvra-format";
+import {
+  describeDataError,
+  getCommandOverview,
+} from "@/services/dashboard-service";
 
 export const Route = createFileRoute("/_central/central")({
   head: () => ({
@@ -145,7 +147,7 @@ function CommandCenterPage() {
       {isLoading ? <LoadingState rows={5} /> : null}
       {isError ? (
         <ErrorState
-          message={describeDataError(error)}
+          description={describeDataError(error)}
           action={
             <Button onClick={() => void refetch()}>Tentar novamente</Button>
           }
@@ -160,7 +162,7 @@ function CommandCenterPage() {
               <MetricCard
                 key={metric.id}
                 label={metric.label}
-                value={metric.value === null ? "—" : metric.value}
+                value={metric.value === null ? "—" : String(metric.value)}
                 hint={metric.hint}
                 tone={METRIC_TONE[metric.id] ?? "neutral"}
               />
