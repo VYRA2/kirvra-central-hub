@@ -9,7 +9,7 @@ import {
   Activity,
   Box,
   ChevronRight,
-  ShieldInfo
+  ShieldCheck
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -86,7 +86,7 @@ function AuditDetailsSheet({
       <SheetContent className="sm:max-w-md md:max-w-lg overflow-y-auto">
         <SheetHeader>
           <div className="flex items-center gap-2 text-primary">
-            <ShieldInfo className="h-5 w-5" />
+            <ShieldCheck className="h-5 w-5" />
             <SheetTitle>Detalhes da Auditoria</SheetTitle>
           </div>
           <SheetDescription>
@@ -195,8 +195,8 @@ function AuditoriaPage() {
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <MetricCard label="Eventos Totais" value={String(stats?.total || 0)} />
         <MetricCard label="Últimas 24 horas" value={String(stats?.recent24h || 0)} tone="primary" />
-        <MetricCard label="Operadores Ativos" value={String(stats?.activeOperators || 0)} tone="success" />
-        <MetricCard label="Logs de Acesso" value={String(stats?.accessLogs || 0)} tone="neutral" />
+        <MetricCard label="Operadores Ativos" value={String(stats?.uniqueOperators || 0)} tone="success" />
+        <MetricCard label="Filtro Ativo" value={filters.action !== "todas" ? "Sim" : "Não"} tone="neutral" />
       </div>
 
       <FilterBar>
@@ -243,8 +243,8 @@ function AuditoriaPage() {
 
         <FilterField label="Entidade" htmlFor="entity">
           <Select
-            value={filters.entity}
-            onValueChange={(v) => setFilters(f => ({ ...f, entity: v, page: 1 }))}
+            value={filters.entity_type}
+            onValueChange={(v) => setFilters(f => ({ ...f, entity_type: v, page: 1 }))}
           >
             <SelectTrigger id="entity">
               <SelectValue placeholder="Todas as entidades" />
