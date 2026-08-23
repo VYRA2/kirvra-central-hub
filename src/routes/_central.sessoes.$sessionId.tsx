@@ -222,7 +222,8 @@ function SessionPage() {
                           <Link
                           to="/alertas/$alertId"
                           params={{ alertId: data.sessionAlerts[0].id }}
-                          search={{}}>
+                          search={{}}
+                        >
                           >
                             Abrir alerta
                           </Link>
@@ -231,7 +232,8 @@ function SessionPage() {
                           <Link
                           to="/motoristas/$driverId"
                           params={{ driverId: data.driver.id }}
-                          search={{}}>
+                          search={{}}
+                        >
                           >
                             Acompanhar motorista
                           </Link>
