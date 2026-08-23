@@ -66,11 +66,27 @@ export async function listEvidence(filters: EvidenceFilters) {
   }
 
   if (filters.search) {
-    // Busca segura por UUID ou nome de motorista
     if (filters.search.length === 36 && filters.search.includes("-")) {
       query = query.or(`id.eq.${filters.search},driver_id.eq.${filters.search},alert_id.eq.${filters.search},security_alert_id.eq.${filters.search},session_id.eq.${filters.search}`);
     } else {
-      query = query.ilike("drivers.full_name", `%${filters.search}%`);
+      // 1. Tentar encontrar IDs de motoristas que batem com o nome
+      const { data: matchingDrivers } = await client
+        .from("drivers")
+        .select("id")
+        .ilike("full_name", `%${filters.search}%`);
+      
+      const matchingDriverIds = matchingDrivers?.map(d => d.id) || [];
+      
+      // Como não podemos fazer join search complexo no or, usamos IDs se encontrados
+      if (matchingDriverIds.length > 0) {
+        let orFilter = `evidence_type.ilike.%${filters.search}%`;
+        matchingDriverIds.forEach(id => {
+          orFilter += `,driver_id.eq.${id}`;
+        });
+        query = query.or(orFilter);
+      } else {
+        query = query.ilike("evidence_type", `%${filters.search}%`);
+      }
     }
   }
 
