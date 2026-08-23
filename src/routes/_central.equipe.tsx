@@ -395,11 +395,11 @@ function EmployeeModal({
             </div>
             <div className="space-y-2">
               <Label htmlFor="phone" className="text-xs font-semibold uppercase text-muted-foreground">Telefone</Label>
-              <Input id="phone" defaultValue={profile?.phone ?? ""} disabled={!isCreate && !isReview} className="h-9" />
+              <Input id="phone" defaultValue={profile?.phone ?? undefined} disabled={!isCreate && !isReview} className="h-9" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="role" className="text-xs font-semibold uppercase text-muted-foreground">Cargo</Label>
-              <Select defaultValue={profile?.role_id} disabled={!isCreate && !isReview}>
+              <Select defaultValue={profile?.role_id ?? undefined} disabled={!isCreate && !isReview}>
                 <SelectTrigger id="role" className="h-9">
                   <SelectValue placeholder="Selecione..." />
                 </SelectTrigger>
@@ -433,7 +433,7 @@ function EmployeeModal({
               </div>
               <div className="flex items-center justify-between text-xs">
                 <span className="text-muted-foreground">Último acesso</span>
-                <span className="font-medium">{formatLastAccess(profile?.last_access_at)}</span>
+                <span className="font-medium">{formatLastAccess(profile?.last_access_at ?? null)}</span>
               </div>
               <div className="flex items-center justify-between text-xs">
                 <span className="text-muted-foreground">Criado em</span>
