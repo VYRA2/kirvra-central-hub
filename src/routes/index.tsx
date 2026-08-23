@@ -1,3 +1,22 @@
+/**
+ * O Supabase foi conectado e as tabelas do Kirvra já foram criadas: motoristas, sessoes, alertas, evidencias, operadores e acoes_operador. A partir de agora toda funcionalidade da central deve salvar e ler dados dessas tabelas. Pode começar a construir a central usando esse banco.
+ * 
+ * IMPORTANTE: os nomes acima representam os domínios funcionais. No banco VYRA2, use exclusivamente os nomes físicos já existentes:
+ * motoristas → drivers
+ * veículos → vehicles
+ * sessões → protection_sessions
+ * alertas comuns → alerts
+ * alertas da IA e de segurança → security_alerts
+ * análises da IA → ai_analysis_events
+ * evidências → alert_evidence
+ * operadores → central_profiles
+ * cargos → central_roles
+ * permissões → central_permissions
+ * cargos dos operadores → central_user_roles
+ * permissões dos cargos → central_role_permissions
+ * atribuições e atendimento de alertas → central_alert_assignments
+ * ações e auditoria → central_audit_logs
+ */
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
 import { resolveCentralSession } from "@/services/auth-service";
