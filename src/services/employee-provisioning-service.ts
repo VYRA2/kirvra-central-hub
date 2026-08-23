@@ -22,7 +22,7 @@ export const listRolesWithPermissions = async (): Promise<RoleWithPermissions[]>
   if (!supabase) return [];
 
   const [rolesRes, permissionsRes, rolePermissionsRes] = await Promise.all([
-    supabase.from("central_roles").select("*").order("name"),
+    supabase.from("central_roles").select("*").order("hierarchy_level", { ascending: false }),
     supabase.from("central_permissions").select("*"),
     supabase.from("central_role_permissions").select("*")
   ]);
@@ -58,11 +58,46 @@ export const listRolesWithPermissions = async (): Promise<RoleWithPermissions[]>
   });
 };
 
-export const createEmployee = async (data: any) => {
+export interface CreateEmployeeData {
+  full_name: string;
+  employee_code: string;
+  phone?: string;
+  role_id: string;
+  shift?: string;
+  start_date: string;
+  temp_password?: string;
+  require_new_password: boolean;
+  is_active: boolean;
+}
+
+export const createEmployee = async (data: CreateEmployeeData) => {
   // A criação segura de funcionários exige uma Edge Function administrativa (atômica).
   // Não simular sucesso e não gravar parcialmente no banco público.
   return {
     success: false,
     message: "Provisionamento administrativo ainda não conectado. A criação requer uma Edge Function segura."
+  };
+};
+
+export const listAllPermissions = async () => {
+  const supabase = getVyraClient();
+  if (!supabase) return [];
+  const { data, error } = await supabase.from("central_permissions").select("*").order("name");
+  if (error) throw error;
+  return data || [];
+};
+
+export const listRolePermissionsMap = async () => {
+  const supabase = getVyraClient();
+  if (!supabase) return [];
+  const { data, error } = await supabase.from("central_role_permissions").select("*");
+  if (error) throw error;
+  return data || [];
+};
+
+export const manageRoles = async (data: any) => {
+  return {
+    success: false,
+    message: "Gestão de cargos ainda não conectada. A operação requer uma Edge Function segura."
   };
 };
