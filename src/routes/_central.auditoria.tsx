@@ -174,6 +174,17 @@ function AuditoriaPage() {
     queryFn: () => getAuditStats(),
   });
 
+  const { data: profilesData } = useQuery({
+    queryKey: ["central-profiles"],
+    queryFn: async () => {
+      const { getVyraClient } = await import("@/integrations/vyra/client");
+      const client = getVyraClient();
+      if (!client) return [];
+      const { data } = await client.from("central_profiles").select("id, full_name, employee_code");
+      return data || [];
+    }
+  });
+
   const handleOpenDetails = (log: AuditRow) => {
     setSelectedLog(log);
     setDetailsOpen(true);
@@ -196,7 +207,7 @@ function AuditoriaPage() {
         <MetricCard label="Eventos Totais" value={String(stats?.total || 0)} />
         <MetricCard label="Últimas 24 horas" value={String(stats?.recent24h || 0)} tone="primary" />
         <MetricCard label="Operadores Ativos" value={String(stats?.uniqueOperators || 0)} tone="success" />
-        <MetricCard label="Filtro Ativo" value={filters.action !== "todas" ? "Sim" : "Não"} tone="neutral" />
+        <MetricCard label="Filtro Ativo" value={filters.action !== "todos" ? "Sim" : "Não"} tone="neutral" />
       </div>
 
       <FilterBar>
@@ -214,12 +225,22 @@ function AuditoriaPage() {
         </FilterField>
 
         <FilterField label="Operador" htmlFor="operator">
-          <Input
-            id="operator"
-            placeholder="Matrícula ou Nome"
+          <Select
             value={filters.operator_id}
-            onChange={(e) => setFilters(f => ({ ...f, operator_id: e.target.value, page: 1 }))}
-          />
+            onValueChange={(v) => setFilters(f => ({ ...f, operator_id: v, page: 1 }))}
+          >
+            <SelectTrigger id="operator">
+              <SelectValue placeholder="Todos os operadores" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todos">Todos os operadores</SelectItem>
+              {profilesData?.map(p => (
+                <SelectItem key={p.id} value={p.id}>
+                  {p.full_name} ({p.employee_code})
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </FilterField>
 
         <FilterField label="Ação" htmlFor="action">
@@ -231,7 +252,7 @@ function AuditoriaPage() {
               <SelectValue placeholder="Todas as ações" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="todos">Todos os operadores</SelectItem>
+              <SelectItem value="todos">Todas as ações</SelectItem>
               <SelectItem value="create">Criação</SelectItem>
               <SelectItem value="update">Edição</SelectItem>
               <SelectItem value="delete">Exclusão</SelectItem>

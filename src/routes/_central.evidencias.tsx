@@ -51,6 +51,8 @@ import { formatDateTime, formatElapsed } from "@/lib/kirvra-format";
 import { 
   listEvidence, 
   getEvidenceSignedUrl, 
+  getEvidenceStats,
+  getEvidenceTypes,
   DEFAULT_EVIDENCE_FILTERS, 
   type EvidenceFilters, 
   type EvidenceRow 
@@ -76,6 +78,7 @@ function EvidenceDetailsDialog({
 }) {
   const { can } = useAuth();
   const [signedUrl, setSignedUrl] = useState<string | null>(null);
+  const [urlStatus, setUrlStatus] = useState<"available" | "error" | "missing" | "idle">("idle");
   const [loadingUrl, setLoadingUrl] = useState(false);
 
   const canView = useMemo(() => {
@@ -90,9 +93,14 @@ function EvidenceDetailsDialog({
     if (!evidence || !evidence.storage_path) return;
     setLoadingUrl(true);
     try {
-      const url = await getEvidenceSignedUrl(evidence.storage_bucket || "alert-evidence", evidence.storage_path);
-      setSignedUrl(url);
+      const result = await getEvidenceSignedUrl(evidence.storage_bucket || "alert-evidence", evidence.storage_path);
+      setSignedUrl(result.url);
+      setUrlStatus(result.status);
+      if (result.status !== "available") {
+        toast.error(result.status === "missing" ? "Arquivo não vinculado." : "Erro ao gerar URL segura.");
+      }
     } catch (error) {
+      setUrlStatus("error");
       toast.error("Erro ao gerar URL segura.");
     } finally {
       setLoadingUrl(false);
@@ -101,6 +109,7 @@ function EvidenceDetailsDialog({
 
   const reset = () => {
     setSignedUrl(null);
+    setUrlStatus("idle");
     setLoadingUrl(false);
   };
 
@@ -214,13 +223,13 @@ function EvidenceDetailsDialog({
                 <div>
                   <dt className="text-xs text-muted-foreground">Alerta Relacionado</dt>
                   <dd className="mt-1">
-                    {evidence.alert_id ? (
+                    {evidence.alert_id || evidence.security_alert_id ? (
                       <Link 
                         to={"/alertas/$alertId" as any} 
-                        params={{ alertId: evidence.alert_id } as any}
+                        params={{ alertId: (evidence.alert_id || evidence.security_alert_id) } as any}
                         className="text-primary hover:underline"
                       >
-                        {evidence.alert_protocol || "Protocolo desconhecido"}
+                        {evidence.alert_id ? `ID ${evidence.alert_id.slice(0, 8)}` : `IA ${evidence.security_alert_id?.slice(0, 8)}`}
                       </Link>
                     ) : "—"}
                   </dd>
@@ -255,7 +264,15 @@ function EvidenceDetailsDialog({
                 <div>
                   <dt className="text-muted-foreground">Status</dt>
                   <dd className="font-medium">
-                    <StatusBadge tone="success">Disponível</StatusBadge>
+                    {urlStatus === "available" ? (
+                      <StatusBadge tone="success">Disponível</StatusBadge>
+                    ) : urlStatus === "missing" ? (
+                      <StatusBadge tone="neutral">Sem Arquivo</StatusBadge>
+                    ) : urlStatus === "error" ? (
+                      <StatusBadge tone="critical">Indisponível</StatusBadge>
+                    ) : (
+                      <span className="text-muted-foreground italic">Pendente</span>
+                    )}
                   </dd>
                 </div>
               </dl>
@@ -277,20 +294,29 @@ function EvidenciasPage() {
     queryFn: () => listEvidence(filters),
   });
 
+  const { data: evidenceStats } = useQuery({
+    queryKey: ["evidence-stats"],
+    queryFn: () => getEvidenceStats(),
+  });
+
+  const { data: evidenceTypes } = useQuery({
+    queryKey: ["evidence-types"],
+    queryFn: () => getEvidenceTypes(),
+  });
+
   const handleOpenDetails = (evidence: EvidenceRow) => {
     setSelectedEvidence(evidence);
     setDetailsOpen(true);
   };
 
   const stats = useMemo(() => {
-    const rows = data?.rows || [];
     return {
-      total: data?.count || 0,
-      images: rows.filter(r => r.mime_type?.startsWith("image/")).length,
-      media: rows.filter(r => r.mime_type?.startsWith("audio/") || r.mime_type?.startsWith("video/")).length,
-      recent24h: rows.filter(r => r.captured_at && new Date(r.captured_at).getTime() > Date.now() - 24*60*60*1000).length,
+      total: evidenceStats?.total || 0,
+      images: evidenceStats?.images || 0,
+      media: evidenceStats?.media || 0,
+      recent24h: evidenceStats?.recent24h || 0,
     };
-  }, [data]);
+  }, [evidenceStats]);
 
   return (
     <KirvraAppShell title="Evidências">
@@ -335,10 +361,11 @@ function EvidenciasPage() {
               <SelectValue placeholder="Todos os tipos" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="todos">Todos os tipos</SelectItem>
-              <SelectItem value="frame">Imagens (Frames)</SelectItem>
-              <SelectItem value="clipe">Clippes / Vídeos</SelectItem>
-              <SelectItem value="audio">Áudios</SelectItem>
+              {evidenceTypes?.map(type => (
+                <SelectItem key={type} value={type}>
+                  {type === "todos" ? "Todos os tipos" : type.charAt(0).toUpperCase() + type.slice(1)}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </FilterField>
@@ -440,7 +467,7 @@ function EvidenciasPage() {
                 header: "Alerta",
                 render: (row) => (
                   <span className="text-xs font-medium truncate">
-                    {row.alert_protocol || "—"}
+                    {row.alert_id ? row.alert_id.slice(0, 8) : row.security_alert_id ? `IA ${row.security_alert_id.slice(0, 8)}` : "—"}
                   </span>
                 ),
               },

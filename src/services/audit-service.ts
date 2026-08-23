@@ -57,7 +57,12 @@ export async function listAuditLogs(filters: AuditFilters) {
   }
 
   if (filters.search) {
-    query = query.or(`action.ilike.%${filters.search}%,entity_type.ilike.%${filters.search}%,entity_id.ilike.%${filters.search}%`);
+    if (filters.search.length === 36 && filters.search.includes("-")) {
+      query = query.eq("entity_id", filters.search);
+    } else {
+      query = query.or(`action.ilike.%${filters.search}%,entity_type.ilike.%${filters.search}%`);
+      // Nota: Busca por nome do operador feita no cliente pós-filtro ou via RPC se necessário
+    }
   }
 
   // Filtro de período simplificado (últimas N horas)
@@ -108,14 +113,15 @@ export async function getAuditStats() {
   const [totalRes, recentRes, operatorsRes] = await Promise.all([
     client.from("central_audit_logs").select("*", { count: "exact", head: true }),
     client.from("central_audit_logs").select("*", { count: "exact", head: true }).gte("created_at", since24h),
-    client.from("central_audit_logs").select("operator_id"), // Para contar únicos no JS ou via RPC
+    client.from("central_audit_logs").select("operator_id"),
   ]);
 
-  const uniqueOperators = new Set((operatorsRes.data || []).map((r: any) => r.operator_id)).size;
+  const uniqueOperatorIds = new Set((operatorsRes.data || []).map((r: any) => r.operator_id).filter(Boolean));
+  const uniqueOperatorsCount = uniqueOperatorIds.size;
 
   return {
     total: totalRes.count || 0,
     recent24h: recentRes.count || 0,
-    uniqueOperators,
+    uniqueOperators: uniqueOperatorsCount,
   };
 }
