@@ -13,7 +13,7 @@ export interface EvidenceRow {
   mime_type: string | null;
   size_bytes: number | null;
   sha256: string | null;
-  metadata: Record<string, any> | null;
+  metadata: import("@/integrations/vyra/types").Json | null;
   captured_at: string | null;
   created_at: string | null;
   // Joins
@@ -110,7 +110,7 @@ export async function listEvidence(filters: EvidenceFilters) {
 
   if (error) throw error;
 
-  const rows: EvidenceRow[] = (data || []).map((row: any) => ({
+  const rows: EvidenceRow[] = (data as any[] || []).map((row) => ({
     id: row.id,
     alert_id: row.alert_id,
     security_alert_id: row.security_alert_id,

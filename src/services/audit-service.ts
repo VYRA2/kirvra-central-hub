@@ -93,8 +93,8 @@ export async function listAuditLogs(filters: AuditFilters) {
 
   if (error) throw error;
 
-  const operatorIds = [...new Set(data.map((r: any) => r.operator_id).filter(Boolean))];
-  let profilesMap = new Map<string, { full_name: string; employee_code: string }>();
+  const operatorIds = [...new Set((data as { operator_id: string | null }[]).map((r) => r.operator_id).filter((id): id is string => Boolean(id)))];
+  const profilesMap = new Map<string, { full_name: string; employee_code: string }>();
 
   if (operatorIds.length > 0) {
     const { data: profiles } = await client
@@ -109,7 +109,7 @@ export async function listAuditLogs(filters: AuditFilters) {
     }
   }
 
-  const rows: AuditRow[] = (data || []).map((row: any) => {
+  const rows: AuditRow[] = (data as (AuditRow & { operator_id: string | null })[] || []).map((row) => {
     const profile = profilesMap.get(row.operator_id);
     return {
       ...row,
@@ -137,7 +137,9 @@ export async function getAuditStats() {
   ]);
 
   const uniqueOperatorIds = new Set(
-    (operatorsRes.data || []).map((r: any) => r.operator_id).filter(Boolean),
+    (operatorsRes.data as { operator_id: string | null }[] || [])
+      .map((r) => r.operator_id)
+      .filter((id): id is string => Boolean(id)),
   );
   const uniqueOperatorsCount = uniqueOperatorIds.size;
 
