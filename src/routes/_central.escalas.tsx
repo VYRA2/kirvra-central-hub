@@ -4,7 +4,6 @@ import { MapPin, Users, Activity, ShieldCheck, Calendar, RefreshCcw } from "luci
 import { toast } from "sonner";
 import { useEffect } from "react";
 
-
 import { Button } from "@/components/ui/button";
 import { KirvraAppShell } from "@/components/kirvra/app-shell";
 import {
@@ -15,10 +14,9 @@ import {
   LoadingState,
   ErrorState,
   PermissionDeniedState,
-  PendingIntegrationNotice,
   DriverAvatar,
 } from "@/components/kirvra/primitives";
-import { getScheduleData } from "@/services/schedule-service";
+import { getScheduleData, subscribeToScheduleChanges } from "@/services/schedule-service";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 
@@ -39,19 +37,20 @@ function SchedulesPage() {
   }
 
   const queryClient = useQueryClient();
-  const { data, isLoading, error, refetch } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ["schedules"],
     queryFn: getScheduleData,
   });
 
   useEffect(() => {
-    // Importamos o serviço para assinar mudanças Realtime
-    const { subscribeToScheduleChanges } = import.meta.env.DEV ? 
-      require("@/services/schedule-service") : 
-      { subscribeToScheduleChanges: (cb: any) => () => {} }; // Fallback type safety
+    // Assinatura Realtime para atualizar os dados automaticamente
+    const unsubscribe = subscribeToScheduleChanges(() => {
+      queryClient.invalidateQueries({ queryKey: ["schedules"] });
+    });
 
-    // Como o import dinâmico é chato aqui, vamos usar a função exportada normalmente
-  }, []);
+    return () => unsubscribe();
+  }, [queryClient]);
+
 
 
   const handleActionClick = (action: string) => {
