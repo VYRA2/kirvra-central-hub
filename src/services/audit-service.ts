@@ -13,8 +13,8 @@ export interface AuditRow {
   user_agent: string | null;
   created_at: string;
   // Join
-  operator_name?: string | null;
-  operator_code?: string | null;
+  operator_name: string | null;
+  operator_code: string | null;
 }
 
 export interface AuditFilters {
@@ -93,7 +93,8 @@ export async function listAuditLogs(filters: AuditFilters) {
 
   if (error) throw error;
 
-  const operatorIds = [...new Set((data as { operator_id: string | null }[]).map((r) => r.operator_id).filter((id): id is string => Boolean(id)))];
+  const rawData = data as (Omit<AuditRow, "operator_name" | "operator_code"> & { operator_id: string | null })[];
+  const operatorIds = [...new Set(rawData.map((r) => r.operator_id).filter((id): id is string => Boolean(id)))];
   const profilesMap = new Map<string, { full_name: string; employee_code: string }>();
 
   if (operatorIds.length > 0) {
@@ -109,12 +110,12 @@ export async function listAuditLogs(filters: AuditFilters) {
     }
   }
 
-  const rows: AuditRow[] = (data as (AuditRow & { operator_id: string | null })[] || []).map((row) => {
-    const profile = profilesMap.get(row.operator_id);
+  const rows: AuditRow[] = rawData.map((row) => {
+    const profile = row.operator_id ? profilesMap.get(row.operator_id) : null;
     return {
       ...row,
-      operator_name: profile?.full_name,
-      operator_code: profile?.employee_code,
+      operator_name: profile?.full_name ?? null,
+      operator_code: profile?.employee_code ?? null,
     };
   });
 
@@ -136,10 +137,9 @@ export async function getAuditStats() {
     client.from("central_audit_logs").select("operator_id"),
   ]);
 
+  const rawOperators = operatorsRes.data as { operator_id: string | null }[] || [];
   const uniqueOperatorIds = new Set(
-    (operatorsRes.data as { operator_id: string | null }[] || [])
-      .map((r) => r.operator_id)
-      .filter((id): id is string => Boolean(id)),
+    rawOperators.map((r) => r.operator_id).filter((id): id is string => Boolean(id)),
   );
   const uniqueOperatorsCount = uniqueOperatorIds.size;
 
