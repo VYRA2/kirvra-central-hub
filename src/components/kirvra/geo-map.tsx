@@ -106,9 +106,9 @@ export default function GeoMap({
           position={[marker.latitude, marker.longitude]}
           icon={pinIcon(marker)}
           title={marker.label}
-          eventHandlers={
-            onSelect ? { click: () => onSelect(marker.id) } : undefined
-          }
+          eventHandlers={{
+            click: () => onSelect?.(marker.id),
+          }}
         />
       ))}
       <FitBounds markers={markers} activeId={activeId} />

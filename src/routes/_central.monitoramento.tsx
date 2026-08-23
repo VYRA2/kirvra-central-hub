@@ -20,7 +20,7 @@ import {
 import { useCentralRealtime } from "@/hooks/use-central-realtime";
 import { formatElapsed, initialsFromName } from "@/lib/kirvra-format";
 import { cn } from "@/lib/utils";
-import type { RiskLevel } from "@/integrations/vyra/types";
+import type { RiskLevel, SensorState } from "@/integrations/vyra/types";
 import { describeDataError } from "@/services/dashboard-service";
 import {
   applyMonitoringFilters,
@@ -310,21 +310,25 @@ function MonitoringPage() {
                         ["AUD", active.sensors.audio],
                         ["GPS", active.sensors.gps],
                         ["NET", active.sensors.network],
-                      ] as Array<[string, boolean | null]>
+                      ] as Array<[string, SensorState]>
                     ).map(([label, state]) => (
                       <li
                         key={label}
                         className={cn(
                           "rounded border px-2 py-1",
-                          state === null
-                            ? "border-border text-muted-foreground"
-                            : state
-                              ? "border-primary/50 text-primary"
-                              : "border-critical/50 text-critical",
+                          state === "ativo"
+                            ? "border-primary/50 text-primary"
+                            : state === "inativo"
+                              ? "border-critical/50 text-critical"
+                              : "border-border text-muted-foreground",
                         )}
                       >
                         {label}:{" "}
-                        {state === null ? "sem dado" : state ? "ok" : "falha"}
+                        {state === "ativo"
+                          ? "ok"
+                          : state === "inativo"
+                            ? "falha"
+                            : "sem dado"}
                       </li>
                     ))}
                   </ul>
