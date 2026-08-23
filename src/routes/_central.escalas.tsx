@@ -105,9 +105,7 @@ function SchedulesPage() {
           }
         />
 
-        {isPending && (
-          <PendingIntegrationNotice message="O backend de escalas ainda precisa ser criado. A Central não encontrou definições de turnos ou registros de presença no VYRA2." />
-        )}
+        {/* Mensagem de integração removida pois agora os dados são reais */}
 
         <div className="flex flex-col gap-2">
           <h2 className="text-2xl font-semibold text-foreground">Turno atual</h2>
