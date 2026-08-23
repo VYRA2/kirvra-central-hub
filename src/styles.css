@@ -1,6 +1,8 @@
 @import "tailwindcss" source(none);
-@source "../src";
 @import "tw-animate-css";
+/* Mapa real da Central (Leaflet) — arquivo local, resolvido pelo bundler. */
+@import "leaflet/dist/leaflet.css";
+@source "../src";
 
 @custom-variant dark (&:is(.dark *));
 
