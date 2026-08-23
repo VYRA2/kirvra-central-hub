@@ -86,7 +86,6 @@ function SchedulesPage() {
     totalRegions: 0,
   };
 
-  const isPending = data?.status === "integrationPending";
 
   return (
     <KirvraAppShell title="Escalas e operadores">
