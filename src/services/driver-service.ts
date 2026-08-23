@@ -16,6 +16,7 @@ import {
   type DriverActivityEntry,
 } from "@/mocks/kirvra-central";
 import type { ServiceResult } from "./auth-service";
+import { assertDemoData } from "./mock-guard";
 
 export interface DriverFilters {
   search: string;
@@ -48,6 +49,7 @@ export interface DriverPage {
 export async function listDrivers(
   filters: DriverFilters,
 ): Promise<DriverPage> {
+  assertDemoData();
   const term = filters.search.trim().toLowerCase();
   const filtered = drivers
     .filter(
@@ -88,6 +90,7 @@ export interface DriverDetail {
 export async function getDriverDetail(
   driverId: string,
 ): Promise<DriverDetail | null> {
+  assertDemoData();
   const driver = findDriver(driverId);
   if (!driver) return null;
   const driverVehicles = vehicles.filter((v) => v.driverId === driverId);
@@ -103,6 +106,7 @@ export async function suspendDriver(
   _driverId: string,
   reason: string,
 ): Promise<ServiceResult> {
+  assertDemoData();
   if (!reason.trim())
     return { status: "error", message: "O motivo da suspensão é obrigatório." };
   return {
@@ -113,6 +117,7 @@ export async function suspendDriver(
 }
 
 export async function exportDriverList(): Promise<ServiceResult> {
+  assertDemoData();
   return {
     status: "pending",
     message:

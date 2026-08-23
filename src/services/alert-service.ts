@@ -26,6 +26,7 @@ import {
   findVehicle,
 } from "@/mocks/kirvra-central";
 import type { ServiceResult } from "./auth-service";
+import { assertDemoData } from "./mock-guard";
 
 export interface AlertQueueFilters {
   state: AlertState | "todos";
@@ -62,6 +63,7 @@ function decorate(list: Alert[]): AlertRow[] {
 export async function listAlertQueue(
   filters: AlertQueueFilters,
 ): Promise<AlertRow[]> {
+  assertDemoData();
   return decorate(
     [...alerts]
       .filter((a) => filters.state === "todos" || a.state === filters.state)
@@ -113,6 +115,7 @@ const PERIOD_DAYS: Record<HistoryFilters["period"], number | null> = {
 export async function listAlertHistory(
   filters: HistoryFilters,
 ): Promise<HistoryPage> {
+  assertDemoData();
   const days = PERIOD_DAYS[filters.period];
   const cutoff = days ? Date.now() - days * 86_400_000 : null;
 
@@ -149,6 +152,7 @@ export interface AlertDetail {
 export async function getAlertDetail(
   alertId: string,
 ): Promise<AlertDetail | null> {
+  assertDemoData();
   const alert = findAlert(alertId);
   if (!alert) return null;
   const driver = findDriver(alert.driverId);
@@ -165,6 +169,7 @@ export async function getAlertDetail(
 }
 
 export function nextUnassignedCritical(): Alert | null {
+  assertDemoData();
   return (
     [...alerts]
       .filter((a) => a.severity === "critico" && !a.assignment.operatorId)
@@ -184,6 +189,7 @@ const PENDING: ServiceResult = {
 
 /** Atribuição precisa ser atômica no banco — nunca resolvida no frontend. */
 export async function claimAlert(_alertId: string): Promise<ServiceResult> {
+  assertDemoData();
   return PENDING;
 }
 
@@ -191,6 +197,7 @@ export async function confirmThreat(
   _alertId: string,
   notes: string,
 ): Promise<ServiceResult> {
+  assertDemoData();
   if (!notes.trim())
     return { status: "error", message: "Descreva a confirmação da ameaça." };
   return PENDING;
@@ -200,6 +207,7 @@ export async function markFalsePositive(
   _alertId: string,
   reason: string,
 ): Promise<ServiceResult> {
+  assertDemoData();
   if (!reason.trim())
     return { status: "error", message: "O motivo é obrigatório." };
   return PENDING;
@@ -210,6 +218,7 @@ export async function closeAlert(
   outcome: string,
   notes: string,
 ): Promise<ServiceResult> {
+  assertDemoData();
   if (!outcome.trim() || !notes.trim())
     return {
       status: "error",
@@ -219,6 +228,7 @@ export async function closeAlert(
 }
 
 export async function startProtocol(_alertId: string): Promise<ServiceResult> {
+  assertDemoData();
   return PENDING;
 }
 
@@ -226,6 +236,7 @@ export async function addAlertNote(
   _alertId: string,
   note: string,
 ): Promise<ServiceResult> {
+  assertDemoData();
   if (!note.trim())
     return { status: "error", message: "A nota não pode ficar vazia." };
   return PENDING;
@@ -235,6 +246,7 @@ export async function transferAlert(
   _alertId: string,
   targetOperatorId: string,
 ): Promise<ServiceResult> {
+  assertDemoData();
   if (!targetOperatorId)
     return { status: "error", message: "Selecione o operador de destino." };
   return PENDING;
@@ -244,12 +256,14 @@ export async function escalateAlert(
   _alertId: string,
   supervisorId: string,
 ): Promise<ServiceResult> {
+  assertDemoData();
   if (!supervisorId)
     return { status: "error", message: "Selecione o supervisor." };
   return PENDING;
 }
 
 export async function exportAlertHistory(): Promise<ServiceResult> {
+  assertDemoData();
   return {
     status: "pending",
     message:
