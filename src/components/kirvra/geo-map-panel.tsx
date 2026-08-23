@@ -94,6 +94,8 @@ export function GeoMapPanel({
 
   return (
     <Frame className={className}>
+      {/* absolute inset-0: o Leaflet exige altura resolvida, não percentual de auto. */}
+      <div className="absolute inset-0">
       <ClientOnly
         fallback={<Centered>Carregando mapa operacional…</Centered>}
       >
@@ -106,6 +108,7 @@ export function GeoMapPanel({
           />
         </Suspense>
       </ClientOnly>
+      </div>
       {overlay}
     </Frame>
   );
