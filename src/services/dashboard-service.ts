@@ -60,9 +60,7 @@ function buildOverview(
   const openAlerts = context.alerts.filter(isOpenAlert);
   const handlingAlerts = context.alerts.filter(isHandlingAlert);
   const criticalAlerts = context.alerts.filter(
-    (alert) => alert.severity === "critico" && !isHandlingAlert(alert) === false
-      ? alert.severity === "critico"
-      : alert.severity === "critico",
+    (alert) => alert.severity === "critico",
   );
 
   const priorityAlerts = [...openAlerts, ...handlingAlerts]
