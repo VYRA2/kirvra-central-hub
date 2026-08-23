@@ -2,6 +2,7 @@ import { getVyraClient } from "@/integrations/vyra/client";
 import { Database } from "@/integrations/vyra/types";
 
 export type TeamProfile = Database["public"]["Tables"]["central_profiles"]["Row"] & {
+  role_id: string | null;
   role_name: string | null;
   role_code: string | null;
 };
@@ -48,6 +49,7 @@ export const listTeamProfiles = async (filters: TeamFilters): Promise<TeamProfil
     const role = roleByUserId.get(p.id);
     return {
       ...p,
+      role_id: role?.id || null,
       role_name: role?.name || null,
       role_code: role?.code || null
     };
