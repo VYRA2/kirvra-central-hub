@@ -1,334 +1,343 @@
 import { useMemo, useState } from "react";
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { Maximize2, Minimize2, ShieldAlert, X, TriangleAlert } from "lucide-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { RefreshCw, Search } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 import { KirvraAppShell } from "@/components/kirvra/app-shell";
-import { FilterBar, FilterField } from "@/components/kirvra/data-display";
-import { LiveMapPanel } from "@/components/kirvra/map-panel";
+import { RequirePermission } from "@/components/kirvra/access-control";
+import { GeoMapPanel } from "@/components/kirvra/geo-map-panel";
 import {
-  DriverAvatar,
   EmptyState,
   ErrorState,
   LoadingState,
   PageHeader,
   Panel,
-  RealtimeIndicator,
   RiskBadge,
   StatusBadge,
 } from "@/components/kirvra/primitives";
-import { formatElapsed } from "@/lib/kirvra-format";
+import { useCentralRealtime } from "@/hooks/use-central-realtime";
+import { formatElapsed, initialsFromName } from "@/lib/kirvra-format";
+import { cn } from "@/lib/utils";
+import type { RiskLevel, SensorState } from "@/integrations/vyra/types";
+import { describeDataError } from "@/services/dashboard-service";
 import {
-  DEFAULT_MONITORING_FILTERS,
-  listLiveSessions,
-  subscribeMonitoring,
+  applyMonitoringFilters,
+  getMonitoringData,
+  locatableSessions,
   type MonitoringFilters,
 } from "@/services/monitoring-service";
-import { operators } from "@/mocks/kirvra-central";
-import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_central/monitoramento")({
-  component: MonitoringPage,
+  head: () => ({
+    meta: [
+      { title: "Monitoramento ao Vivo | KIRVRA Central" },
+      {
+        name: "description",
+        content:
+          "Mapa operacional em tempo real das sessões protegidas KIRVRA, com filtros de risco e telemetria de sensores.",
+      },
+      { property: "og:title", content: "Monitoramento ao Vivo · KIRVRA" },
+      {
+        property: "og:description",
+        content:
+          "Sessões protegidas ao vivo, localização real e status de câmera, áudio, GPS e rede.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+  component: () => (
+    <KirvraAppShell title="Monitoramento ao Vivo">
+      <RequirePermission permissions={["sessions.view", "location.view"]}>
+        <MonitoringPage />
+      </RequirePermission>
+    </KirvraAppShell>
+  ),
 });
 
+const RISK_OPTIONS: Array<{ value: RiskLevel | "todos"; label: string }> = [
+  { value: "todos", label: "Todos" },
+  { value: "normal", label: "Normal" },
+  { value: "atencao", label: "Atenção" },
+  { value: "suspeito", label: "Suspeito" },
+  { value: "critico", label: "Crítico" },
+];
+
 function MonitoringPage() {
-  const [filters, setFilters] = useState<MonitoringFilters>(
-    DEFAULT_MONITORING_FILTERS,
-  );
-  const [selectedId, setSelectedId] = useState<string | null>("ses-1042");
-  const [fullscreen, setFullscreen] = useState(false);
+  const queryClient = useQueryClient();
+  const [filters, setFilters] = useState<MonitoringFilters>({
+    search: "",
+    risk: "todos",
+    onlyOffline: false,
+  });
+  const [activeId, setActiveId] = useState<string | null>(null);
 
-  const realtime = useMemo(() => subscribeMonitoring(() => {}), []);
-
-  const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ["live-sessions", filters],
-    queryFn: () => listLiveSessions(filters),
+  const { data, isLoading, isError, error, refetch, isFetching } = useQuery({
+    queryKey: ["monitoring"],
+    queryFn: getMonitoringData,
+    refetchInterval: 20_000,
   });
 
-  const rows = data ?? [];
-  const selected = rows.find((row) => row.session.id === selectedId) ?? null;
-  const criticalCount = rows.filter(
-    (row) => row.session.riskLevel === "critico",
-  ).length;
+  const realtime = useCentralRealtime(() => {
+    void queryClient.invalidateQueries({ queryKey: ["monitoring"] });
+  });
+
+  const sessions = useMemo(
+    () => applyMonitoringFilters(data?.sessions ?? [], filters),
+    [data, filters],
+  );
+
+  const markers = useMemo(
+    () =>
+      locatableSessions(sessions).map((session) => ({
+        id: session.id,
+        label: session.driverName ?? "Sessão protegida",
+        initials: initialsFromName(session.driverName ?? "SP"),
+        latitude: session.point!.latitude,
+        longitude: session.point!.longitude,
+        risk: session.riskLevel,
+        offline: session.state === "offline",
+      })),
+    [sessions],
+  );
+
+  const active = sessions.find((session) => session.id === activeId) ?? null;
 
   return (
-    <KirvraAppShell title="Monitoramento ao vivo">
+    <>
       <PageHeader
-        title="Motoristas protegidos"
-        description="Localização, nível de risco e conectividade das sessões em execução, atualizados continuamente pela Central."
+        title="Monitoramento ao vivo"
+        description="Sessões protegidas em execução com localização real. Sessões sem coordenada registrada aparecem apenas na lista."
         className={undefined}
         actions={
           <>
-            <Button
-              variant="outline"
-              onClick={() => setFullscreen((value) => !value)}
-              aria-pressed={fullscreen}
+            <StatusBadge
+              tone={
+                realtime.status === "conectado"
+                  ? "success"
+                  : realtime.status === "erro"
+                    ? "critical"
+                    : "warning"
+              }
             >
-              {fullscreen ? (
-                <Minimize2 className="h-4 w-4" aria-hidden="true" />
-              ) : (
-                <Maximize2 className="h-4 w-4" aria-hidden="true" />
-              )}
-              {fullscreen ? "Sair da tela cheia" : "Tela cheia"}
-            </Button>
-            <Button variant="destructive" asChild>
-              <Link to="/alertas" search={{} as any} {...({} as any)}>
-                <ShieldAlert className="h-4 w-4" aria-hidden="true" />
-                Alertas críticos · {criticalCount}
-              </Link>
+              Tempo real: {realtime.status}
+            </StatusBadge>
+            <Button variant="outline" onClick={() => void refetch()}>
+              <RefreshCw
+                className={isFetching ? "h-4 w-4 animate-spin" : "h-4 w-4"}
+                aria-hidden="true"
+              />
+              Atualizar
             </Button>
           </>
         }
       />
 
-      <FilterBar>
-        <FilterField label="Buscar" htmlFor="search" className="min-w-[240px]">
-          <Input
-            id="search"
-            value={filters.search}
-            placeholder="Motorista ou placa"
-            onChange={(event) =>
-              setFilters((f) => ({ ...f, search: event.target.value }))
-            }
-          />
-        </FilterField>
-
-        <FilterField label="Risco" htmlFor="risk">
-          <Select
-            value={filters.risk}
-            onValueChange={(value) =>
-              setFilters((f) => ({
-                ...f,
-                risk: value as MonitoringFilters["risk"],
-              }))
-            }
-          >
-            <SelectTrigger id="risk">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="todos">Todos os níveis</SelectItem>
-              <SelectItem value="normal">Normal</SelectItem>
-              <SelectItem value="atencao">Atenção</SelectItem>
-              <SelectItem value="suspeito">Suspeito</SelectItem>
-              <SelectItem value="critico">Crítico</SelectItem>
-            </SelectContent>
-          </Select>
-        </FilterField>
-
-        <FilterField label="Operador" htmlFor="operator">
-          <Select
-            value={filters.operatorId}
-            onValueChange={(value) =>
-              setFilters((f) => ({ ...f, operatorId: value }))
-            }
-          >
-            <SelectTrigger id="operator">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="todos">Todos os operadores</SelectItem>
-              {operators.map((operator) => (
-                <SelectItem key={operator.id} value={operator.id}>
-                  {operator.fullName}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </FilterField>
-
-        <div className="flex items-center gap-2 pb-1.5">
-          <Switch
-            id="only-offline"
-            checked={filters.onlyOffline}
-            onCheckedChange={(checked) =>
-              setFilters((f) => ({ ...f, onlyOffline: checked }))
-            }
-          />
-          <Label htmlFor="only-offline" className="text-xs">
-            Somente offline
-          </Label>
-        </div>
-
-        <div className="ml-auto pb-1.5">
-          <RealtimeIndicator
-            status={realtime.status}
-            lastUpdate={formatElapsed(new Date().toISOString())}
-          />
-        </div>
-      </FilterBar>
-
       {isLoading ? <LoadingState rows={4} /> : null}
       {isError ? (
         <ErrorState
+          description={describeDataError(error)}
           action={<Button onClick={() => void refetch()}>Tentar novamente</Button>}
           className={undefined}
         />
       ) : null}
 
       {data ? (
-        <div
-          className={cn(
-            "grid gap-4",
-            fullscreen ? "grid-cols-1" : "xl:grid-cols-[minmax(0,1fr)_340px]",
-          )}
-        >
-          <Panel bodyClassName="p-0" title={undefined} description={undefined} actions={undefined} className={undefined}>
-            <LiveMapPanel
-              className={cn(
-                "rounded-none border-0",
-                fullscreen ? "min-h-[calc(100vh-330px)]" : "min-h-[520px]",
-              )}
-              activeId={selectedId}
-              onSelect={(id: string) => setSelectedId(id)}
-              track={selected?.session.track ?? []}
-              markers={rows.map((row) => ({
-                id: row.session.id,
-                label: row.driverName,
-                x: row.session.mapPosition.x,
-                y: row.session.mapPosition.y,
-                risk: row.session.riskLevel,
-                offline: row.session.state === "offline",
-              }))}
-              footer={undefined}
-              overlay={
-                selected ? (
-                  <div className="absolute top-4 left-4 z-10 max-w-[280px]">
-                    <div className="rounded-lg border border-border bg-background/95 p-3 shadow-lg backdrop-blur-sm">
-                      <div className="mb-2 flex items-center justify-between">
-                        <span className="text-xs font-semibold text-muted-foreground">
-                          FOCO EM TEMPO REAL
-                        </span>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6"
-                          onClick={() => setSelectedId(null)}
-                        >
-                          <X className="h-3 w-3" />
-                        </Button>
-                      </div>
-                      <div className="mb-3 flex items-center gap-3">
-                        <DriverAvatar initials={selected.driverName.substring(0, 2)} size="md" />
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm font-bold text-foreground">
-                            {selected.driverName}
-                          </p>
-                          <div className="flex items-center gap-2">
-                            <RiskBadge level={selected.session.riskLevel} />
-                            <span className="text-[10px] text-muted-foreground uppercase">
-                              {selected.session.state}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      {selected.session.alertIds && selected.session.alertIds.length > 0 ? (
-                        <Button
-                          size="sm"
-                          className="w-full gap-2 bg-critical text-critical-foreground hover:bg-critical/90"
-                          asChild
-                        >
-                          <Link
-                            to={"/alertas/$alertId" as any}
-                            params={{ alertId: selected.session.alertIds[0] } as any}
-                            search={{} as any}
-                          >
-                            <TriangleAlert className="h-3.5 w-3.5" />
-                            Abrir alerta
-                          </Link>
-                        </Button>
-                      ) : null}
-                    </div>
-                  </div>
-                ) : undefined
-              }
-            />
-          </Panel>
-
-          <Panel
-            title="Sessões ativas"
-            description={`${rows.length} sessões no filtro atual`}
-            bodyClassName="p-0"
-            className={cn(fullscreen ? "xl:hidden" : undefined)}
-            actions={undefined}
-          >
-            {rows.length === 0 ? (
-              <div className="p-4">
-                <EmptyState description="Nenhuma sessão corresponde aos filtros selecionados." />
+        <div className="grid gap-4 xl:grid-cols-[340px_minmax(0,1fr)]">
+          <div className="flex flex-col gap-3">
+            <Panel
+              title="Filtros"
+              bodyClassName="space-y-3 p-3"
+              actions={undefined}
+              className={undefined}
+            >
+              <div className="relative">
+                <Search
+                  className="absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground"
+                  aria-hidden="true"
+                />
+                <Input
+                  aria-label="Buscar por motorista ou placa"
+                  placeholder="Motorista ou placa"
+                  className="pl-8"
+                  value={filters.search}
+                  onChange={(event) =>
+                    setFilters((prev) => ({
+                      ...prev,
+                      search: event.target.value,
+                    }))
+                  }
+                />
               </div>
-            ) : (
-              <ul className="divide-y divide-border">
-                {rows.map((row) => {
-                  const offline = row.session.state === "offline";
-                  const stale =
-                    Date.now() -
-                      new Date(row.session.lastHeartbeatAt).getTime() >
-                    60_000;
-                  return (
-                    <li
-                      key={row.session.id}
-                      className={cn(
-                        "px-4 py-3",
-                        selectedId === row.session.id && "bg-surface-raised/60",
-                        offline && "opacity-80",
-                      )}
+              <div className="flex flex-wrap gap-1.5">
+                {RISK_OPTIONS.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() =>
+                      setFilters((prev) => ({ ...prev, risk: option.value }))
+                    }
+                    aria-pressed={filters.risk === option.value}
+                    className={cn(
+                      "rounded-md border px-2 py-1 text-[11px] transition-colors",
+                      filters.risk === option.value
+                        ? "border-primary/60 bg-primary/15 text-primary"
+                        : "border-border text-muted-foreground hover:text-foreground",
+                    )}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+              <label className="flex items-center gap-2 text-[11px] text-muted-foreground">
+                <input
+                  type="checkbox"
+                  checked={filters.onlyOffline}
+                  onChange={(event) =>
+                    setFilters((prev) => ({
+                      ...prev,
+                      onlyOffline: event.target.checked,
+                    }))
+                  }
+                  className="h-3.5 w-3.5 accent-primary"
+                />
+                Somente sessões offline
+              </label>
+            </Panel>
+
+            <Panel
+              title={`Sessões protegidas (${sessions.length})`}
+              bodyClassName="divide-y divide-border p-0"
+              actions={undefined}
+              className={undefined}
+            >
+              {sessions.length === 0 ? (
+                <div className="p-3">
+                  <EmptyState
+                    title="Nenhuma sessão encontrada"
+                    description="Ajuste os filtros ou aguarde novas sessões de proteção."
+                    action={undefined}
+                    className={undefined}
+                  />
+                </div>
+              ) : (
+                sessions.map((session) => (
+                  <button
+                    key={session.id}
+                    type="button"
+                    onClick={() => setActiveId(session.id)}
+                    aria-pressed={activeId === session.id}
+                    className={cn(
+                      "block w-full px-3 py-2.5 text-left hover:bg-surface-raised",
+                      activeId === session.id && "bg-surface-raised",
+                    )}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="min-w-0 truncate text-sm text-foreground">
+                        {session.driverName ?? "Motorista não identificado"}
+                      </p>
+                      <RiskBadge level={session.riskLevel ?? "normal"} />
+                    </div>
+                    <p className="tabular truncate text-[11px] text-muted-foreground">
+                      {session.plate ?? "Placa não registrada"}
+                      {session.lastHeartbeatAt
+                        ? ` · ${formatElapsed(session.lastHeartbeatAt)}`
+                        : " · sem heartbeat"}
+                    </p>
+                    {session.point === null ? (
+                      <p className="mt-1 text-[11px] text-warning">
+                        Sem localização válida registrada
+                      </p>
+                    ) : null}
+                  </button>
+                ))
+              )}
+            </Panel>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <Panel
+              title="Mapa operacional"
+              description="OpenStreetMap · marcadores somente com coordenada real"
+              bodyClassName="p-0"
+              actions={undefined}
+              className={undefined}
+            >
+              <GeoMapPanel
+                className="min-h-[520px] rounded-none border-0"
+                markers={markers}
+                activeId={activeId}
+                onSelect={setActiveId}
+              />
+            </Panel>
+
+            {active ? (
+              <Panel
+                title="Sessão selecionada"
+                bodyClassName="space-y-3 p-4"
+                actions={
+                  <Button size="sm" variant="outline" asChild>
+                    <Link
+                      to="/sessoes/$sessionId"
+                      params={{ sessionId: active.id } as any}
+                      search={{} as any}
                     >
-                      <button
-                        type="button"
-                        className="w-full text-left"
-                        onClick={() => setSelectedId(row.session.id)}
-                      >
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="min-w-0">
-                            <p className="truncate text-sm font-medium text-foreground">
-                              {row.driverName}
-                            </p>
-                            <p className="tabular text-xs text-muted-foreground">
-                              {row.plate}
-                            </p>
-                          </div>
-                          <RiskBadge level={row.session.riskLevel} />
-                        </div>
-                      </button>
-                      <div className="mt-2 flex items-center justify-between gap-2">
-                        <span className="tabular text-[11px] text-muted-foreground">
-                          GPS {formatElapsed(row.session.location.capturedAt)}
-                        </span>
-                        {offline ? (
-                          <StatusBadge tone="critical">Offline</StatusBadge>
-                        ) : stale ? (
-                          <StatusBadge tone="warning">Heartbeat atrasado</StatusBadge>
-                        ) : (
-                          <StatusBadge tone="success">Conectada</StatusBadge>
+                      Abrir sessão
+                    </Link>
+                  </Button>
+                }
+                className={undefined}
+              >
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div>
+                    <p className="text-sm font-medium text-foreground">
+                      {active.driverName ?? "Motorista não identificado"}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {active.vehicleLabel ?? "Veículo não registrado"}
+                      {active.plate ? ` · ${active.plate}` : ""}
+                    </p>
+                    <p className="tabular mt-1 text-[11px] text-muted-foreground">
+                      {active.address ?? "Endereço não registrado"}
+                    </p>
+                  </div>
+                  <ul className="grid grid-cols-2 gap-1.5 text-[11px]">
+                    {(
+                      [
+                        ["CAM", active.sensors.camera],
+                        ["AUD", active.sensors.audio],
+                        ["GPS", active.sensors.gps],
+                        ["NET", active.sensors.network],
+                      ] as Array<[string, SensorState]>
+                    ).map(([label, state]) => (
+                      <li
+                        key={label}
+                        className={cn(
+                          "rounded border px-2 py-1",
+                          state === "ativo"
+                            ? "border-primary/50 text-primary"
+                            : state === "inativo"
+                              ? "border-critical/50 text-critical"
+                              : "border-border text-muted-foreground",
                         )}
-                        <Button size="sm" variant="outline" asChild>
-                          <Link
-                            to="/sessoes/$sessionId"
-                            params={{ sessionId: row.session.id } as any}
-                          >
-                            Abrir
-                          </Link>
-                        </Button>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </Panel>
+                      >
+                        {label}:{" "}
+                        {state === "ativo"
+                          ? "ok"
+                          : state === "inativo"
+                            ? "falha"
+                            : "sem dado"}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </Panel>
+            ) : null}
+          </div>
         </div>
       ) : null}
-    </KirvraAppShell>
+    </>
   );
 }

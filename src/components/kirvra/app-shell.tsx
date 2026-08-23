@@ -31,6 +31,8 @@ import {
 import { cn } from "@/lib/utils";
 import { EMPLOYEE_ROLE_LABEL } from "@/integrations/vyra/types";
 import { useAuth } from "@/hooks/use-auth";
+import type { PermissionCode } from "@/integrations/vyra/access";
+import { DemoModeBanner } from "./access-control";
 import { signOut } from "@/services/auth-service";
 import { KirvraWordmark } from "./brand";
 import {
@@ -43,29 +45,31 @@ interface NavItem {
   label: string;
   to: string;
   icon: typeof Gauge;
+  /** Permissões mínimas; itens sem permissão não são renderizados. */
+  permissions: PermissionCode[];
 }
 
 const NAV_GROUPS: Array<{ label: string; items: NavItem[] }> = [
   {
     label: "Operação",
     items: [
-      { label: "Central de Comando", to: "/central", icon: LayoutDashboard },
-      { label: "Monitoramento", to: "/monitoramento", icon: Radar },
-      { label: "Alertas", to: "/alertas", icon: ShieldAlert },
-      { label: "Motoristas", to: "/motoristas", icon: Users },
-      { label: "Veículos", to: "/veiculos", icon: Car },
-      { label: "Evidências", to: "/evidencias", icon: Camera },
+      { label: "Central de Comando", to: "/central", permissions: ["dashboard.view"], icon: LayoutDashboard },
+      { label: "Monitoramento", to: "/monitoramento", permissions: ["sessions.view", "location.view"], icon: Radar },
+      { label: "Alertas", to: "/alertas", permissions: ["alerts.view"], icon: ShieldAlert },
+      { label: "Motoristas", to: "/motoristas", permissions: ["drivers.view"], icon: Users },
+      { label: "Veículos", to: "/veiculos", permissions: ["vehicles.view"], icon: Car },
+      { label: "Evidências", to: "/evidencias", permissions: ["evidence.view"], icon: Camera },
     ],
   },
   {
     label: "Gestão",
     items: [
-      { label: "Equipe", to: "/equipe", icon: UsersRound },
-      { label: "Escalas", to: "/escalas", icon: CalendarClock },
-      { label: "Relatórios", to: "/relatorios", icon: FileBarChart },
-      { label: "Auditoria", to: "/auditoria", icon: ScrollText },
-      { label: "Saúde do sistema", to: "/saude-do-sistema", icon: Gauge },
-      { label: "Configurações", to: "/configuracoes", icon: Settings },
+      { label: "Equipe", to: "/equipe", permissions: ["employees.manage"], icon: UsersRound },
+      { label: "Escalas", to: "/escalas", permissions: ["schedules.manage"], icon: CalendarClock },
+      { label: "Relatórios", to: "/relatorios", permissions: ["reports.view"], icon: FileBarChart },
+      { label: "Auditoria", to: "/auditoria", permissions: ["audit.view"], icon: ScrollText },
+      { label: "Saúde do sistema", to: "/saude-do-sistema", permissions: ["health.view"], icon: Gauge },
+      { label: "Configurações", to: "/configuracoes", permissions: ["settings.manage"], icon: Settings },
     ],
   },
 ];
@@ -85,6 +89,7 @@ export function KirvraSidebar({
   onNavigate?: () => void;
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { canAll } = useAuth();
 
   return (
     <nav
@@ -99,7 +104,10 @@ export function KirvraSidebar({
         )}
       </div>
 
-      {NAV_GROUPS.map((group) => (
+      {NAV_GROUPS.map((group) => {
+        const items = group.items.filter((item) => canAll(item.permissions));
+        if (items.length === 0) return null;
+        return (
         <div key={group.label}>
           {!collapsed ? (
             <p className="px-2 pb-2 text-[10px] font-semibold tracking-[0.18em] text-muted-foreground uppercase">
@@ -107,7 +115,7 @@ export function KirvraSidebar({
             </p>
           ) : null}
           <ul className="space-y-0.5">
-            {group.items.map((item) => {
+            {items.map((item) => {
               const active = isItemActive(pathname, item.to);
               return (
                 <li key={item.to}>
@@ -142,7 +150,8 @@ export function KirvraSidebar({
             })}
           </ul>
         </div>
-      ))}
+        );
+      })}
     </nav>
   );
 }
@@ -276,7 +285,7 @@ export function KirvraAppShell({
   title: string;
   children: ReactNode;
 }) {
-  const { session, loading } = useAuth();
+  const { session, loading, backendAvailable } = useAuth();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -329,8 +338,9 @@ export function KirvraAppShell({
         />
         <main className="min-h-0 flex-1 overflow-y-auto p-4 lg:p-5">
           <div className="mx-auto flex max-w-[1600px] flex-col gap-4">
-            {session && !session.backed ? (
-              <PendingIntegrationNotice message="Modo demonstração: os dados exibidos são fictícios (mocks locais). Nada é gravado no backend e nenhuma ação crítica é executada." />
+            {session && !session.backed ? <DemoModeBanner /> : null}
+            {session?.backed === true && !backendAvailable ? (
+              <PendingIntegrationNotice />
             ) : null}
             {loading && !session ? (
               <p className="text-xs text-muted-foreground">

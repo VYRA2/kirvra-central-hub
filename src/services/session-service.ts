@@ -16,6 +16,7 @@ import {
   findVehicle,
 } from "@/mocks/kirvra-central";
 import type { ServiceResult } from "./auth-service";
+import { assertDemoData } from "./mock-guard";
 
 export interface SessionDetail {
   session: ProtectionSession;
@@ -27,6 +28,7 @@ export interface SessionDetail {
 export async function getSessionDetail(
   sessionId: string,
 ): Promise<SessionDetail | null> {
+  assertDemoData();
   const session = findSession(sessionId);
   if (!session) return null;
   const driver = findDriver(session.driverId);
@@ -49,6 +51,7 @@ export async function addSessionNote(
   _sessionId: string,
   note: string,
 ): Promise<ServiceResult> {
+  assertDemoData();
   if (!note.trim())
     return { status: "error", message: "A observação não pode ficar vazia." };
   if (!isVyraConfigured()) return PENDING;
@@ -59,6 +62,7 @@ export async function escalateSession(
   _sessionId: string,
   reason: string,
 ): Promise<ServiceResult> {
+  assertDemoData();
   if (!reason.trim())
     return { status: "error", message: "Informe o motivo da escalada." };
   return PENDING;
