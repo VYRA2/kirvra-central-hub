@@ -103,6 +103,28 @@ export interface Database {
         Insert: Partial<Database["public"]["Tables"]["central_profiles"]["Row"]>;
         Update: Partial<Database["public"]["Tables"]["central_profiles"]["Row"]>;
       };
+      vehicles: {
+        Row: {
+          id: string;
+          driver_id: string | null;
+          plate: string;
+          brand: string | null;
+          model: string | null;
+          color: string | null;
+          year: number | null;
+          renavam: string | null;
+          photo_path: string | null;
+          crlv_path: string | null;
+          owner_type: string | null;
+          authorization_confirmed: boolean | null;
+          authorization_confirmed_at: string | null;
+          verification_status: string | null;
+          created_at: string | null;
+          updated_at: string | null;
+        };
+        Insert: Partial<Database["public"]["Tables"]["vehicles"]["Row"]>;
+        Update: Partial<Database["public"]["Tables"]["vehicles"]["Row"]>;
+      };
     };
   };
 }
