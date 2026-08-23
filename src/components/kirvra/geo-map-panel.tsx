@@ -41,9 +41,6 @@ function Centered({ children }: { children: ReactNode }) {
   );
 }
 
-class MapBoundary extends (
-  await import("react")
-).Component {}
 
 export function GeoMapPanel({
   markers,
