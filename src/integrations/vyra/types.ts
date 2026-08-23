@@ -171,6 +171,78 @@ export interface Database {
         Insert: Partial<Database["public"]["Tables"]["protection_sessions"]["Row"]>;
         Update: Partial<Database["public"]["Tables"]["protection_sessions"]["Row"]>;
       };
+      central_regions: {
+        Row: {
+          id: string;
+          name: string;
+          code: string;
+          description: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["central_regions"]["Row"]>;
+        Update: Partial<Database["public"]["Tables"]["central_regions"]["Row"]>;
+      };
+      central_shifts: {
+        Row: {
+          id: string;
+          name: string;
+          start_time: string;
+          end_time: string;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["central_shifts"]["Row"]>;
+        Update: Partial<Database["public"]["Tables"]["central_shifts"]["Row"]>;
+      };
+      central_shift_assignments: {
+        Row: {
+          id: string;
+          shift_id: string;
+          operator_id: string;
+          date: string;
+          created_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["central_shift_assignments"]["Row"]>;
+        Update: Partial<Database["public"]["Tables"]["central_shift_assignments"]["Row"]>;
+      };
+      central_operator_presence: {
+        Row: {
+          operator_id: string;
+          status: string;
+          heartbeat_at: string;
+          ip_address: string | null;
+          station_id: string | null;
+          updated_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["central_operator_presence"]["Row"]>;
+        Update: Partial<Database["public"]["Tables"]["central_operator_presence"]["Row"]>;
+      };
+      central_region_assignments: {
+        Row: {
+          id: string;
+          operator_id: string;
+          region_id: string;
+          assigned_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["central_region_assignments"]["Row"]>;
+        Update: Partial<Database["public"]["Tables"]["central_region_assignments"]["Row"]>;
+      };
+      central_shift_handovers: {
+        Row: {
+          id: string;
+          shift_id: string;
+          outgoing_operator_id: string;
+          incoming_operator_id: string | null;
+          status: string;
+          notes: string | null;
+          created_at: string;
+          completed_at: string | null;
+        };
+        Insert: Partial<Database["public"]["Tables"]["central_shift_handovers"]["Row"]>;
+        Update: Partial<Database["public"]["Tables"]["central_shift_handovers"]["Row"]>;
+      };
     };
   };
 }
