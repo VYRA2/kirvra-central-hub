@@ -60,16 +60,6 @@ export interface Database {
         Insert: Partial<Database["public"]["Tables"]["security_alerts"]["Row"]>;
         Update: Partial<Database["public"]["Tables"]["security_alerts"]["Row"]>;
       };
-      protection_sessions: {
-        Row: {
-          id: string;
-          driver_id: string | null;
-          started_at: string;
-          ended_at: string | null;
-        };
-        Insert: Partial<Database["public"]["Tables"]["protection_sessions"]["Row"]>;
-        Update: Partial<Database["public"]["Tables"]["protection_sessions"]["Row"]>;
-      };
       drivers: {
         Row: {
           id: string;
