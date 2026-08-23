@@ -1,7 +1,8 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { MapPin, Users, Activity, ShieldCheck, Calendar, RefreshCcw } from "lucide-react";
 import { toast } from "sonner";
+import { useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
 import { KirvraAppShell } from "@/components/kirvra/app-shell";
@@ -13,10 +14,9 @@ import {
   LoadingState,
   ErrorState,
   PermissionDeniedState,
-  PendingIntegrationNotice,
   DriverAvatar,
 } from "@/components/kirvra/primitives";
-import { getScheduleData } from "@/services/schedule-service";
+import { getScheduleData, subscribeToScheduleChanges } from "@/services/schedule-service";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 
@@ -36,11 +36,22 @@ function SchedulesPage() {
     );
   }
 
+  const queryClient = useQueryClient();
   const { data, isLoading, error } = useQuery({
     queryKey: ["schedules"],
     queryFn: getScheduleData,
-    refetchInterval: 30000,
   });
+
+  useEffect(() => {
+    // Assinatura Realtime para atualizar os dados automaticamente
+    const unsubscribe = subscribeToScheduleChanges(() => {
+      queryClient.invalidateQueries({ queryKey: ["schedules"] });
+    });
+
+    return () => unsubscribe();
+  }, [queryClient]);
+
+
 
   const handleActionClick = (action: string) => {
     toast.info(`${action} ainda não conectada`, {
@@ -75,7 +86,6 @@ function SchedulesPage() {
     totalRegions: 0,
   };
 
-  const isPending = data?.status === "integrationPending";
 
   return (
     <KirvraAppShell title="Escalas e operadores">
@@ -105,9 +115,7 @@ function SchedulesPage() {
           }
         />
 
-        {isPending && (
-          <PendingIntegrationNotice message="O backend de escalas ainda precisa ser criado. A Central não encontrou definições de turnos ou registros de presença no VYRA2." />
-        )}
+        {/* Mensagem de integração removida pois agora os dados são reais */}
 
         <div className="flex flex-col gap-2">
           <h2 className="text-2xl font-semibold text-foreground">Turno atual</h2>
@@ -149,7 +157,7 @@ function SchedulesPage() {
             className="lg:col-span-2"
             bodyClassName="p-0"
           >
-            {isPending || data?.operators.length === 0 ? (
+            {!data || data.operators.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-20 text-center">
                 <Users className="mb-3 h-10 w-10 text-muted-foreground/30" />
                 <p className="text-sm font-medium text-muted-foreground">
@@ -202,7 +210,7 @@ function SchedulesPage() {
                 </svg>
                 
                 {/* Pins de exemplo apenas visuais (inativos) na ausência de dados reais */}
-                {!isPending && metrics.totalRegions > 0 && (
+                {data && metrics.totalRegions > 0 && (
                    <div className="absolute inset-0 pointer-events-none">
                      <div className="absolute top-[30%] left-[20%] h-6 w-6 rounded-full bg-primary/80 flex items-center justify-center text-[10px] font-bold text-white shadow-lg">LC</div>
                      <div className="absolute top-[45%] right-[25%] h-6 w-6 rounded-full bg-critical/80 flex items-center justify-center text-[10px] font-bold text-white shadow-lg">AS</div>
@@ -212,7 +220,7 @@ function SchedulesPage() {
                 )}
               </div>
               
-              {isPending || metrics.totalRegions === 0 ? (
+              {!data || metrics.totalRegions === 0 ? (
                 <div>
                   <MapPin className="mx-auto mb-2 h-8 w-8 text-muted-foreground/30" />
                   <p className="text-sm font-medium text-muted-foreground">
