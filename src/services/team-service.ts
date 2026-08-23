@@ -24,10 +24,6 @@ export const listTeamProfiles = async (filters: TeamFilters): Promise<TeamProfil
   const supabase = getVyraClient();
   if (!supabase) throw new Error("Supabase client not configured");
 
-  // A consulta real exige join entre central_profiles, central_user_roles e central_roles
-  // Como não podemos assumir que o postgrest resolve o join automático sem foreign keys declaradas explicitamente,
-  // fazemos o fetch e o join manual para garantir robustez no VYRA2.
-  
   const [profilesRes, userRolesRes, rolesRes] = await Promise.all([
     supabase.from("central_profiles").select("*"),
     supabase.from("central_user_roles").select("*"),
@@ -52,10 +48,9 @@ export const listTeamProfiles = async (filters: TeamFilters): Promise<TeamProfil
       role_id: role?.id || null,
       role_name: role?.name || null,
       role_code: role?.code || null
-    };
+    } as TeamProfile;
   });
 
-  // Filtros em memória
   if (filters.search) {
     const s = filters.search.toLowerCase();
     processed = processed.filter(p => 
@@ -65,10 +60,7 @@ export const listTeamProfiles = async (filters: TeamFilters): Promise<TeamProfil
   }
 
   if (filters.roleId && filters.roleId !== "all") {
-    processed = processed.filter(p => {
-      const role = roleByUserId.get(p.id);
-      return role?.id === filters.roleId;
-    });
+    processed = processed.filter(p => p.role_id === filters.roleId);
   }
 
   if (filters.status && filters.status !== "all") {
@@ -87,8 +79,8 @@ export const getTeamStats = async (): Promise<TeamStats> => {
 
   const stats = {
     active: 0,
-    online: 0, // Fonte real ainda não disponível
-    inService: 0, // Fonte real ainda não disponível
+    online: 0,
+    inService: 0,
     suspended: 0
   };
 
@@ -109,11 +101,10 @@ export const listRoles = async () => {
 };
 
 export const manageEmployee = async () => {
-  // Simula a tentativa de chamada à Edge Function administrativa futura
-  // Retorna o erro esperado conforme requisitos
+  // Operação bloqueada enquanto backend administrativo não estiver conectado
   return {
     success: false,
-    message: "Provisionamento seguro de funcionários ainda não habilitado."
+    message: "Provisionamento administrativo ainda não conectado."
   };
 };
 
