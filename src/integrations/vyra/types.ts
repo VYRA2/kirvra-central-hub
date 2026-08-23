@@ -118,6 +118,25 @@ export interface Database {
         Insert: Database["public"]["Tables"]["central_user_roles"]["Row"];
         Update: Partial<Database["public"]["Tables"]["central_user_roles"]["Row"]>;
       };
+      central_permissions: {
+        Row: {
+          id: string;
+          name: string;
+          code: string;
+          description: string | null;
+        };
+        Insert: Partial<Database["public"]["Tables"]["central_permissions"]["Row"]>;
+        Update: Partial<Database["public"]["Tables"]["central_permissions"]["Row"]>;
+      };
+      central_role_permissions: {
+        Row: {
+          id: string;
+          role_id: string;
+          permission_id: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["central_role_permissions"]["Row"]>;
+        Update: Partial<Database["public"]["Tables"]["central_role_permissions"]["Row"]>;
+      };
       vehicles: {
         Row: {
           id: string;
