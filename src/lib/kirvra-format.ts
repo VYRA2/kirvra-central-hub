@@ -71,3 +71,12 @@ export function maskPhone(phone: string): string {
   if (digits.length < 6) return phone;
   return `${phone.slice(0, phone.length - 6)}••-••${phone.slice(-2)}`;
 }
+
+/** Iniciais para avatares e marcadores; nunca inventa nome. */
+export function initialsFromName(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "--";
+  const first = parts[0]?.[0] ?? "";
+  const last = parts.length > 1 ? (parts[parts.length - 1]?.[0] ?? "") : "";
+  return `${first}${last}`.toUpperCase();
+}
