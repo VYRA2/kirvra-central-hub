@@ -204,6 +204,13 @@ export interface LiveAlert {
   driverName: string | null;
 }
 
+/** Heartbeat válido conforme ao limite operacional de 5 minutos. */
+export function isRecentHeartbeat(value: string | null, now = Date.now()): boolean {
+  if (!value) return false;
+  const timestamp = new Date(value).getTime();
+  return Number.isFinite(timestamp) && now - timestamp >= 0 && now - timestamp <= 5 * 60 * 1000;
+}
+
 const OPEN_STATUS = ["novo", "new", "pending", "open", "aberto", "created"];
 const HANDLING_STATUS = [
   "assumido",
