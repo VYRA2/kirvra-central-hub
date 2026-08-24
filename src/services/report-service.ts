@@ -159,7 +159,9 @@ export async function fetchReportData(filters: ReportFilters): Promise<ReportDat
     const dayStart = startOfDay(d);
     const dayEnd = endOfDay(d);
     const count = alerts.filter(a => {
-      const date = parseISO(a.created_at);
+      const dateStr = a.created_at;
+      if (!dateStr) return false;
+      const date = parseISO(dateStr);
       return date >= dayStart && date <= dayEnd;
     }).length;
     
@@ -179,7 +181,7 @@ export async function fetchReportData(filters: ReportFilters): Promise<ReportDat
   };
 
   alerts.forEach(a => {
-    const type = a.threat_type?.toLowerCase() || "";
+    const type = (a.threat_type || "").toLowerCase();
     if (type.includes("arma") || type.includes("assalto")) categoryMap["Possível arma/assalto"]++;
     else if (type.includes("violencia") || type.includes("corporal")) categoryMap["Violência corporal"]++;
     else if (type.includes("audio") || type.includes("palavra")) categoryMap["Áudio/palavra de risco"]++;
