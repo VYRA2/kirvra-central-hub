@@ -19,6 +19,7 @@ import { Route as CentralConfiguracoesRouteImport } from './routes/_central.conf
 import { Route as CentralEquipeRouteImport } from './routes/_central.equipe'
 import { Route as CentralEscalasRouteImport } from './routes/_central.escalas'
 import { Route as CentralEvidenciasRouteImport } from './routes/_central.evidencias'
+import { Route as CentralMeuPerfilRouteImport } from './routes/_central.meu-perfil'
 import { Route as CentralMonitoramentoRouteImport } from './routes/_central.monitoramento'
 import { Route as CentralRelatoriosRouteImport } from './routes/_central.relatorios'
 import { Route as CentralSaudeDoSistemaRouteImport } from './routes/_central.saude-do-sistema'
@@ -79,6 +80,11 @@ const CentralEscalasRoute = CentralEscalasRouteImport.update({
 const CentralEvidenciasRoute = CentralEvidenciasRouteImport.update({
   id: '/evidencias',
   path: '/evidencias',
+  getParentRoute: () => CentralRoute,
+} as any)
+const CentralMeuPerfilRoute = CentralMeuPerfilRouteImport.update({
+  id: '/meu-perfil',
+  path: '/meu-perfil',
   getParentRoute: () => CentralRoute,
 } as any)
 const CentralMonitoramentoRoute = CentralMonitoramentoRouteImport.update({
@@ -154,6 +160,7 @@ export interface FileRoutesByFullPath {
   '/equipe': typeof CentralEquipeRouteWithChildren
   '/escalas': typeof CentralEscalasRoute
   '/evidencias': typeof CentralEvidenciasRoute
+  '/meu-perfil': typeof CentralMeuPerfilRoute
   '/monitoramento': typeof CentralMonitoramentoRoute
   '/relatorios': typeof CentralRelatoriosRoute
   '/saude-do-sistema': typeof CentralSaudeDoSistemaRoute
@@ -177,6 +184,7 @@ export interface FileRoutesByTo {
   '/equipe': typeof CentralEquipeRouteWithChildren
   '/escalas': typeof CentralEscalasRoute
   '/evidencias': typeof CentralEvidenciasRoute
+  '/meu-perfil': typeof CentralMeuPerfilRoute
   '/monitoramento': typeof CentralMonitoramentoRoute
   '/relatorios': typeof CentralRelatoriosRoute
   '/saude-do-sistema': typeof CentralSaudeDoSistemaRoute
@@ -202,6 +210,7 @@ export interface FileRoutesById {
   '/_central/equipe': typeof CentralEquipeRouteWithChildren
   '/_central/escalas': typeof CentralEscalasRoute
   '/_central/evidencias': typeof CentralEvidenciasRoute
+  '/_central/meu-perfil': typeof CentralMeuPerfilRoute
   '/_central/monitoramento': typeof CentralMonitoramentoRoute
   '/_central/relatorios': typeof CentralRelatoriosRoute
   '/_central/saude-do-sistema': typeof CentralSaudeDoSistemaRoute
@@ -227,6 +236,7 @@ export interface FileRouteTypes {
     | '/equipe'
     | '/escalas'
     | '/evidencias'
+    | '/meu-perfil'
     | '/monitoramento'
     | '/relatorios'
     | '/saude-do-sistema'
@@ -250,6 +260,7 @@ export interface FileRouteTypes {
     | '/equipe'
     | '/escalas'
     | '/evidencias'
+    | '/meu-perfil'
     | '/monitoramento'
     | '/relatorios'
     | '/saude-do-sistema'
@@ -274,6 +285,7 @@ export interface FileRouteTypes {
     | '/_central/equipe'
     | '/_central/escalas'
     | '/_central/evidencias'
+    | '/_central/meu-perfil'
     | '/_central/monitoramento'
     | '/_central/relatorios'
     | '/_central/saude-do-sistema'
@@ -365,6 +377,13 @@ declare module '@tanstack/react-router' {
       path: '/evidencias'
       fullPath: '/evidencias'
       preLoaderRoute: typeof CentralEvidenciasRouteImport
+      parentRoute: typeof CentralRoute
+    }
+    '/_central/meu-perfil': {
+      id: '/_central/meu-perfil'
+      path: '/meu-perfil'
+      fullPath: '/meu-perfil'
+      preLoaderRoute: typeof CentralMeuPerfilRouteImport
       parentRoute: typeof CentralRoute
     }
     '/_central/monitoramento': {
@@ -475,6 +494,7 @@ interface CentralRouteChildren {
   CentralEquipeRoute: typeof CentralEquipeRouteWithChildren
   CentralEscalasRoute: typeof CentralEscalasRoute
   CentralEvidenciasRoute: typeof CentralEvidenciasRoute
+  CentralMeuPerfilRoute: typeof CentralMeuPerfilRoute
   CentralMonitoramentoRoute: typeof CentralMonitoramentoRoute
   CentralRelatoriosRoute: typeof CentralRelatoriosRoute
   CentralSaudeDoSistemaRoute: typeof CentralSaudeDoSistemaRoute
@@ -494,6 +514,7 @@ const CentralRouteChildren: CentralRouteChildren = {
   CentralEquipeRoute: CentralEquipeRouteWithChildren,
   CentralEscalasRoute: CentralEscalasRoute,
   CentralEvidenciasRoute: CentralEvidenciasRoute,
+  CentralMeuPerfilRoute: CentralMeuPerfilRoute,
   CentralMonitoramentoRoute: CentralMonitoramentoRoute,
   CentralRelatoriosRoute: CentralRelatoriosRoute,
   CentralSaudeDoSistemaRoute: CentralSaudeDoSistemaRoute,

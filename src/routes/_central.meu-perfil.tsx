@@ -45,7 +45,7 @@ import {
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/_central/meu-perfil-e-seguranca")({
+export const Route = createFileRoute("/_central/meu-perfil")({
   component: ProfileSecurityPage,
 });
 
