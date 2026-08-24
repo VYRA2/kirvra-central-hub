@@ -77,7 +77,6 @@ function MonitoringPage() {
   const { data, isLoading, isError, error, refetch, isFetching } = useQuery({
     queryKey: ["monitoring"],
     queryFn: getMonitoringData,
-    refetchInterval: 20_000,
   });
 
   const realtime = useCentralRealtime(() => {

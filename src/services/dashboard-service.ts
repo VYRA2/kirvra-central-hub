@@ -8,11 +8,10 @@
 import {
   isHandlingAlert,
   isOpenAlert,
+  isRecentHeartbeat,
   type LiveAlert,
   type LiveSession,
 } from "@/integrations/vyra/live";
-import { buildDemoContext } from "./demo-live";
-import { isDemoModeEnabled } from "./demo-mode";
 import { fetchLiveContext, VyraDataError } from "./vyra-live-service";
 
 export type DataSource = "vyra" | "demo";
@@ -60,7 +59,7 @@ function buildOverview(
   context: { sessions: LiveSession[]; alerts: LiveAlert[]; updatedAt: string },
 ): CommandOverview {
   const activeSessions = context.sessions.filter(
-    (session) => session.state === null || session.state === "ativa",
+    (session) => session.state === "ativa" && !session.endedAt,
   );
   const openAlerts = context.alerts.filter(isOpenAlert);
   const handlingAlerts = context.alerts.filter(isHandlingAlert);
@@ -135,9 +134,6 @@ function buildOverview(
 }
 
 export async function getCommandOverview(): Promise<CommandOverview> {
-  if (isDemoModeEnabled()) {
-    return buildOverview("demo", buildDemoContext());
-  }
   const context = await fetchLiveContext();
   return buildOverview("vyra", context);
 }

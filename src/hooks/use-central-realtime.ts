@@ -1,31 +1,25 @@
 import { useEffect, useRef, useState } from "react";
 
-import { isDemoModeEnabled } from "@/services/demo-mode";
 import { subscribeCentralRealtime, type RealtimeStatus } from "@/services/realtime-service";
 
-export type CentralRealtimeStatus = RealtimeStatus | "desativado";
+export type CentralRealtimeStatus = RealtimeStatus;
 
-/**
- * Assina o realtime das tabelas existentes de sessões e alertas.
- *
- * Um único canal compartilhado por chave lógica, com desinscrição no unmount —
- * sem loop de reconexão. No modo demonstração o realtime fica desativado.
- */
+/** Canal único da operação: ambas as telas compartilham a mesma assinatura. */
 export function useCentralRealtime(onChange: () => void) {
-  const [status, setStatus] = useState<CentralRealtimeStatus>(
-    isDemoModeEnabled() ? "desativado" : "conectando",
-  );
+  const [status, setStatus] = useState<CentralRealtimeStatus>("conectando");
   const handler = useRef(onChange);
   handler.current = onChange;
 
   useEffect(() => {
-    if (isDemoModeEnabled()) {
-      setStatus("desativado");
-      return;
-    }
     const subscription = subscribeCentralRealtime({
       key: "operacao",
-      tables: [{ table: "protection_sessions" }, { table: "alerts" }],
+      tables: [
+        { table: "protection_sessions", event: "*" },
+        { table: "security_alerts", event: "*" },
+        { table: "drivers", event: "*" },
+        { table: "vehicles", event: "*" },
+        { table: "central_operator_presence", event: "*" },
+      ],
       onChange: () => handler.current(),
       onStatus: setStatus,
     });

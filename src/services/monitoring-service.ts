@@ -3,9 +3,8 @@
  * Sem dados inventados: sessões sem localização válida não geram marcador.
  */
 import type { LiveAlert, LiveSession } from "@/integrations/vyra/live";
+import { isRecentHeartbeat } from "@/integrations/vyra/live";
 import type { RiskLevel } from "@/integrations/vyra/types";
-import { buildDemoContext } from "./demo-live";
-import { isDemoModeEnabled } from "./demo-mode";
 import { fetchLiveContext } from "./vyra-live-service";
 import type { DataSource } from "./dashboard-service";
 
@@ -29,13 +28,13 @@ export interface MonitoringData {
 }
 
 export async function getMonitoringData(): Promise<MonitoringData> {
-  const context = isDemoModeEnabled() ? buildDemoContext() : await fetchLiveContext();
+  const context = await fetchLiveContext();
 
   return {
-    source: isDemoModeEnabled() ? "demo" : "vyra",
+    source: "vyra",
     updatedAt: context.updatedAt,
     sessions: context.sessions.filter(
-      (session) => session.state === null || session.state !== "encerrada",
+      (session) => session.state !== "encerrada" && !session.endedAt,
     ),
     alerts: context.alerts,
   };
