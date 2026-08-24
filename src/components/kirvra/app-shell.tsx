@@ -215,6 +215,10 @@ export function UserMenu() {
           </span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
+        <DropdownMenuItem onSelect={() => navigate({ to: "/meu-perfil" as any })}>
+          <Users className="h-4 w-4" aria-hidden="true" />
+          Meu perfil e segurança
+        </DropdownMenuItem>
         <DropdownMenuItem
           onSelect={() => {
             void signOut().then(() =>
