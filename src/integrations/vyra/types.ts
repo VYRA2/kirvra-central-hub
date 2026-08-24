@@ -274,6 +274,7 @@ export interface Database {
         Insert: Partial<Database["public"]["Tables"]["central_protocols"]["Row"]>;
         Update: Partial<Database["public"]["Tables"]["central_protocols"]["Row"]>;
       };
+    };
   };
 }
 
