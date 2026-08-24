@@ -2,8 +2,8 @@
  * Central de Comando — dados reais do VYRA2.
  *
  * Nenhum número é inventado: cada indicador é contado a partir das tabelas
- * existentes (protection_sessions, alerts). Quando um dado não existe no
- * esquema, o indicador devolve `null` e o cartão mostra estado vazio.
+ * existentes (protection_sessions, security_alerts). Quando um dado não existe
+ * no esquema, o cartão mostra estado vazio.
  */
 import {
   isHandlingAlert,
