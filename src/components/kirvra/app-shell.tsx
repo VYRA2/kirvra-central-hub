@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import {
   Bell,
   CalendarClock,
@@ -36,6 +37,7 @@ import { DemoModeBanner } from "./access-control";
 import { signOut } from "@/services/auth-service";
 import { KirvraWordmark } from "./brand";
 import { DriverAvatar, PendingIntegrationNotice, SystemOnlineBadge } from "./primitives";
+import { DEFAULT_QUEUE_FILTERS, listAlertQueue } from "@/services/alert-service";
 
 interface NavItem {
   label: string;
@@ -165,19 +167,28 @@ export function KirvraSidebar({
   );
 }
 
-export function NotificationButton({ count = 3 }: { count?: number }) {
+export function NotificationButton() {
+  const { data } = useQuery({
+    queryKey: ["notification-alert-count"],
+    queryFn: () => listAlertQueue(DEFAULT_QUEUE_FILTERS),
+    refetchInterval: 10_000,
+  });
+  const count = data?.length ?? 0;
   return (
     <Button
       variant="ghost"
       size="sm"
-      aria-label={`Notificações, ${count} não lidas`}
+      aria-label={`Alertas abertos, ${count}`}
       className="gap-2 text-muted-foreground hover:text-foreground"
+      asChild
     >
-      <Bell className="h-4 w-4" aria-hidden="true" />
-      <span className="hidden sm:inline">Notificações</span>
-      <span className="tabular rounded bg-critical/15 px-1.5 py-0.5 text-[11px] font-semibold text-critical">
-        {count}
-      </span>
+      <Link to="/alertas" search={DEFAULT_QUEUE_FILTERS}>
+        <Bell className="h-4 w-4" aria-hidden="true" />
+        <span className="hidden sm:inline">Notificações</span>
+        <span className="tabular rounded bg-critical/15 px-1.5 py-0.5 text-[11px] font-semibold text-critical">
+          {count}
+        </span>
+      </Link>
     </Button>
   );
 }
@@ -215,7 +226,7 @@ export function UserMenu() {
           </span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onSelect={() => navigate({ to: "/meu-perfil" as any })}>
+        <DropdownMenuItem onSelect={() => navigate({ to: "/meu-perfil" })}>
           <Users className="h-4 w-4" aria-hidden="true" />
           Meu perfil e segurança
         </DropdownMenuItem>
