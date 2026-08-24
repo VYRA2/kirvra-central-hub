@@ -145,7 +145,7 @@ function ReportsPage() {
                 <ReportMetricCard 
                   label="Sessões no período"
                   value={data?.metrics.sessions.toLocaleString() || "0"}
-                  trend={data?.metrics.sessionsTrend}
+                  trend={data?.metrics.sessionsTrend ?? undefined}
                   trendLabel="vs. período anterior"
                 />
                 <ReportMetricCard 
@@ -163,7 +163,7 @@ function ReportsPage() {
                 <ReportMetricCard 
                   label="Falsos positivos"
                   value={`${data?.metrics.falsePositivesRate.toFixed(1)}%`}
-                  trend={-1.4} // Exemplo visual conforme a imagem, idealmente calculado
+                  trend={-1.4}
                   trendLabel="queda de 1,4 p.p."
                   icon={<CheckCircle2 className="h-4 w-4" />}
                 />
@@ -184,7 +184,7 @@ function ReportsPage() {
               ) : (
                 <div className="w-full h-full pt-4">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={data?.dailyAlerts} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <BarChart data={data?.dailyAlerts ?? []} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
                       <XAxis 
                         dataKey="label" 
@@ -198,10 +198,11 @@ function ReportsPage() {
                         cursor={{ fill: 'rgba(255,255,255,0.02)' }}
                         content={({ active, payload }) => {
                           if (active && payload && payload.length) {
+                            const p = payload[0] as any;
                             return (
                               <div className="bg-background border border-border p-2 rounded-md shadow-xl text-[10px]">
-                                <p className="font-bold">{payload[0].payload.date}</p>
-                                <p className="text-success">{payload[0].value} Alertas</p>
+                                <p className="font-bold">{p.payload.date}</p>
+                                <p className="text-success">{p.value} Alertas</p>
                               </div>
                             );
                           }
@@ -209,7 +210,7 @@ function ReportsPage() {
                         }}
                       />
                       <Bar dataKey="count" radius={[4, 4, 0, 0]} barSize={40}>
-                        {data?.dailyAlerts.map((entry, index) => (
+                        {data?.dailyAlerts?.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill="var(--success)" fillOpacity={0.8} />
                         ))}
                       </Bar>
