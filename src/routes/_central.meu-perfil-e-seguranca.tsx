@@ -264,14 +264,14 @@ function ProfileSecurityPage() {
         onOpenChange={setShowSignOutOthersConfirm}
         title="Encerrar outras sessões?"
         description="Isso fará com que todos os outros dispositivos conectados, exceto este, sejam desconectados imediatamente."
-        actionLabel="Encerrar sessões"
+        confirmLabel="Encerrar sessões"
         onConfirm={async () => {
           const res = await profileSecurityService.signOutOthers();
           if (res.success) toast.success(res.message);
           else toast.error(res.message);
           return { status: res.success ? "ok" : "error", message: res.message };
         }}
-        variant="critical"
+        destructive
       />
     </KirvraAppShell>
   );
@@ -284,8 +284,14 @@ function PasswordModal({ open, onOpenChange }: { open: boolean, onOpenChange: (o
   const [loading, setLoading] = useState(false);
 
   async function handleUpdate() {
-    if (newPassword !== confirmPassword) return toast.error("As senhas não coincidem");
-    if (newPassword.length < 8) return toast.error("A senha deve ter no mínimo 8 caracteres");
+    if (newPassword !== confirmPassword) {
+      toast.error("As senhas não coincidem");
+      return;
+    }
+    if (newPassword.length < 8) {
+      toast.error("A senha deve ter no mínimo 8 caracteres");
+      return;
+    }
 
     setLoading(true);
     try {
@@ -408,7 +414,6 @@ function MfaModal({ open, onOpenChange }: { open: boolean, onOpenChange: (o: boo
               </div>
             </div>
           </div>
-        </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
           <Button disabled>Verificar e Ativar</Button>

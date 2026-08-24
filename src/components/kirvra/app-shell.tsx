@@ -215,7 +215,7 @@ export function UserMenu() {
           </span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onSelect={() => navigate({ to: "/meu-perfil-e-seguranca" })}>
+        <DropdownMenuItem onSelect={() => navigate({ to: "/meu-perfil-e-seguranca" as any })}>
           <Users className="h-4 w-4" aria-hidden="true" />
           Meu perfil e segurança
         </DropdownMenuItem>
