@@ -22,9 +22,11 @@ export interface RetentionPolicy {
 
 export interface Protocol {
   id: string;
+  code: string;
   name: string;
   is_active: boolean;
-  description?: string;
+  description: string | null;
+  sort_order: number;
 }
 
 export interface SystemSettings {
