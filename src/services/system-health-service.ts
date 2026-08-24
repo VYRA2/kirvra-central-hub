@@ -153,7 +153,7 @@ export class SystemHealthService {
     }
   }
 
-  private static async checkRealtime(client: any): Promise<ServiceHealthSnapshot> {
+  private static async checkRealtime(client: SupabaseClient | null): Promise<ServiceHealthSnapshot> {
     if (!client) {
       return {
         id: "realtime",
