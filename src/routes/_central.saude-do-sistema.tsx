@@ -186,7 +186,7 @@ function SystemHealthPage() {
           />
           <MetricCard
             label="Fila de IA"
-            value={data?.aiQueueSize !== null ? String(data.aiQueueSize) : "—"}
+            value={data?.aiQueueSize !== undefined && data?.aiQueueSize !== null ? String(data.aiQueueSize) : "—"}
             sublabel="Processamentos pendentes"
             tone={data?.aiQueueSize === 0 ? "success" : "neutral"}
           />
