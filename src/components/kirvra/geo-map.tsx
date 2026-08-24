@@ -42,7 +42,21 @@ function FitBounds({ markers, activeId }: { markers: GeoMarker[]; activeId: stri
   const map = useMap();
 
   useEffect(() => {
-    if (markers.length === 0) return;
+    const invalidate = () => map.invalidateSize({ animate: false });
+    invalidate();
+    const frame = window.requestAnimationFrame(invalidate);
+    window.addEventListener("resize", invalidate);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("resize", invalidate);
+    };
+  }, [map]);
+
+  useEffect(() => {
+    if (markers.length === 0) {
+      map.setView([-23.5505, -46.6333], 11, { animate: false });
+      return;
+    }
     const active = activeId ? markers.find((marker) => marker.id === activeId) : null;
     if (active) {
       map.setView([active.latitude, active.longitude], 15, { animate: true });
