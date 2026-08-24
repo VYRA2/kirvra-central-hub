@@ -145,7 +145,7 @@ function ReportsPage() {
                 <ReportMetricCard 
                   label="Sessões no período"
                   value={data?.metrics.sessions.toLocaleString() || "0"}
-                  trend={data?.metrics.sessionsTrend ?? undefined}
+                  trend={data?.metrics.sessionsTrend ?? 0}
                   trendLabel="vs. período anterior"
                 />
                 <ReportMetricCard 
