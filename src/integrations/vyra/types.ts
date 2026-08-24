@@ -243,6 +243,37 @@ export interface Database {
         Insert: Partial<Database["public"]["Tables"]["central_shift_handovers"]["Row"]>;
         Update: Partial<Database["public"]["Tables"]["central_shift_handovers"]["Row"]>;
       };
+      central_settings: {
+        Row: {
+          id: number;
+          risk_attention_threshold: number;
+          risk_suspicious_threshold: number;
+          risk_critical_threshold: number;
+          auto_escalation_seconds: number;
+          sound_on_critical: boolean;
+          auto_open_critical: boolean;
+          require_close_confirmation: boolean;
+          evidence_retention_days: number;
+          audit_retention_days: number;
+          block_download_by_default: boolean;
+          updated_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["central_settings"]["Row"]>;
+        Update: Partial<Database["public"]["Tables"]["central_settings"]["Row"]>;
+      };
+      central_protocols: {
+        Row: {
+          id: string;
+          code: string;
+          name: string;
+          description: string | null;
+          is_active: boolean;
+          sort_order: number;
+          created_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["central_protocols"]["Row"]>;
+        Update: Partial<Database["public"]["Tables"]["central_protocols"]["Row"]>;
+      };
     };
   };
 }

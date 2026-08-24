@@ -151,57 +151,13 @@ function SettingsPage() {
           />
           <ErrorState
             title="Configuração do backend pendente"
-            description="As tabelas 'central_settings' e 'central_protocols' não foram encontradas no Supabase VYRA2."
+            description="As tabelas 'central_settings' e 'central_protocols' ou as RPCs necessárias não foram encontradas no Supabase VYRA2."
             action={
               <Button onClick={() => window.location.reload()} variant="outline">
                 Tentar novamente
               </Button>
             }
           />
-          <div className="rounded-lg border border-warning/30 bg-warning/5 p-4">
-            <h4 className="text-sm font-semibold text-warning flex items-center gap-2">
-              <AlertCircle className="h-4 w-4" />
-              SQL Necessário
-            </h4>
-            <pre className="mt-2 text-[10px] font-mono p-3 bg-background border rounded overflow-x-auto text-muted-foreground leading-relaxed">
-              {`-- SQL para provisionamento da Central Kirvra
-CREATE TABLE public.central_settings (
-    id int PRIMARY KEY DEFAULT 1,
-    risk_attention_threshold int DEFAULT 40,
-    risk_suspicious_threshold int DEFAULT 65,
-    risk_critical_threshold int DEFAULT 85,
-    auto_escalation_seconds int DEFAULT 60,
-    sound_on_critical boolean DEFAULT true,
-    auto_open_critical boolean DEFAULT true,
-    require_close_confirmation boolean DEFAULT true,
-    evidence_retention_days int DEFAULT 30,
-    audit_retention_days int DEFAULT 90,
-    block_download_by_default boolean DEFAULT true,
-    updated_at timestamptz DEFAULT now(),
-    CONSTRAINT singleton CHECK (id = 1)
-);
-
-CREATE TABLE public.central_protocols (
-    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    name text NOT NULL,
-    description text,
-    is_active boolean DEFAULT true,
-    created_at timestamptz DEFAULT now()
-);
-
-GRANT SELECT, UPDATE ON public.central_settings TO authenticated;
-GRANT SELECT, INSERT, UPDATE ON public.central_protocols TO authenticated;
-GRANT ALL ON public.central_settings TO service_role;
-GRANT ALL ON public.central_protocols TO service_role;
-
-INSERT INTO public.central_settings (id) VALUES (1) ON CONFLICT DO NOTHING;
-INSERT INTO public.central_protocols (name, description) VALUES 
-('Possível arma/assalto', 'Detecção visual de armamento ou gestos de assalto.'),
-('Violência corporal', 'Lutas, agressões ou movimentos bruscos de violência.'),
-('Perda de conexão', 'Falha prolongada no heartbeat da sessão de proteção.')
-ON CONFLICT DO NOTHING;`}
-            </pre>
-          </div>
         </div>
       </KirvraAppShell>
     );
@@ -569,8 +525,21 @@ ON CONFLICT DO NOTHING;`}
           {editingProtocol && (
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
+                <Label htmlFor="code">Código</Label>
+                <Input id="code" value={editingProtocol.code} readOnly className="bg-muted/50" />
+              </div>
+              <div className="grid gap-2">
                 <Label htmlFor="name">Nome do protocolo</Label>
-                <Input id="name" value={editingProtocol.name} readOnly className="bg-muted/50" />
+                <Input
+                  id="name"
+                  value={editingProtocol.name}
+                  onChange={(e) =>
+                    setEditingProtocol({
+                      ...editingProtocol,
+                      name: e.target.value,
+                    })
+                  }
+                />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="description">Descrição funcional</Label>
@@ -578,7 +547,12 @@ ON CONFLICT DO NOTHING;`}
                   id="description"
                   className="flex min-h-[80px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                   value={editingProtocol.description || ""}
-                  readOnly
+                  onChange={(e) =>
+                    setEditingProtocol({
+                      ...editingProtocol,
+                      description: e.target.value,
+                    })
+                  }
                 />
               </div>
               <div className="flex items-center justify-between">
@@ -605,6 +579,8 @@ ON CONFLICT DO NOTHING;`}
               onClick={async () => {
                 if (!editingProtocol) return;
                 const res = await SettingsService.updateProtocol(editingProtocol.id, {
+                  name: editingProtocol.name,
+                  description: editingProtocol.description,
                   is_active: editingProtocol.is_active,
                 });
                 if (res.success) {

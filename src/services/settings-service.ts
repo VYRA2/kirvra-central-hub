@@ -22,9 +22,11 @@ export interface RetentionPolicy {
 
 export interface Protocol {
   id: string;
+  code: string;
   name: string;
   is_active: boolean;
-  description?: string;
+  description: string | null;
+  sort_order: number;
 }
 
 export interface SystemSettings {
@@ -48,11 +50,10 @@ export class SettingsService {
     if (!client) return { settings: null, status: "pending" };
 
     try {
-      // Tentamos ler da tabela 'central_settings'.
-      // Como sabemos que ela pode não existir ainda no VYRA2, capturamos o erro.
       const { data, error } = await client
-        .from("central_settings" as any)
+        .from("central_settings")
         .select("*")
+        .eq("id", 1)
         .single();
 
       if (error) {
@@ -60,7 +61,6 @@ export class SettingsService {
         return { settings: null, status: "pending" };
       }
 
-      // Mapeamento real para o objeto de interface
       return {
         settings: {
           riskLevels: {
@@ -87,18 +87,15 @@ export class SettingsService {
     }
   }
 
-  /**
-   * Obtém a lista de protocolos reais.
-   */
   static async getProtocols(): Promise<{ protocols: Protocol[]; status: IntegrationStatus }> {
     const client = getVyraClient();
     if (!client) return { protocols: [], status: "pending" };
 
     try {
       const { data, error } = await client
-        .from("central_protocols" as any)
+        .from("central_protocols")
         .select("*")
-        .order("name");
+        .order("sort_order", { ascending: true });
 
       if (error) {
         return { protocols: [], status: "pending" };
@@ -110,58 +107,47 @@ export class SettingsService {
     }
   }
 
-  /**
-   * Salva as configurações.
-   */
   static async updateSettings(
     settings: SystemSettings,
   ): Promise<{ success: boolean; error?: string }> {
     const client = getVyraClient();
     if (!client) return { success: false, error: "Integração pendente" };
 
-    const payload = {
-      risk_attention_threshold: settings.riskLevels.attention,
-      risk_suspicious_threshold: settings.riskLevels.suspicious,
-      risk_critical_threshold: settings.riskLevels.critical,
-      auto_escalation_seconds: settings.riskLevels.autoEscalationSeconds,
-      sound_on_critical: settings.alertBehavior.soundOnCritical,
-      auto_open_critical: settings.alertBehavior.autoOpenCritical,
-      require_close_confirmation: settings.alertBehavior.requireConfirmationToClose,
-      evidence_retention_days: settings.retentionPolicy.evidenceRetentionDays,
-      audit_retention_days: settings.retentionPolicy.auditRetentionDays,
-      block_download_by_default: settings.retentionPolicy.blockDownloadByDefault,
-      updated_at: new Date().toISOString(),
-    };
-
     try {
-      const { error } = await client
-        .from("central_settings" as any)
-        .update(payload)
-        .eq("id", 1); // Assume-se um singleton com ID 1
+      const { error } = await client.rpc("central_save_settings", {
+        p_risk_attention_threshold: settings.riskLevels.attention,
+        p_risk_suspicious_threshold: settings.riskLevels.suspicious,
+        p_risk_critical_threshold: settings.riskLevels.critical,
+        p_auto_escalation_seconds: settings.riskLevels.autoEscalationSeconds,
+        p_sound_on_critical: settings.alertBehavior.soundOnCritical,
+        p_auto_open_critical: settings.alertBehavior.autoOpenCritical,
+        p_require_close_confirmation: settings.alertBehavior.requireConfirmationToClose,
+        p_evidence_retention_days: settings.retentionPolicy.evidenceRetentionDays,
+        p_audit_retention_days: settings.retentionPolicy.auditRetentionDays,
+        p_block_download_by_default: settings.retentionPolicy.blockDownloadByDefault,
+      });
 
       if (error) throw error;
-
       return { success: true };
     } catch (err: any) {
       return { success: false, error: err.message };
     }
   }
 
-  /**
-   * Atualiza um protocolo específico.
-   */
   static async updateProtocol(
     id: string,
-    updates: Partial<Protocol>,
+    updates: { name: string; description: string | null; is_active: boolean },
   ): Promise<{ success: boolean; error?: string }> {
     const client = getVyraClient();
     if (!client) return { success: false, error: "Integração pendente" };
 
     try {
-      const { error } = await client
-        .from("central_protocols" as any)
-        .update(updates)
-        .eq("id", id);
+      const { error } = await client.rpc("central_update_protocol", {
+        p_protocol_id: id,
+        p_name: updates.name,
+        p_description: updates.description,
+        p_is_active: updates.is_active,
+      });
 
       if (error) throw error;
       return { success: true };
