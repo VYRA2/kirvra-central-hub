@@ -61,16 +61,14 @@ export interface LiveContext {
 
 /** Contexto operacional ao vivo: sessões ativas + alertas + join local. */
 export async function fetchLiveContext(): Promise<LiveContext> {
-  const [sessionRows, manualAlertRows, securityAlertRows, driverRows, vehicleRows] =
-    await Promise.all([
-      selectAll("protection_sessions", 500),
-      selectAll("alerts", 300),
-      selectAll("security_alerts", 300),
-      selectAll("drivers", 1000),
-      selectAll("vehicles", 1000),
-    ]);
+  const [sessionRows, securityAlertRows, driverRows, vehicleRows] = await Promise.all([
+    selectAll("protection_sessions", 500),
+    selectAll("security_alerts", 300),
+    selectAll("drivers", 1000),
+    selectAll("vehicles", 1000),
+  ]);
 
-  const alerts = [...manualAlertRows, ...securityAlertRows]
+  const alerts = securityAlertRows
     .map(normalizeAlert)
     .filter((alert): alert is LiveAlert => alert !== null);
   const drivers = driverRows

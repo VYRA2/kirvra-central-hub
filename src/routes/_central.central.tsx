@@ -63,7 +63,6 @@ function CommandCenterPage() {
   const { data, isLoading, isError, error, refetch, isFetching } = useQuery({
     queryKey: ["command-overview"],
     queryFn: getCommandOverview,
-    refetchInterval: 30_000,
   });
 
   const realtime = useCentralRealtime(() => {

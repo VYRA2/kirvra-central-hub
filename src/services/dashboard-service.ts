@@ -2,17 +2,16 @@
  * Central de Comando — dados reais do VYRA2.
  *
  * Nenhum número é inventado: cada indicador é contado a partir das tabelas
- * existentes (protection_sessions, alerts). Quando um dado não existe no
- * esquema, o indicador devolve `null` e o cartão mostra estado vazio.
+ * existentes (protection_sessions, security_alerts). Quando um dado não existe
+ * no esquema, o cartão mostra estado vazio.
  */
 import {
   isHandlingAlert,
   isOpenAlert,
+  isRecentHeartbeat,
   type LiveAlert,
   type LiveSession,
 } from "@/integrations/vyra/live";
-import { buildDemoContext } from "./demo-live";
-import { isDemoModeEnabled } from "./demo-mode";
 import { fetchLiveContext, VyraDataError } from "./vyra-live-service";
 
 export type DataSource = "vyra" | "demo";
@@ -60,7 +59,8 @@ function buildOverview(
   context: { sessions: LiveSession[]; alerts: LiveAlert[]; updatedAt: string },
 ): CommandOverview {
   const activeSessions = context.sessions.filter(
-    (session) => session.state === null || session.state === "ativa",
+    (session) =>
+      session.state === "ativa" && !session.endedAt && isRecentHeartbeat(session.lastHeartbeatAt),
   );
   const openAlerts = context.alerts.filter(isOpenAlert);
   const handlingAlerts = context.alerts.filter(isHandlingAlert);
@@ -135,9 +135,6 @@ function buildOverview(
 }
 
 export async function getCommandOverview(): Promise<CommandOverview> {
-  if (isDemoModeEnabled()) {
-    return buildOverview("demo", buildDemoContext());
-  }
   const context = await fetchLiveContext();
   return buildOverview("vyra", context);
 }

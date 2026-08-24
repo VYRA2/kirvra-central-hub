@@ -1,5 +1,5 @@
 /**
- * Canais Realtime da Central (Supabase VYRA2).
+ * Canais Realtime da Central (VYRA2).
  *
  * Regras aplicadas:
  *  - um único canal por chave lógica (dedupe por contador de referências);

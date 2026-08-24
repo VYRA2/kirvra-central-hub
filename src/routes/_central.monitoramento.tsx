@@ -77,7 +77,6 @@ function MonitoringPage() {
   const { data, isLoading, isError, error, refetch, isFetching } = useQuery({
     queryKey: ["monitoring"],
     queryFn: getMonitoringData,
-    refetchInterval: 20_000,
   });
 
   const realtime = useCentralRealtime(() => {
@@ -277,10 +276,7 @@ function MonitoringPage() {
                 bodyClassName="space-y-3 p-4"
                 actions={
                   <Button size="sm" variant="outline" asChild>
-                    <Link
-                      to="/sessoes/$sessionId"
-                      params={{ sessionId: active.id }}
-                      search={{}}>
+                    <Link to="/sessoes/$sessionId" params={{ sessionId: active.id }} search={{}}>
                       Abrir sessão
                     </Link>
                   </Button>
