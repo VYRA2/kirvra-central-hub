@@ -5,14 +5,12 @@ import {
   ArrowRightLeft,
   CheckCircle2,
   CircleSlash,
-  Expand,
   ImagePlus,
   NotebookPen,
   Play,
   ShieldAlert,
   SquareCheck,
   TriangleAlert,
-  Volume2,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -46,12 +44,12 @@ import {
   confirmThreat,
   escalateAlert,
   getAlertDetail,
+  listCentralOperators,
   markFalsePositive,
   startProtocol,
   transferAlert,
   DEFAULT_QUEUE_FILTERS,
 } from "@/services/alert-service";
-import { findSession, operators } from "@/mocks/kirvra-central";
 import type { ServiceResult } from "@/services/auth-service";
 
 export const Route = createFileRoute("/_central/alertas/$alertId")({
@@ -71,14 +69,21 @@ function AlertHandlingPage() {
     queryKey: ["alert", alertId],
     queryFn: () => getAlertDetail(alertId),
   });
+  const operatorsQuery = useQuery({
+    queryKey: ["central-operators"],
+    queryFn: listCentralOperators,
+    staleTime: 60_000,
+  });
 
   const report = (result: ServiceResult) => {
     if (result.status === "pending") toast.warning(result.message);
     if (result.status === "error") toast.error(result.message);
+    if (result.status === "ok") {
+      toast.success("Operação registrada e auditada no VYRA2.");
+      void refetch();
+    }
     return result;
   };
-
-  const session = data ? findSession(data.alert.sessionId) : null;
 
   return (
     <KirvraAppShell title="Atendimento do alerta">
@@ -141,48 +146,30 @@ function AlertHandlingPage() {
             <div className="flex min-w-0 flex-col gap-4">
               <Panel
                 title="Localização ao vivo"
-                description={
-                  session
-                    ? `${session.location.address} · último GPS ${formatElapsed(
-                        session.location.capturedAt,
-                      )}`
-                    : "Sessão sem localização disponível"
-                }
+                description={data.alert.locationLabel}
                 bodyClassName="p-0"
                 className={undefined}
                 actions={undefined}
               >
                 <LiveMapPanel
                   className="min-h-[300px] rounded-none border-0"
-                  activeId={session?.id ?? null}
-                  track={session?.track ?? []}
-                  markers={
-                    session
-                      ? [
-                          {
-                            id: session.id,
-                            label: data.driver.displayName,
-                            x: session.mapPosition.x,
-                            y: session.mapPosition.y,
-                            risk: session.riskLevel,
-                            offline: session.state === "offline",
-                          },
-                        ]
-                      : []
-                  }
+                  activeId={null}
+                  track={[]}
+                  markers={[]}
                   onSelect={undefined}
                   overlay={undefined}
                   footer={
                     <div className="flex items-center justify-between gap-2">
                       <span className="tabular text-xs text-muted-foreground">
-                        {session ? `Precisão ${session.location.accuracyMeters} m` : "—"}
+                        Coordenadas capturadas no momento do alerta
                       </span>
-                      {session ? (
+                      {data.alert.sessionId ? (
                         <Button size="sm" variant="outline" asChild>
                           <Link
                             to="/sessoes/$sessionId"
-                            params={{ sessionId: session.id }}
-                            search={{}}>
+                            params={{ sessionId: data.alert.sessionId }}
+                            search={{}}
+                          >
                             Abrir sessão
                           </Link>
                         </Button>
@@ -203,13 +190,23 @@ function AlertHandlingPage() {
                 bodyClassName={undefined}
                 actions={
                   <div className="flex gap-2">
-                    <Button size="sm" variant="outline" disabled={!data.evidence}>
-                      <Play className="h-3.5 w-3.5" aria-hidden="true" />
-                      Reproduzir clipe
-                    </Button>
-                    <Button size="sm" variant="outline" disabled={!data.evidence}>
-                      <Expand className="h-3.5 w-3.5" aria-hidden="true" />
-                      Ampliar imagem
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={!data.evidence?.signedUrl}
+                      asChild={Boolean(data.evidence?.signedUrl)}
+                    >
+                      {data.evidence?.signedUrl ? (
+                        <a href={data.evidence.signedUrl} target="_blank" rel="noreferrer">
+                          <Play className="h-3.5 w-3.5" aria-hidden="true" />
+                          Abrir evidência
+                        </a>
+                      ) : (
+                        <span>
+                          <Play className="h-3.5 w-3.5" aria-hidden="true" />
+                          Abrir evidência
+                        </span>
+                      )}
                     </Button>
                     <Button size="sm" variant="ghost" disabled>
                       <ImagePlus className="h-3.5 w-3.5" aria-hidden="true" />
@@ -221,17 +218,34 @@ function AlertHandlingPage() {
                 {data.evidence ? (
                   <figure>
                     <div className="kirvra-map-grid relative flex h-[240px] items-center justify-center overflow-hidden rounded-md border border-border">
-                      <span className="text-xs text-muted-foreground">
-                        Frame protegido · carregado por URL assinada de curta duração (integração
-                        pendente)
-                      </span>
+                      {data.evidence.signedUrl ? (
+                        data.evidence.kind === "clipe" ? (
+                          <video
+                            className="h-full w-full object-contain"
+                            src={data.evidence.signedUrl}
+                            controls
+                          />
+                        ) : (
+                          <img
+                            className="h-full w-full object-contain"
+                            src={data.evidence.signedUrl}
+                            alt="Evidência protegida do alerta"
+                          />
+                        )
+                      ) : (
+                        <span className="text-xs text-muted-foreground">
+                          Evidência privada indisponível para este cargo.
+                        </span>
+                      )}
                       <span
                         aria-hidden="true"
                         className="absolute top-[28%] left-[38%] h-[38%] w-[26%] rounded border-2 border-critical"
                       />
-                      <span className="absolute top-[22%] left-[38%] rounded bg-critical px-1.5 py-0.5 text-[10px] font-semibold text-critical-foreground">
-                        {data.evidence.boundingBoxLabel}
-                      </span>
+                      {data.evidence.boundingBoxLabel ? (
+                        <span className="absolute top-[22%] left-[38%] rounded bg-critical px-1.5 py-0.5 text-[10px] font-semibold text-critical-foreground">
+                          {data.evidence.boundingBoxLabel}
+                        </span>
+                      ) : null}
                     </div>
                     <figcaption className="tabular mt-2 text-xs text-muted-foreground">
                       Confiança do modelo {Math.round(data.evidence.confidence * 100)}% ·{" "}
@@ -254,24 +268,14 @@ function AlertHandlingPage() {
               >
                 {data.audio ? (
                   <>
-                    <div
-                      className="flex h-20 items-end gap-[2px] rounded-md border border-border bg-surface px-2 py-2"
-                      role="img"
-                      aria-label="Forma de onda do áudio capturado"
-                    >
-                      {data.audio.waveform.map((value, index) => (
-                        <span
-                          key={index}
-                          className="flex-1 rounded-sm bg-primary/70"
-                          style={{ height: `${value}%` }}
-                        />
-                      ))}
-                    </div>
+                    {data.audio.signedUrl ? (
+                      <audio className="w-full" src={data.audio.signedUrl} controls />
+                    ) : (
+                      <p className="text-xs text-muted-foreground">
+                        Áudio privado indisponível para este cargo.
+                      </p>
+                    )}
                     <div className="mt-3 flex flex-wrap items-center gap-4">
-                      <Button size="sm" variant="outline">
-                        <Volume2 className="h-3.5 w-3.5" aria-hidden="true" />
-                        Ouvir áudio
-                      </Button>
                       <div className="flex min-w-[180px] flex-1 items-center gap-3">
                         <Label htmlFor="volume" className="text-xs">
                           Volume
@@ -481,13 +485,11 @@ function AlertHandlingPage() {
                     <SelectValue placeholder="Selecione o operador" />
                   </SelectTrigger>
                   <SelectContent>
-                    {operators
-                      .filter((o) => o.role === "operador")
-                      .map((operator) => (
-                        <SelectItem key={operator.id} value={operator.id}>
-                          {operator.fullName}
-                        </SelectItem>
-                      ))}
+                    {(operatorsQuery.data ?? []).map((operator) => (
+                      <SelectItem key={operator.id} value={operator.id}>
+                        {operator.fullName}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -510,13 +512,11 @@ function AlertHandlingPage() {
                     <SelectValue placeholder="Selecione o supervisor" />
                   </SelectTrigger>
                   <SelectContent>
-                    {operators
-                      .filter((o) => o.role === "supervisor" || o.role === "gerente")
-                      .map((operator) => (
-                        <SelectItem key={operator.id} value={operator.id}>
-                          {operator.fullName}
-                        </SelectItem>
-                      ))}
+                    {(operatorsQuery.data ?? []).map((operator) => (
+                      <SelectItem key={operator.id} value={operator.id}>
+                        {operator.fullName}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
