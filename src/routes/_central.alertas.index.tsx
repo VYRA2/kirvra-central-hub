@@ -28,21 +28,40 @@ import { formatClock, formatElapsed } from "@/lib/kirvra-format";
 import {
   DEFAULT_QUEUE_FILTERS,
   claimAlert,
+  listCentralOperators,
   listAlertQueue,
   nextUnassignedCritical,
   type AlertQueueFilters,
   type AlertRow,
 } from "@/services/alert-service";
-import { operators } from "@/mocks/kirvra-central";
 
 export const Route = createFileRoute("/_central/alertas/")({
   validateSearch: (search: Record<string, unknown>): AlertQueueFilters => ({
-    severity: (search["severity"] as any) || "todos",
-    state: (search["state"] as any) || "todos",
-    operatorId: (search["operatorId"] as any) || "todos",
+    severity: isSeverityFilter(search["severity"]) ? search["severity"] : "todos",
+    state: isStateFilter(search["state"]) ? search["state"] : "todos",
+    operatorId: typeof search["operatorId"] === "string" ? search["operatorId"] : "todos",
   }),
   component: AlertQueuePage,
 });
+
+const severityValues = new Set(["todos", "atencao", "suspeito", "critico"]);
+const stateValues = new Set([
+  "todos",
+  "novo",
+  "assumido",
+  "em_analise",
+  "confirmado",
+  "falso_positivo",
+  "encerrado",
+]);
+
+function isSeverityFilter(value: unknown): value is AlertQueueFilters["severity"] {
+  return typeof value === "string" && severityValues.has(value);
+}
+
+function isStateFilter(value: unknown): value is AlertQueueFilters["state"] {
+  return typeof value === "string" && stateValues.has(value);
+}
 
 function AlertQueuePage() {
   const search = Route.useSearch();
@@ -55,16 +74,26 @@ function AlertQueuePage() {
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["alert-queue", filters],
     queryFn: () => listAlertQueue(filters),
+    refetchInterval: 5_000,
+  });
+  const operatorsQuery = useQuery({
+    queryKey: ["central-operators"],
+    queryFn: listCentralOperators,
+    staleTime: 60_000,
   });
 
   const handleClaim = async (alertId: string) => {
     const result = await claimAlert(alertId);
     if (result.status === "pending") toast.warning(result.message);
     if (result.status === "error") toast.error(result.message);
+    if (result.status === "ok") {
+      toast.success("Alerta assumido e auditado no VYRA2.");
+      await refetch();
+    }
   };
 
   const handleNextCritical = async () => {
-    const next = nextUnassignedCritical();
+    const next = await nextUnassignedCritical();
     if (!next) {
       toast.info("Nenhum alerta crítico sem responsável na fila.");
       return;
@@ -158,7 +187,7 @@ function AlertQueuePage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="todos">Todos os operadores</SelectItem>
-              {operators.map((operator) => (
+              {(operatorsQuery.data ?? []).map((operator) => (
                 <SelectItem key={operator.id} value={operator.id}>
                   {operator.fullName}
                 </SelectItem>
