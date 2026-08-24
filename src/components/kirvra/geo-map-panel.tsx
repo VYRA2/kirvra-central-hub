@@ -74,19 +74,25 @@ export function GeoMapPanel({
     );
   }
 
-  if (markers.length === 0) {
-    return (
-      <Frame className={className}>
-        <Centered>
-          <MapPinOff className="h-5 w-5" aria-hidden="true" />
-          Nenhuma sessão com localização válida no momento.
-        </Centered>
-      </Frame>
-    );
-  }
-
   return (
     <Frame className={className}>
+      <div className="absolute inset-0">
+        <ClientOnly fallback={<Centered>Carregando mapa operacional…</Centered>}>
+          <Suspense fallback={<Centered>Carregando mapa operacional…</Centered>}>
+            <GeoMap markers={markers} activeId={activeId} track={track} onSelect={onSelect} />
+          </Suspense>
+        </ClientOnly>
+      </div>
+      {markers.length === 0 ? (
+        <div className="pointer-events-none absolute inset-x-3 top-3 z-[500] rounded-md border border-border bg-card/85 px-3 py-2 text-center text-xs text-muted-foreground shadow-sm backdrop-blur-sm">
+          Nenhuma sessão com localização válida no momento
+        </div>
+      ) : null}
+      {overlay}
+    </Frame>
+  );
+
+  /*
       {/* absolute inset-0: o Leaflet exige altura resolvida, não percentual de auto. */}
       <div className="absolute inset-0">
         <ClientOnly fallback={<Centered>Carregando mapa operacional…</Centered>}>
