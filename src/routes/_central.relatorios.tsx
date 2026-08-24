@@ -162,7 +162,7 @@ function ReportsPage() {
                 />
                 <ReportMetricCard 
                   label="Falsos positivos"
-                  value={`${data?.metrics.falsePositivesRate.toFixed(1)}%`}
+                  value={`${data?.metrics.falsePositivesRate.toFixed(1) ?? "0.0"}%`}
                   trend={-1.4}
                   trendLabel="queda de 1,4 p.p."
                   icon={<CheckCircle2 className="h-4 w-4" />}
