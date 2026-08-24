@@ -30,7 +30,6 @@ import {
   PageHeader, 
   LoadingState, 
   ErrorState, 
-  MetricCard, 
   Panel,
   StatusBadge
 } from "@/components/kirvra/primitives";
