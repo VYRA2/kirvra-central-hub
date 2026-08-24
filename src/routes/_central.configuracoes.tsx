@@ -151,57 +151,13 @@ function SettingsPage() {
           />
           <ErrorState
             title="Configuração do backend pendente"
-            description="As tabelas 'central_settings' e 'central_protocols' não foram encontradas no Supabase VYRA2."
+            description="As tabelas 'central_settings' e 'central_protocols' ou as RPCs necessárias não foram encontradas no Supabase VYRA2."
             action={
               <Button onClick={() => window.location.reload()} variant="outline">
                 Tentar novamente
               </Button>
             }
           />
-          <div className="rounded-lg border border-warning/30 bg-warning/5 p-4">
-            <h4 className="text-sm font-semibold text-warning flex items-center gap-2">
-              <AlertCircle className="h-4 w-4" />
-              SQL Necessário
-            </h4>
-            <pre className="mt-2 text-[10px] font-mono p-3 bg-background border rounded overflow-x-auto text-muted-foreground leading-relaxed">
-              {`-- SQL para provisionamento da Central Kirvra
-CREATE TABLE public.central_settings (
-    id int PRIMARY KEY DEFAULT 1,
-    risk_attention_threshold int DEFAULT 40,
-    risk_suspicious_threshold int DEFAULT 65,
-    risk_critical_threshold int DEFAULT 85,
-    auto_escalation_seconds int DEFAULT 60,
-    sound_on_critical boolean DEFAULT true,
-    auto_open_critical boolean DEFAULT true,
-    require_close_confirmation boolean DEFAULT true,
-    evidence_retention_days int DEFAULT 30,
-    audit_retention_days int DEFAULT 90,
-    block_download_by_default boolean DEFAULT true,
-    updated_at timestamptz DEFAULT now(),
-    CONSTRAINT singleton CHECK (id = 1)
-);
-
-CREATE TABLE public.central_protocols (
-    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    name text NOT NULL,
-    description text,
-    is_active boolean DEFAULT true,
-    created_at timestamptz DEFAULT now()
-);
-
-GRANT SELECT, UPDATE ON public.central_settings TO authenticated;
-GRANT SELECT, INSERT, UPDATE ON public.central_protocols TO authenticated;
-GRANT ALL ON public.central_settings TO service_role;
-GRANT ALL ON public.central_protocols TO service_role;
-
-INSERT INTO public.central_settings (id) VALUES (1) ON CONFLICT DO NOTHING;
-INSERT INTO public.central_protocols (name, description) VALUES 
-('Possível arma/assalto', 'Detecção visual de armamento ou gestos de assalto.'),
-('Violência corporal', 'Lutas, agressões ou movimentos bruscos de violência.'),
-('Perda de conexão', 'Falha prolongada no heartbeat da sessão de proteção.')
-ON CONFLICT DO NOTHING;`}
-            </pre>
-          </div>
         </div>
       </KirvraAppShell>
     );
