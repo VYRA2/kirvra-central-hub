@@ -173,7 +173,7 @@ export async function fetchReportData(filters: ReportFilters): Promise<ReportDat
   }
 
   // 6. Ameaças por Categoria
-  const categoryMap: Record<string, number> = {
+  const categoryMap: { [key: string]: number } = {
     "Possível arma/assalto": 0,
     "Violência corporal": 0,
     "Áudio/palavra de risco": 0,
@@ -183,13 +183,13 @@ export async function fetchReportData(filters: ReportFilters): Promise<ReportDat
   alerts.forEach(a => {
     const type = (a.threat_type || "").toLowerCase();
     if (type.includes("arma") || type.includes("assalto")) {
-      categoryMap["Possível arma/assalto"]++;
+      categoryMap["Possível arma/assalto"] = (categoryMap["Possível arma/assalto"] || 0) + 1;
     } else if (type.includes("violencia") || type.includes("corporal")) {
-      categoryMap["Violência corporal"]++;
+      categoryMap["Violência corporal"] = (categoryMap["Violência corporal"] || 0) + 1;
     } else if (type.includes("audio") || type.includes("palavra")) {
-      categoryMap["Áudio/palavra de risco"]++;
+      categoryMap["Áudio/palavra de risco"] = (categoryMap["Áudio/palavra de risco"] || 0) + 1;
     } else {
-      categoryMap["Outros sinais"]++;
+      categoryMap["Outros sinais"] = (categoryMap["Outros sinais"] || 0) + 1;
     }
   });
 
