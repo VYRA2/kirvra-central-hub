@@ -151,7 +151,7 @@ function ReportsPage() {
                 <ReportMetricCard 
                   label="Alertas críticos"
                   value={data?.metrics.criticalAlerts.toLocaleString() || "0"}
-                  sublabel={`${data?.metrics.criticalAlertsRate.toFixed(1)}% das sessões`}
+                  sublabel={`${data?.metrics.criticalAlertsRate.toFixed(1) ?? "0.0"}% das sessões`}
                   icon={<AlertCircle className="h-4 w-4" />}
                 />
                 <ReportMetricCard 
