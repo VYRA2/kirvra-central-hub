@@ -8,6 +8,7 @@
 import {
   isHandlingAlert,
   isOpenAlert,
+  isRecentHeartbeat,
   type LiveAlert,
   type LiveSession,
 } from "@/integrations/vyra/live";
@@ -58,7 +59,7 @@ function buildOverview(
   context: { sessions: LiveSession[]; alerts: LiveAlert[]; updatedAt: string },
 ): CommandOverview {
   const activeSessions = context.sessions.filter(
-    (session) => session.state === "ativa" && !session.endedAt,
+    (session) => session.state === "ativa" && !session.endedAt && isRecentHeartbeat(session.lastHeartbeatAt),
   );
   const openAlerts = context.alerts.filter(isOpenAlert);
   const handlingAlerts = context.alerts.filter(isHandlingAlert);

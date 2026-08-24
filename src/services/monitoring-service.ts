@@ -2,7 +2,7 @@
  * Monitoramento ao vivo — sessões de proteção reais do VYRA2.
  * Sem dados inventados: sessões sem localização válida não geram marcador.
  */
-import type { LiveAlert, LiveSession } from "@/integrations/vyra/live";
+import { isRecentHeartbeat, type LiveAlert, type LiveSession } from "@/integrations/vyra/live";
 import type { RiskLevel } from "@/integrations/vyra/types";
 import { fetchLiveContext } from "./vyra-live-service";
 import type { DataSource } from "./dashboard-service";
@@ -32,9 +32,12 @@ export async function getMonitoringData(): Promise<MonitoringData> {
   return {
     source: "vyra",
     updatedAt: context.updatedAt,
-    sessions: context.sessions.filter(
-      (session) => session.state !== "encerrada" && !session.endedAt,
-    ),
+    sessions: context.sessions
+      .filter((session) => session.state !== "encerrada" && !session.endedAt)
+      .map((session) => ({
+        ...session,
+        state: isRecentHeartbeat(session.lastHeartbeatAt) ? session.state : "offline",
+      })), 
     alerts: context.alerts,
   };
 }
