@@ -181,8 +181,8 @@ function SystemHealthPage() {
           <MetricCard
             label="Disponibilidade"
             value={data?.availability || "—"}
-            sublabel="Últimos 30 dias"
-            tone={data?.availability !== "—" ? "success" : "neutral"}
+            sublabel={data?.availability ? "Últimos 30 dias" : "Sem dados suficientes"}
+            tone={data?.availability ? "success" : "neutral"}
           />
           <MetricCard
             label="Latência média"
@@ -198,9 +198,9 @@ function SystemHealthPage() {
           />
           <MetricCard
             label="Incidentes"
-            value={String(data?.incidentCount || 0)}
-            sublabel="Nas últimas 24h"
-            tone={data?.incidentCount === 0 ? "success" : "critical"}
+            value={data?.incidentCount !== null && data?.incidentCount !== undefined ? String(data.incidentCount) : "—"}
+            sublabel={data?.incidentCount !== null && data?.incidentCount !== undefined ? "Nas últimas 24h" : "Sem dados suficientes"}
+            tone={data?.incidentCount === 0 ? "success" : data?.incidentCount ? "critical" : "neutral"}
           />
         </div>
 
