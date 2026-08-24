@@ -40,8 +40,14 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 
+import { RequirePermission } from "@/components/kirvra/access-control";
+
 export const Route = createFileRoute("/_central/saude-do-sistema")({
-  component: SystemHealthPage,
+  component: () => (
+    <RequirePermission permissions={["health.view"]}>
+      <SystemHealthPage />
+    </RequirePermission>
+  ),
 });
 
 function HealthStatusBadge({ status }: { status: HealthStatus }) {
