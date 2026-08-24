@@ -133,9 +133,9 @@ function LoginPage() {
         <h2 className="text-lg font-semibold text-foreground">Acesso à Central</h2>
         <p className="mt-1 text-sm text-muted-foreground">Use suas credenciais internas KIRVRA.</p>
 
-        {!backendAvailable ? (
+        {error && error.includes("Integração pendente") ? (
           <div className="mt-4">
-            <PendingIntegrationNotice message={"Preciso que você configure a integração real com o Supabase neste projeto. Não escreva as credenciais como texto na tela — configure como variáveis de ambiente funcionais no código do projeto.\n\nAs credenciais são:\n\nURL: https://hwpansazevjwzdcmhssc.supabase.co\n\nChave anon/publishable: sb_publishable_n4QujjWX_YX5TNbCUiZJqA_2jwtDbsZ\n\nO que preciso que você faça:\n\nLocalize o arquivo de configuração do Supabase no projeto — geralmente src/integrations/supabase/client.ts ou similar\n\nSubstitua qualquer placeholder ou variável vazia pela URL e chave acima diretamente no código\n\nGaranta que o cliente Supabase está sendo inicializado corretamente com createClient(url, key)\n\nRemova qualquer mensagem de aviso de \"integração pendente\" da tela de login\n\nTeste se a conexão com o Supabase está funcionando — o botão \"Entrar com segurança\" deve conseguir autenticar um usuário real\n\nApós fazer as alterações, me mostra o trecho do código onde a conexão foi configurada para eu confirmar que está correto."} />
+            <PendingIntegrationNotice message={error} />
           </div>
         ) : null}
 

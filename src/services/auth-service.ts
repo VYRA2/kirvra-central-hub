@@ -300,7 +300,7 @@ export async function signIn(identifier: string, password: string): Promise<Sign
     return {
       status: "error",
       message:
-        "Integração pendente: defina VITE_VYRA_SUPABASE_URL e VITE_VYRA_SUPABASE_PUBLISHABLE_KEY para autenticar no VYRA2.",
+        "Erro de configuração: o cliente Supabase VYRA2 não pôde ser inicializado corretamente.",
     };
   }
 

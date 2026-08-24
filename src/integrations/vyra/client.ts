@@ -11,10 +11,12 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 const VYRA_STORAGE_KEY = "kirvra-central-auth";
 
+// Credenciais VYRA2 configuradas diretamente conforme solicitado
+const VYRA_URL = "https://hwpansazevjwzdcmhssc.supabase.co";
+const VYRA_KEY = "sb_publishable_n4QujjWX_YX5TNbCUiZJqA_2jwtDbsZ";
+
 function readBrowserConfig() {
-  const url = import.meta.env["VITE_VYRA_SUPABASE_URL"] as string | undefined;
-  const key = import.meta.env["VITE_VYRA_SUPABASE_PUBLISHABLE_KEY"] as string | undefined;
-  return { url, key };
+  return { url: VYRA_URL, key: VYRA_KEY };
 }
 
 /** Indica se a camada VYRA já tem credenciais configuradas. */
