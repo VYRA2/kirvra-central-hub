@@ -5,12 +5,8 @@ import {
   endOfDay, 
   format, 
   parseISO,
-  differenceInSeconds,
-  isSameDay
+  differenceInSeconds
 } from "date-fns";
-import { formatInTimeZone, toDate } from "date-fns-tz";
-
-const TZ = "America/Sao_Paulo";
 
 export interface ReportMetrics {
   sessions: number;
@@ -113,11 +109,14 @@ export async function fetchReportData(filters: ReportFilters): Promise<ReportDat
     .lte("created_at", end.toISOString());
 
   const alerts = securityAlerts || [];
-  const criticalAlerts = alerts.filter(a => a.threat_type?.toLowerCase() === 'critico' || a.status?.toLowerCase() === 'critico').length;
+  const criticalAlerts = alerts.filter(a => {
+    const type = (a.threat_type || "").toLowerCase();
+    const status = (a.status || "").toLowerCase();
+    return type === 'critico' || status === 'critico';
+  }).length;
   const criticalAlertsRate = currentSessions ? (criticalAlerts / currentSessions) * 100 : 0;
 
   // 3. Resposta Média
-  // A tabela central_alert_assignments.accepted_at é o alvo para o tempo de resposta
   const { data: assignments } = await supabase
     .from("central_alert_assignments")
     .select("alert_id, created_at")
@@ -125,7 +124,6 @@ export async function fetchReportData(filters: ReportFilters): Promise<ReportDat
     .lte("created_at", end.toISOString())
     .not("created_at", "is", null);
 
-  // Mapear alertas para tempos de resposta
   let totalResponseSeconds = 0;
   let responseCount = 0;
 
@@ -146,7 +144,6 @@ export async function fetchReportData(filters: ReportFilters): Promise<ReportDat
   const avgResponseTime = `${String(Math.floor(avgResponseSeconds / 60)).padStart(2, '0')}:${String(avgResponseSeconds % 60).padStart(2, '0')}`;
 
   // 4. Falsos Positivos
-  // Usar central_alert_assignments se tiver o status final ou security_alerts.status
   const reviewedAlerts = alerts.filter(a => a.status === 'falso_positivo' || a.status === 'confirmado' || a.status === 'encerrado');
   const falsePositives = reviewedAlerts.filter(a => a.status === 'falso_positivo').length;
   const falsePositivesRate = reviewedAlerts.length ? (falsePositives / reviewedAlerts.length) * 100 : 0;
@@ -155,9 +152,10 @@ export async function fetchReportData(filters: ReportFilters): Promise<ReportDat
   const dailyAlerts: DailyAlertData[] = [];
   const dayNames = ["D", "S", "T", "Q", "Q", "S", "S"];
   
-  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-    const dayStart = startOfDay(d);
-    const dayEnd = endOfDay(d);
+  const tempDate = new Date(start);
+  while (tempDate <= end) {
+    const dayStart = startOfDay(tempDate);
+    const dayEnd = endOfDay(tempDate);
     const count = alerts.filter(a => {
       const dateStr = a.created_at;
       if (!dateStr) return false;
@@ -166,10 +164,12 @@ export async function fetchReportData(filters: ReportFilters): Promise<ReportDat
     }).length;
     
     dailyAlerts.push({
-      date: format(d, "yyyy-MM-dd"),
+      date: format(tempDate, "yyyy-MM-dd"),
       count,
-      label: dayNames[d.getDay()]
+      label: dayNames[tempDate.getDay()]
     });
+    
+    tempDate.setDate(tempDate.getDate() + 1);
   }
 
   // 6. Ameaças por Categoria
