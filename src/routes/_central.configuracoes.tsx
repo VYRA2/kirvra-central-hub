@@ -525,8 +525,21 @@ function SettingsPage() {
           {editingProtocol && (
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
+                <Label htmlFor="code">Código</Label>
+                <Input id="code" value={editingProtocol.code} readOnly className="bg-muted/50" />
+              </div>
+              <div className="grid gap-2">
                 <Label htmlFor="name">Nome do protocolo</Label>
-                <Input id="name" value={editingProtocol.name} readOnly className="bg-muted/50" />
+                <Input
+                  id="name"
+                  value={editingProtocol.name}
+                  onChange={(e) =>
+                    setEditingProtocol({
+                      ...editingProtocol,
+                      name: e.target.value,
+                    })
+                  }
+                />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="description">Descrição funcional</Label>
@@ -534,7 +547,12 @@ function SettingsPage() {
                   id="description"
                   className="flex min-h-[80px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                   value={editingProtocol.description || ""}
-                  readOnly
+                  onChange={(e) =>
+                    setEditingProtocol({
+                      ...editingProtocol,
+                      description: e.target.value,
+                    })
+                  }
                 />
               </div>
               <div className="flex items-center justify-between">
@@ -561,6 +579,8 @@ function SettingsPage() {
               onClick={async () => {
                 if (!editingProtocol) return;
                 const res = await SettingsService.updateProtocol(editingProtocol.id, {
+                  name: editingProtocol.name,
+                  description: editingProtocol.description,
                   is_active: editingProtocol.is_active,
                 });
                 if (res.success) {
