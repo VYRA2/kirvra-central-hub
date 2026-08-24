@@ -439,7 +439,7 @@ export function PendingIntegrationNotice({
       className="flex items-start gap-2 rounded-lg border border-warning/35 bg-warning/10 px-3 py-2 text-xs text-warning"
     >
       <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-      <span>{message}</span>
+      <span className="whitespace-pre-wrap">{message}</span>
     </div>
   );
 }
