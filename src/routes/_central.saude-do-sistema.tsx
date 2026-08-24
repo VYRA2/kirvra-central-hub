@@ -212,7 +212,7 @@ function SystemHealthPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
-                    {data?.services.map((service) => (
+                    {data?.services?.map((service) => (
                       <tr key={service.id} className="group hover:bg-muted/30">
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-3">
