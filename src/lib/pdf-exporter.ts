@@ -1,7 +1,6 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
 import type { ReportData, ReportFilters } from "@/services/report-service";
 import type { CentralSession } from "@/services/auth-service";
 
@@ -22,10 +21,10 @@ export async function exportReportToPDF(
   
   // Cores KIRVRA (Midnight Indigo / Neon Mint)
   const colors = {
-    primary: [10, 25, 27], // Midnight Indigo aproximado
-    secondary: [20, 184, 166], // Neon Mint aproximado
-    text: [30, 41, 59],
-    muted: [100, 116, 139],
+    primary: [10, 25, 27] as [number, number, number],
+    secondary: [20, 184, 166] as [number, number, number],
+    text: [30, 41, 59] as [number, number, number],
+    muted: [100, 116, 139] as [number, number, number],
   };
 
   // 1. Cabeçalho
@@ -76,7 +75,7 @@ export async function exportReportToPDF(
     ]],
     theme: "grid",
     headStyles: { 
-      fillColor: colors.primary as [number, number, number],
+      fillColor: colors.primary,
       textColor: [255, 255, 255],
       fontSize: 10,
       halign: "center"
