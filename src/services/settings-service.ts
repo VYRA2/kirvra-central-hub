@@ -40,16 +40,19 @@ export class SettingsService {
    * Obtém as configurações atuais do sistema.
    * Se as tabelas não existirem, retorna IntegrationStatus="pending".
    */
-  static async getSettings(): Promise<{ settings: SystemSettings | null; status: IntegrationStatus }> {
+  static async getSettings(): Promise<{
+    settings: SystemSettings | null;
+    status: IntegrationStatus;
+  }> {
     const client = getVyraClient();
     if (!client) return { settings: null, status: "pending" };
 
     try {
-      // Tentamos ler da tabela 'central_settings'. 
+      // Tentamos ler da tabela 'central_settings'.
       // Como sabemos que ela pode não existir ainda no VYRA2, capturamos o erro.
       const { data, error } = await client
-        .from('central_settings' as any)
-        .select('*')
+        .from("central_settings" as any)
+        .select("*")
         .single();
 
       if (error) {
@@ -77,7 +80,7 @@ export class SettingsService {
             blockDownloadByDefault: data.block_download_by_default,
           },
         },
-        status: "connected"
+        status: "connected",
       };
     } catch (e) {
       return { settings: null, status: "pending" };
@@ -93,9 +96,9 @@ export class SettingsService {
 
     try {
       const { data, error } = await client
-        .from('central_protocols' as any)
-        .select('*')
-        .order('name');
+        .from("central_protocols" as any)
+        .select("*")
+        .order("name");
 
       if (error) {
         return { protocols: [], status: "pending" };
@@ -110,7 +113,9 @@ export class SettingsService {
   /**
    * Salva as configurações.
    */
-  static async updateSettings(settings: SystemSettings): Promise<{ success: boolean; error?: string }> {
+  static async updateSettings(
+    settings: SystemSettings,
+  ): Promise<{ success: boolean; error?: string }> {
     const client = getVyraClient();
     if (!client) return { success: false, error: "Integração pendente" };
 
@@ -125,14 +130,14 @@ export class SettingsService {
       evidence_retention_days: settings.retentionPolicy.evidenceRetentionDays,
       audit_retention_days: settings.retentionPolicy.auditRetentionDays,
       block_download_by_default: settings.retentionPolicy.blockDownloadByDefault,
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     };
 
     try {
       const { error } = await client
-        .from('central_settings' as any)
+        .from("central_settings" as any)
         .update(payload)
-        .eq('id', 1); // Assume-se um singleton com ID 1
+        .eq("id", 1); // Assume-se um singleton com ID 1
 
       if (error) throw error;
 
@@ -145,15 +150,18 @@ export class SettingsService {
   /**
    * Atualiza um protocolo específico.
    */
-  static async updateProtocol(id: string, updates: Partial<Protocol>): Promise<{ success: boolean; error?: string }> {
+  static async updateProtocol(
+    id: string,
+    updates: Partial<Protocol>,
+  ): Promise<{ success: boolean; error?: string }> {
     const client = getVyraClient();
     if (!client) return { success: false, error: "Integração pendente" };
 
     try {
       const { error } = await client
-        .from('central_protocols' as any)
+        .from("central_protocols" as any)
         .update(updates)
-        .eq('id', id);
+        .eq("id", id);
 
       if (error) throw error;
       return { success: true };
