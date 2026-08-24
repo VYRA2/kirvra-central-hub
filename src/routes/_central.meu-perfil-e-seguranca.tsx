@@ -414,6 +414,7 @@ function MfaModal({ open, onOpenChange }: { open: boolean, onOpenChange: (o: boo
               </div>
             </div>
           </div>
+        </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
           <Button disabled>Verificar e Ativar</Button>
