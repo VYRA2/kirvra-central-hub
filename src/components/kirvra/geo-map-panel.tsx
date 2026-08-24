@@ -91,5 +91,4 @@ export function GeoMapPanel({
       {overlay}
     </Frame>
   );
-
 }
