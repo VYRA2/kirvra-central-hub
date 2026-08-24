@@ -196,9 +196,10 @@ function ReportsPage() {
                       <YAxis hide />
                       <Tooltip 
                         cursor={{ fill: 'rgba(255,255,255,0.02)' }}
-                        content={({ active, payload }) => {
+                        content={(props: any) => {
+                          const { active, payload } = props;
                           if (active && payload && payload.length) {
-                            const p = payload[0] as any;
+                            const p = payload[0];
                             return (
                               <div className="bg-background border border-border p-2 rounded-md shadow-xl text-[10px]">
                                 <p className="font-bold">{p.payload.date}</p>
