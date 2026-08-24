@@ -166,7 +166,7 @@ export async function fetchReportData(filters: ReportFilters): Promise<ReportDat
     dailyAlerts.push({
       date: format(tempDate, "yyyy-MM-dd"),
       count,
-      label: dayNames[tempDate.getDay()]
+      label: dayNames[tempDate.getDay()] || "D"
     });
     
     tempDate.setDate(tempDate.getDate() + 1);
