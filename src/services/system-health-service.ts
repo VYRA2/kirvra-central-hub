@@ -1,5 +1,5 @@
 import { getVyraClient } from "@/integrations/vyra/client";
-import { readIso, readNumber, readString } from "@/integrations/vyra/live";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 export type HealthStatus = "online" | "degradado" | "offline" | "pendente" | "indisponivel";
 
