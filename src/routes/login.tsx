@@ -135,7 +135,7 @@ function LoginPage() {
 
         {!backendAvailable ? (
           <div className="mt-4">
-            <PendingIntegrationNotice message="Integração pendente: defina VITE_VYRA_SUPABASE_URL e VITE_VYRA_SUPABASE_PUBLISHABLE_KEY para autenticar no Supabase VYRA2. Sem elas nenhum login real é possível." />
+            <PendingIntegrationNotice message={"Configure as variáveis de ambiente do projeto com as credenciais do meu Supabase:\n\nVITE_VYRA_SUPABASE_URL =https://hwpansazevjwzdcmhssc.supabase.co\nVITE_VYRA_SUPABASE_PUBLISHABLE_KEY = sb_publishable_n4QujjWX_YX5TNbCUiZJqA_2jwtDbsZ"} />
           </div>
         ) : null}
 
