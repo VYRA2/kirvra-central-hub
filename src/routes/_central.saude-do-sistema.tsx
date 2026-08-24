@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { 
-  Activity, 
-  RefreshCcw, 
-  ShieldCheck, 
-  Zap, 
-  Clock, 
-  Layers, 
+import {
+  Activity,
+  RefreshCcw,
+  ShieldCheck,
+  Zap,
+  Clock,
+  Layers,
   AlertCircle,
   Database,
   Cloud,
@@ -15,25 +15,25 @@ import {
   CheckCircle2,
   XCircle,
   AlertTriangle,
-  Loader2
+  Loader2,
 } from "lucide-react";
 
 import { KirvraAppShell } from "@/components/kirvra/app-shell";
-import { 
-  MetricCard, 
-  PageHeader, 
-  Panel, 
-  StatusBadge, 
+import {
+  MetricCard,
+  PageHeader,
+  Panel,
+  StatusBadge,
   BadgeTone,
   LoadingState,
-  EmptyState
+  EmptyState,
 } from "@/components/kirvra/primitives";
 import { Button } from "@/components/ui/button";
-import { 
-  SystemHealthService, 
-  SystemHealthOverview, 
+import {
+  SystemHealthService,
+  SystemHealthOverview,
   HealthStatus,
-  ServiceHealthSnapshot 
+  ServiceHealthSnapshot,
 } from "@/services/system-health-service";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -67,21 +67,23 @@ function HealthStatusBadge({ status }: { status: HealthStatus }) {
     indisponivel: "Indisponível",
   };
 
-  return (
-    <StatusBadge tone={tones[status]}>
-      {labels[status]}
-    </StatusBadge>
-  );
+  return <StatusBadge tone={tones[status]}>{labels[status]}</StatusBadge>;
 }
 
 function ServiceIcon({ id }: { id: string }) {
   switch (id) {
-    case "db": return <Database className="h-4 w-4" />;
-    case "storage": return <Cloud className="h-4 w-4" />;
-    case "realtime": return <Zap className="h-4 w-4" />;
-    case "ai-engine": return <Cpu className="h-4 w-4" />;
-    case "runpod": return <Server className="h-4 w-4" />;
-    default: return <Activity className="h-4 w-4" />;
+    case "db":
+      return <Database className="h-4 w-4" />;
+    case "storage":
+      return <Cloud className="h-4 w-4" />;
+    case "realtime":
+      return <Zap className="h-4 w-4" />;
+    case "ai-engine":
+      return <Cpu className="h-4 w-4" />;
+    case "runpod":
+      return <Server className="h-4 w-4" />;
+    default:
+      return <Activity className="h-4 w-4" />;
   }
 }
 
@@ -115,22 +117,26 @@ function SystemHealthPage() {
   }, []);
 
   const handleDiagnostic = async () => {
-    const confirmed = window.confirm("Deseja executar o diagnóstico completo de infraestrutura? Isso realizará testes ativos em todos os serviços conectados.");
+    const confirmed = window.confirm(
+      "Deseja executar o diagnóstico completo de infraestrutura? Isso realizará testes ativos em todos os serviços conectados.",
+    );
     if (!confirmed) return;
 
     setDiagnosticating(true);
     try {
       const result = await SystemHealthService.runSystemDiagnostic();
       setData(result);
-      
+
       const summary = {
-        online: result.services.filter(s => s.status === "online").length,
-        offline: result.services.filter(s => s.status === "offline").length,
-        degradado: result.services.filter(s => s.status === "degradado").length,
-        pendente: result.services.filter(s => s.status === "pendente").length,
+        online: result.services.filter((s) => s.status === "online").length,
+        offline: result.services.filter((s) => s.status === "offline").length,
+        degradado: result.services.filter((s) => s.status === "degradado").length,
+        pendente: result.services.filter((s) => s.status === "pendente").length,
       };
 
-      toast.info(`Diagnóstico concluído: ${summary.online} Online, ${summary.degradado} Degradado, ${summary.offline} Offline, ${summary.pendente} Pendentes.`);
+      toast.info(
+        `Diagnóstico concluído: ${summary.online} Online, ${summary.degradado} Degradado, ${summary.offline} Offline, ${summary.pendente} Pendentes.`,
+      );
     } catch (err) {
       toast.error("Erro ao executar diagnóstico.");
     } finally {
@@ -154,23 +160,31 @@ function SystemHealthPage() {
           description="Monitoramento em tempo real da infraestrutura e serviços críticos da Central KIRVRA."
           actions={
             <div className="flex gap-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 className="gap-2"
                 onClick={() => loadData(true)}
                 disabled={refreshing || diagnosticating}
               >
-                {refreshing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCcw className="h-3.5 w-3.5" />}
+                {refreshing ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <RefreshCcw className="h-3.5 w-3.5" />
+                )}
                 Atualizar
               </Button>
-              <Button 
-                size="sm" 
+              <Button
+                size="sm"
                 className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
                 onClick={handleDiagnostic}
                 disabled={refreshing || diagnosticating}
               >
-                {diagnosticating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <ShieldCheck className="h-3.5 w-3.5" />}
+                {diagnosticating ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <ShieldCheck className="h-3.5 w-3.5" />
+                )}
                 Executar diagnóstico
               </Button>
             </div>
@@ -181,32 +195,55 @@ function SystemHealthPage() {
           <MetricCard
             label="Disponibilidade"
             value={data?.availability || "—"}
-            sublabel="Últimos 30 dias"
-            tone={data?.availability !== "—" ? "success" : "neutral"}
+            sublabel={data?.availability ? "Últimos 30 dias" : "Sem dados suficientes"}
+            tone={data?.availability ? "success" : "neutral"}
           />
           <MetricCard
             label="Latência média"
             value={data?.averageLatencyMs ? `${data.averageLatencyMs} ms` : "—"}
             sublabel="Medição atual"
-            tone={data?.averageLatencyMs ? (data.averageLatencyMs < 200 ? "success" : "warning") : "neutral"}
+            tone={
+              data?.averageLatencyMs
+                ? data.averageLatencyMs < 200
+                  ? "success"
+                  : "warning"
+                : "neutral"
+            }
           />
           <MetricCard
             label="Fila de IA"
-            value={data?.aiQueueSize !== undefined && data?.aiQueueSize !== null ? String(data.aiQueueSize) : "—"}
+            value={
+              data?.aiQueueSize !== undefined && data?.aiQueueSize !== null
+                ? String(data.aiQueueSize)
+                : "—"
+            }
             sublabel="Processamentos pendentes"
             tone={data?.aiQueueSize === 0 ? "success" : "neutral"}
           />
           <MetricCard
             label="Incidentes"
-            value={String(data?.incidentCount || 0)}
-            sublabel="Nas últimas 24h"
-            tone={data?.incidentCount === 0 ? "success" : "critical"}
+            value={
+              data?.incidentCount !== null && data?.incidentCount !== undefined
+                ? String(data.incidentCount)
+                : "—"
+            }
+            sublabel={
+              data?.incidentCount !== null && data?.incidentCount !== undefined
+                ? "Nas últimas 24h"
+                : "Sem dados suficientes"
+            }
+            tone={
+              data?.incidentCount === 0 ? "success" : data?.incidentCount ? "critical" : "neutral"
+            }
           />
         </div>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           <div className="lg:col-span-2">
-            <Panel title="Serviços e Integrações" description="Status detalhado de cada componente da plataforma.">
+            <Panel
+              title="Serviços e Integrações"
+              description="Status detalhado de cada componente da plataforma."
+            >
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm">
                   <thead>
@@ -222,13 +259,18 @@ function SystemHealthPage() {
                       <tr key={service.id} className="group hover:bg-muted/30">
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-3">
-                            <div className={cn(
-                              "flex h-8 w-8 items-center justify-center rounded-lg border",
-                              service.status === "online" ? "border-success/20 bg-success/5 text-success" : 
-                              service.status === "offline" ? "border-critical/20 bg-critical/5 text-critical" :
-                              service.status === "degradado" ? "border-warning/20 bg-warning/5 text-warning" :
-                              "border-border bg-muted/20 text-muted-foreground"
-                            )}>
+                            <div
+                              className={cn(
+                                "flex h-8 w-8 items-center justify-center rounded-lg border",
+                                service.status === "online"
+                                  ? "border-success/20 bg-success/5 text-success"
+                                  : service.status === "offline"
+                                    ? "border-critical/20 bg-critical/5 text-critical"
+                                    : service.status === "degradado"
+                                      ? "border-warning/20 bg-warning/5 text-warning"
+                                      : "border-border bg-muted/20 text-muted-foreground",
+                              )}
+                            >
                               <ServiceIcon id={service.id} />
                             </div>
                             <div>
@@ -259,14 +301,23 @@ function SystemHealthPage() {
               {data?.recentEvents && data.recentEvents.length > 0 ? (
                 <div className="space-y-4">
                   {data.recentEvents.map((event) => (
-                    <div key={event.id} className="relative pl-4 before:absolute before:left-0 before:top-2 before:h-full before:w-[1px] before:bg-border last:before:h-2">
+                    <div
+                      key={event.id}
+                      className="relative pl-4 before:absolute before:left-0 before:top-2 before:h-full before:w-[1px] before:bg-border last:before:h-2"
+                    >
                       <div className="absolute left-[-4px] top-1.5 h-2 w-2 rounded-full border border-background bg-primary" />
                       <div className="space-y-1">
                         <div className="flex items-center justify-between gap-2">
-                          <span className="text-[11px] font-semibold text-foreground">{event.service}</span>
-                          <span className="text-[10px] text-muted-foreground">{format(new Date(event.timestamp), "HH:mm", { locale: ptBR })}</span>
+                          <span className="text-[11px] font-semibold text-foreground">
+                            {event.service}
+                          </span>
+                          <span className="text-[10px] text-muted-foreground">
+                            {format(new Date(event.timestamp), "HH:mm", { locale: ptBR })}
+                          </span>
                         </div>
-                        <p className="text-xs text-muted-foreground leading-relaxed">{event.message}</p>
+                        <p className="text-xs text-muted-foreground leading-relaxed">
+                          {event.message}
+                        </p>
                       </div>
                     </div>
                   ))}
@@ -274,7 +325,9 @@ function SystemHealthPage() {
               ) : (
                 <div className="flex flex-col items-center justify-center py-10 text-center opacity-50">
                   <Activity className="mb-3 h-8 w-8 text-muted-foreground" />
-                  <p className="text-xs text-muted-foreground">Nenhum evento de infraestrutura registrado.</p>
+                  <p className="text-xs text-muted-foreground">
+                    Nenhum evento de infraestrutura registrado.
+                  </p>
                 </div>
               )}
             </Panel>
@@ -287,9 +340,10 @@ function SystemHealthPage() {
             <div>
               <h4 className="text-sm font-semibold text-foreground">Relatório Técnico</h4>
               <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
-                Esta página realiza diagnósticos diretos a partir do seu navegador para o Supabase VYRA2. 
-                Os indicadores de <strong>AI Engine</strong> e <strong>RunPod</strong> exigem credenciais de servidor 
-                e permanecem em estado pendente até a configuração das variáveis de ambiente no backend da Central.
+                Esta página realiza diagnósticos diretos a partir do seu navegador para o Supabase
+                VYRA2. Os indicadores de <strong>AI Engine</strong> e <strong>RunPod</strong> exigem
+                credenciais de servidor e permanecem em estado pendente até a configuração das
+                variáveis de ambiente no backend da Central.
               </p>
             </div>
           </div>

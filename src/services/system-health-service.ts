@@ -1,5 +1,5 @@
 import { getVyraClient } from "@/integrations/vyra/client";
-import { readIso, readNumber, readString } from "@/integrations/vyra/live";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 export type HealthStatus = "online" | "degradado" | "offline" | "pendente" | "indisponivel";
 
@@ -21,10 +21,10 @@ export interface InfrastructureEvent {
 }
 
 export interface SystemHealthOverview {
-  availability: string;
+  availability: string | null;
   averageLatencyMs: number | null;
   aiQueueSize: number | null;
-  incidentCount: number;
+  incidentCount: number | null;
   services: ServiceHealthSnapshot[];
   recentEvents: InfrastructureEvent[];
   lastUpdateAt: string;
@@ -36,7 +36,6 @@ export class SystemHealthService {
    * Não usa mocks. Se um serviço não puder ser verificado, retorna status pendente ou indisponível.
    */
   static async getSystemHealthSnapshot(): Promise<SystemHealthOverview> {
-    const startTime = Date.now();
     const client = getVyraClient();
     
     // Diagnósticos paralelos
@@ -59,21 +58,23 @@ export class SystemHealthService {
       ? Math.round(latencies.reduce((a, b) => a + b, 0) / latencies.length) 
       : null;
 
-    // Disponibilidade baseada no banco (simplificado)
-    const availability = dbHealth.status === "online" ? "99.98%" : "—";
+    // Disponibilidade histórica e incidentes exigem tabelas de métricas que não existem no VYRA2 ainda.
+    // Retornamos null para evitar dados fictícios.
+    const availability = null;
+    const incidentCount = null;
 
     return {
       availability,
       averageLatencyMs: averageLatency,
-      aiQueueSize: null, // Depende do RunPod API
-      incidentCount: 0, // Depende de tabela de incidentes que não existe no VYRA2 ainda
+      aiQueueSize: null,
+      incidentCount,
       services,
-      recentEvents: [], // Sem tabela de eventos de infra
+      recentEvents: [],
       lastUpdateAt: new Date().toISOString()
     };
   }
 
-  private static async checkDatabase(client: any): Promise<ServiceHealthSnapshot> {
+  private static async checkDatabase(client: SupabaseClient | null): Promise<ServiceHealthSnapshot> {
     const start = Date.now();
     if (!client) {
       return {
@@ -113,7 +114,7 @@ export class SystemHealthService {
     }
   }
 
-  private static async checkStorage(client: any): Promise<ServiceHealthSnapshot> {
+  private static async checkStorage(client: SupabaseClient | null): Promise<ServiceHealthSnapshot> {
     const start = Date.now();
     if (!client) {
       return {
@@ -153,7 +154,7 @@ export class SystemHealthService {
     }
   }
 
-  private static async checkRealtime(client: any): Promise<ServiceHealthSnapshot> {
+  private static async checkRealtime(client: SupabaseClient | null): Promise<ServiceHealthSnapshot> {
     if (!client) {
       return {
         id: "realtime",
@@ -165,7 +166,6 @@ export class SystemHealthService {
       };
     }
 
-    // Verifica estado do canal se houver um ativo globalmente ou cria um teste rápido
     const channel = client.channel("health-check");
     
     return new Promise((resolve) => {
@@ -200,9 +200,6 @@ export class SystemHealthService {
   }
 
   private static async checkAiEngine(): Promise<ServiceHealthSnapshot> {
-    // Regra: Consultar somente se houver URL segura configurada
-    // Como estamos no frontend, não temos acesso a process.env de servidor.
-    // O requisito diz "Consultar somente quando uma URL segura estiver configurada no servidor".
     return {
       id: "ai-engine",
       service: "Kirvra AI Engine",
@@ -214,8 +211,6 @@ export class SystemHealthService {
   }
 
   private static async checkRunpod(): Promise<ServiceHealthSnapshot> {
-    // Regra: Consultar somente por backend/server function.
-    // Por enquanto no frontend marcamos como pendente.
     return {
       id: "runpod",
       service: "RunPod Worker",
@@ -227,8 +222,6 @@ export class SystemHealthService {
   }
 
   static async runSystemDiagnostic(): Promise<SystemHealthOverview> {
-    // Para o diagnóstico completo, poderíamos ter lógica de confirmação e logs
-    // Mas a essência é a mesma do snapshot por enquanto
     return this.getSystemHealthSnapshot();
   }
 }
