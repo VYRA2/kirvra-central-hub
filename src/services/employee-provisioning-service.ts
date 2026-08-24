@@ -24,7 +24,7 @@ export const listRolesWithPermissions = async (): Promise<RoleWithPermissions[]>
   const [rolesRes, permissionsRes, rolePermissionsRes] = await Promise.all([
     supabase.from("central_roles").select("*").order("hierarchy_level", { ascending: false }),
     supabase.from("central_permissions").select("*"),
-    supabase.from("central_role_permissions").select("*")
+    supabase.from("central_role_permissions").select("*"),
   ]);
 
   if (rolesRes.error) throw rolesRes.error;
@@ -35,32 +35,31 @@ export const listRolesWithPermissions = async (): Promise<RoleWithPermissions[]>
   const permissions = permissionsRes.data || [];
   const rolePermissions = rolePermissionsRes.data || [];
 
-  const permissionById = new Map(permissions.map(p => [p.id, p]));
+  const permissionById = new Map(permissions.map((p) => [p.id, p]));
 
-  return roles.map(role => {
+  return roles.map((role) => {
     const associatedPermissions = rolePermissions
-      .filter(rp => rp.role_id === role.id)
-      .map(rp => {
+      .filter((rp) => rp.role_id === role.id)
+      .map((rp) => {
         const p = permissionById.get(rp.permission_id);
         return {
           id: rp.id,
           role_id: rp.role_id,
           permission_id: rp.permission_id,
           permission_name: p?.name || "Desconhecida",
-          permission_code: p?.code || "unknown"
+          permission_code: p?.code || "unknown",
         };
       });
 
     return {
       ...role,
-      permissions: associatedPermissions
+      permissions: associatedPermissions,
     };
   });
 };
 
 export interface CreateEmployeeData {
   full_name: string;
-  employee_code: string;
   phone?: string;
   role_id: string;
   shift?: string;
@@ -71,11 +70,20 @@ export interface CreateEmployeeData {
 }
 
 export const createEmployee = async (data: CreateEmployeeData) => {
-  // A criação segura de funcionários exige uma Edge Function administrativa (atômica).
-  // Não simular sucesso e não gravar parcialmente no banco público.
+  const supabase = getVyraClient();
+  if (!supabase) return { success: false, message: "Supabase VYRA2 não configurado." };
+  const { data: sessionData } = await supabase.auth.getSession();
+  if (!sessionData.session)
+    return { success: false, message: "Sua sessão expirou. Entre novamente." };
+
+  const { data: result, error } = await supabase.functions.invoke("central-employees-admin", {
+    body: { action: "employee.create", payload: data },
+  });
+  if (error) return { success: false, message: result?.error || error.message };
   return {
-    success: false,
-    message: "Provisionamento administrativo ainda não conectado. A criação requer uma Edge Function segura."
+    success: true,
+    message: `Funcionário criado. ID de acesso: ${result.employee_code}`,
+    employee_code: result.employee_code as string,
   };
 };
 
@@ -95,9 +103,9 @@ export const listRolePermissionsMap = async () => {
   return data || [];
 };
 
-export const manageRoles = async (data: any) => {
+export const manageRoles = async (_data: unknown) => {
   return {
     success: false,
-    message: "Gestão de cargos ainda não conectada. A operação requer uma Edge Function segura."
+    message: "Gestão de cargos ainda não conectada. A operação requer uma Edge Function segura.",
   };
 };

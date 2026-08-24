@@ -1,27 +1,27 @@
 import { useState, useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { 
-  KeyRound, 
-  ShieldCheck, 
-  Smartphone, 
-  Monitor, 
-  LogOut, 
-  Save, 
+import {
+  KeyRound,
+  ShieldCheck,
+  Smartphone,
+  Monitor,
+  LogOut,
+  Save,
   AlertTriangle,
   QrCode,
   CheckCircle2,
   RefreshCcw,
   Eye,
-  EyeOff
+  EyeOff,
 } from "lucide-react";
 
 import { KirvraAppShell } from "@/components/kirvra/app-shell";
-import { 
-  PageHeader, 
-  Panel, 
-  DriverAvatar, 
-  LoadingState, 
-  ErrorState, 
+import {
+  PageHeader,
+  Panel,
+  DriverAvatar,
+  LoadingState,
+  ErrorState,
   StatusBadge,
   PendingIntegrationNotice,
 } from "@/components/kirvra/primitives";
@@ -30,20 +30,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
   DialogDescription,
-  DialogFooter
+  DialogFooter,
 } from "@/components/ui/dialog";
-import { 
-  profileSecurityService, 
-  type ProfileData 
-} from "@/services/profile-security-service";
+import { profileSecurityService, type ProfileData } from "@/services/profile-security-service";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import type { Session } from "@supabase/supabase-js";
 
 export const Route = createFileRoute("/_central/meu-perfil")({
   component: ProfileSecurityPage,
@@ -54,7 +52,8 @@ function ProfileSecurityPage() {
   const [error, setError] = useState<string | null>(null);
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [saving, setSaving] = useState(false);
-  const [session, setSession] = useState<any>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [mfaEnabled, setMfaEnabled] = useState(false);
 
   // Modais
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -70,15 +69,17 @@ function ProfileSecurityPage() {
     setLoading(true);
     setError(null);
     try {
-      const [p, s] = await Promise.all([
+      const [p, s, mfa] = await Promise.all([
         profileSecurityService.getMyProfile(),
-        profileSecurityService.getCurrentSession()
+        profileSecurityService.getCurrentSession(),
+        profileSecurityService.getMfaStatus(),
       ]);
       setProfile(p);
       setSession(s);
-    } catch (err: any) {
+      setMfaEnabled(mfa.enabled);
+    } catch (err: unknown) {
       console.error("Erro ao carregar perfil:", err);
-      setError(err.message || "Erro desconhecido");
+      setError(err instanceof Error ? err.message : "Erro desconhecido");
     } finally {
       setLoading(false);
     }
@@ -88,7 +89,11 @@ function ProfileSecurityPage() {
     if (!profile) return;
     setSaving(true);
     try {
-      const result = await profileSecurityService.updateProfile(profile.id, profile.full_name, profile.phone);
+      const result = await profileSecurityService.updateProfile(
+        profile.id,
+        profile.full_name,
+        profile.phone,
+      );
       if (result.success) {
         toast.success(result.message);
       } else if (result.pendingBackend) {
@@ -96,24 +101,48 @@ function ProfileSecurityPage() {
       } else {
         toast.error(result.message);
       }
-    } catch (err: any) {
-      toast.error(err.message || "Erro ao salvar");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Erro ao salvar");
     } finally {
       setSaving(false);
     }
   }
 
-  if (loading) return <KirvraAppShell title="Meu perfil e segurança"><LoadingState label="Carregando seu perfil..." /></KirvraAppShell>;
-  if (error) return <KirvraAppShell title="Meu perfil e segurança"><ErrorState title="Não foi possível carregar seu perfil" description={error} action={<Button onClick={loadData}>Tentar novamente</Button>} /></KirvraAppShell>;
-  if (!profile) return <KirvraAppShell title="Meu perfil e segurança"><ErrorState title="Perfil não encontrado" /></KirvraAppShell>;
+  if (loading)
+    return (
+      <KirvraAppShell title="Meu perfil e segurança">
+        <LoadingState label="Carregando seu perfil..." />
+      </KirvraAppShell>
+    );
+  if (error)
+    return (
+      <KirvraAppShell title="Meu perfil e segurança">
+        <ErrorState
+          title="Não foi possível carregar seu perfil"
+          description={error}
+          action={<Button onClick={loadData}>Tentar novamente</Button>}
+        />
+      </KirvraAppShell>
+    );
+  if (!profile)
+    return (
+      <KirvraAppShell title="Meu perfil e segurança">
+        <ErrorState title="Perfil não encontrado" />
+      </KirvraAppShell>
+    );
 
-  const initials = profile.full_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+  const initials = profile.full_name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 
   return (
     <KirvraAppShell title="Meu perfil e segurança">
       <div className="space-y-6">
-        <PageHeader 
-          title="Meu perfil e segurança" 
+        <PageHeader
+          title="Meu perfil e segurança"
           description="Gerencie suas informações pessoais, credenciais de acesso e segurança da conta."
         />
 
@@ -123,46 +152,70 @@ function ProfileSecurityPage() {
             <Panel title="Informações Pessoais">
               <div className="space-y-6">
                 <div className="flex flex-col items-center gap-4 sm:flex-row">
-                  <DriverAvatar initials={initials} size="xl" className="border-4 border-primary/20" />
+                  <DriverAvatar
+                    initials={initials}
+                    size="xl"
+                    className="border-4 border-primary/20"
+                  />
                   <div className="text-center sm:text-left">
                     <h3 className="text-lg font-semibold">{profile.full_name}</h3>
-                    <p className="text-sm text-muted-foreground">{profile.role_name} • {profile.employee_code}</p>
-                    <p className="mt-1 text-xs text-muted-foreground">Turno: {profile.shift_name}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {profile.role_name} • {profile.employee_code}
+                    </p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Turno: {profile.shift_name}
+                    </p>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="full_name">Nome completo</Label>
-                    <Input 
-                      id="full_name" 
-                      value={profile.full_name} 
+                    <Input
+                      id="full_name"
+                      value={profile.full_name}
                       onChange={(e) => setProfile({ ...profile, full_name: e.target.value })}
                     />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="email">E-mail corporativo</Label>
-                    <Input id="email" value={profile.email} readOnly className="bg-muted/50 cursor-not-allowed" />
+                    <Input
+                      id="email"
+                      value={profile.email}
+                      readOnly
+                      className="bg-muted/50 cursor-not-allowed"
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="phone">Telefone de contato</Label>
-                    <Input 
-                      id="phone" 
-                      value={profile.phone || ""} 
+                    <Input
+                      id="phone"
+                      value={profile.phone || ""}
                       onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
                       placeholder="(00) 00000-0000"
                     />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="employee_code">Código interno</Label>
-                    <Input id="employee_code" value={profile.employee_code} readOnly className="bg-muted/50 cursor-not-allowed" />
+                    <Input
+                      id="employee_code"
+                      value={profile.employee_code}
+                      readOnly
+                      className="bg-muted/50 cursor-not-allowed"
+                    />
                   </div>
                 </div>
 
                 <div className="flex justify-end gap-3 pt-4 border-t border-border">
-                  <Button variant="outline" onClick={loadData} disabled={saving}>Descartar</Button>
+                  <Button variant="outline" onClick={loadData} disabled={saving}>
+                    Descartar
+                  </Button>
                   <Button onClick={handleSaveProfile} disabled={saving}>
-                    {saving ? <RefreshCcw className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                    {saving ? (
+                      <RefreshCcw className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <Save className="mr-2 h-4 w-4" />
+                    )}
                     Salvar alterações
                   </Button>
                 </div>
@@ -178,9 +231,13 @@ function ProfileSecurityPage() {
                       <KeyRound className="h-4 w-4 text-primary" />
                       <h4 className="text-sm font-medium">Senha de acesso</h4>
                     </div>
-                    <p className="text-xs text-muted-foreground">Última alteração: Data não disponível</p>
+                    <p className="text-xs text-muted-foreground">
+                      Última alteração: Data não disponível
+                    </p>
                   </div>
-                  <Button variant="outline" size="sm" onClick={() => setShowPasswordModal(true)}>Alterar</Button>
+                  <Button variant="outline" size="sm" onClick={() => setShowPasswordModal(true)}>
+                    Alterar
+                  </Button>
                 </div>
 
                 {/* MFA */}
@@ -190,11 +247,20 @@ function ProfileSecurityPage() {
                       <ShieldCheck className="h-4 w-4 text-primary" />
                       <h4 className="text-sm font-medium">Autenticação em duas etapas (MFA)</h4>
                     </div>
-                    <p className="text-xs text-muted-foreground">Adicione uma camada extra de segurança usando o Google Authenticator ou similar.</p>
+                    <p className="text-xs text-muted-foreground">
+                      Adicione uma camada extra de segurança usando o Google Authenticator ou
+                      similar.
+                    </p>
                   </div>
                   <div className="flex items-center gap-4">
-                    <StatusBadge tone="neutral">Desativado</StatusBadge>
-                    <Switch checked={false} onCheckedChange={() => setShowMfaModal(true)} />
+                    <StatusBadge tone={mfaEnabled ? "success" : "neutral"}>
+                      {mfaEnabled ? "Ativado" : "Desativado"}
+                    </StatusBadge>
+                    <Switch
+                      checked={mfaEnabled}
+                      disabled={mfaEnabled}
+                      onCheckedChange={() => setShowMfaModal(true)}
+                    />
                   </div>
                 </div>
 
@@ -205,9 +271,15 @@ function ProfileSecurityPage() {
                       <Monitor className="h-4 w-4 text-primary" />
                       <h4 className="text-sm font-medium">Sessões ativas</h4>
                     </div>
-                    <p className="text-xs text-muted-foreground">Você está conectado em 1 dispositivo no momento.</p>
+                    <p className="text-xs text-muted-foreground">
+                      {session
+                        ? "Sua sessão atual está ativa."
+                        : "Nenhuma sessão ativa encontrada."}
+                    </p>
                   </div>
-                  <Button variant="outline" size="sm" onClick={() => setShowSessionsModal(true)}>Gerenciar</Button>
+                  <Button variant="outline" size="sm" onClick={() => setShowSessionsModal(true)}>
+                    Gerenciar
+                  </Button>
                 </div>
               </div>
             </Panel>
@@ -222,7 +294,9 @@ function ProfileSecurityPage() {
                     <Monitor className="mt-0.5 h-5 w-5 text-primary" />
                     <div className="flex-1">
                       <p className="text-sm font-medium">Dispositivo Atual</p>
-                      <p className="text-xs text-muted-foreground">{navigator?.userAgent?.split(')')?.[0]?.split('(')?.[1] || "Navegador Web"}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {navigator?.userAgent?.split(")")?.[0]?.split("(")?.[1] || "Navegador Web"}
+                      </p>
                       <div className="mt-2 flex items-center gap-2">
                         <StatusBadge tone="success">Conectado agora</StatusBadge>
                       </div>
@@ -232,15 +306,18 @@ function ProfileSecurityPage() {
 
                 <div className="flex flex-col items-center justify-center gap-2 py-8 text-center border border-dashed border-border rounded-lg">
                   <Smartphone className="h-8 w-8 text-muted-foreground/40" />
-                  <p className="text-xs text-muted-foreground">Nenhum outro dispositivo registrado</p>
+                  <p className="text-xs text-muted-foreground">
+                    Nenhum outro dispositivo registrado
+                  </p>
                 </div>
 
                 <div className="bg-warning/10 border border-warning/30 rounded-md p-3">
                   <div className="flex gap-2 text-warning">
                     <AlertTriangle className="h-4 w-4 shrink-0" />
                     <p className="text-[10px] leading-relaxed">
-                      O gerenciamento individual de dispositivos requer uma tabela dedicada no backend. 
-                      Para encerrar o acesso em outros locais, use o gerenciamento de sessões.
+                      O gerenciamento individual de dispositivos requer uma tabela dedicada no
+                      backend. Para encerrar o acesso em outros locais, use o gerenciamento de
+                      sessões.
                     </p>
                   </div>
                 </div>
@@ -253,9 +330,9 @@ function ProfileSecurityPage() {
       {/* Modais */}
       <PasswordModal open={showPasswordModal} onOpenChange={setShowPasswordModal} />
       <MfaModal open={showMfaModal} onOpenChange={setShowMfaModal} />
-      <SessionsModal 
-        open={showSessionsModal} 
-        onOpenChange={setShowSessionsModal} 
+      <SessionsModal
+        open={showSessionsModal}
+        onOpenChange={setShowSessionsModal}
         onSignOutOthers={() => setShowSignOutOthersConfirm(true)}
       />
 
@@ -277,7 +354,13 @@ function ProfileSecurityPage() {
   );
 }
 
-function PasswordModal({ open, onOpenChange }: { open: boolean, onOpenChange: (o: boolean) => void }): React.JSX.Element {
+function PasswordModal({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (o: boolean) => void;
+}): React.JSX.Element {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
@@ -304,8 +387,8 @@ function PasswordModal({ open, onOpenChange }: { open: boolean, onOpenChange: (o
       } else {
         toast.error(res.message);
       }
-    } catch (err: any) {
-      toast.error(err.message || "Erro ao atualizar senha");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Erro ao atualizar senha");
     } finally {
       setLoading(false);
     }
@@ -324,13 +407,13 @@ function PasswordModal({ open, onOpenChange }: { open: boolean, onOpenChange: (o
           <div className="space-y-2">
             <Label htmlFor="new-pass">Nova senha</Label>
             <div className="relative">
-              <Input 
-                id="new-pass" 
-                type={showPass ? "text" : "password"} 
+              <Input
+                id="new-pass"
+                type={showPass ? "text" : "password"}
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
               />
-              <button 
+              <button
                 type="button"
                 className="absolute right-3 top-2.5 text-muted-foreground hover:text-foreground"
                 onClick={() => setShowPass(!showPass)}
@@ -341,26 +424,38 @@ function PasswordModal({ open, onOpenChange }: { open: boolean, onOpenChange: (o
           </div>
           <div className="space-y-2">
             <Label htmlFor="confirm-pass">Confirmar nova senha</Label>
-            <Input 
-              id="confirm-pass" 
-              type={showPass ? "text" : "password"} 
+            <Input
+              id="confirm-pass"
+              type={showPass ? "text" : "password"}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
           </div>
           <div className="rounded-md bg-muted/50 p-3 text-[11px] text-muted-foreground space-y-1">
             <p className="font-semibold text-foreground mb-1">Critérios mínimos:</p>
-            <p className={cn("flex items-center gap-1.5", newPassword.length >= 8 && "text-success")}>
+            <p
+              className={cn("flex items-center gap-1.5", newPassword.length >= 8 && "text-success")}
+            >
               <CheckCircle2 className="h-3 w-3" /> Pelo menos 8 caracteres
             </p>
-            <p className="flex items-center gap-1.5"><CheckCircle2 className="h-3 w-3" /> Letras maiúsculas e minúsculas</p>
-            <p className="flex items-center gap-1.5"><CheckCircle2 className="h-3 w-3" /> Pelo menos um número ou símbolo</p>
+            <p className="flex items-center gap-1.5">
+              <CheckCircle2 className="h-3 w-3" /> Letras maiúsculas e minúsculas
+            </p>
+            <p className="flex items-center gap-1.5">
+              <CheckCircle2 className="h-3 w-3" /> Pelo menos um número ou símbolo
+            </p>
           </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            Cancelar
+          </Button>
           <Button onClick={handleUpdate} disabled={loading}>
-            {loading ? <RefreshCcw className="mr-2 h-4 w-4 animate-spin" /> : <KeyRound className="mr-2 h-4 w-4" />}
+            {loading ? (
+              <RefreshCcw className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <KeyRound className="mr-2 h-4 w-4" />
+            )}
             Confirmar alteração
           </Button>
         </DialogFooter>
@@ -369,7 +464,13 @@ function PasswordModal({ open, onOpenChange }: { open: boolean, onOpenChange: (o
   );
 }
 
-function MfaModal({ open, onOpenChange }: { open: boolean, onOpenChange: (o: boolean) => void }): React.JSX.Element {
+function MfaModal({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (o: boolean) => void;
+}): React.JSX.Element {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
@@ -382,41 +483,60 @@ function MfaModal({ open, onOpenChange }: { open: boolean, onOpenChange: (o: boo
         <div className="space-y-6 py-4">
           <div className="flex items-center gap-4 p-4 rounded-lg bg-warning/10 border border-warning/30 text-warning">
             <AlertTriangle className="h-5 w-5 shrink-0" />
-            <p className="text-xs font-medium">O fluxo de login ainda não suporta redirecionamento MFA. A ativação pode impedir seu próximo acesso.</p>
+            <p className="text-xs font-medium">
+              O fluxo de login ainda não suporta redirecionamento MFA. A ativação pode impedir seu
+              próximo acesso.
+            </p>
           </div>
 
           <div className="space-y-4">
             <div className="flex gap-3">
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/20 text-xs font-bold text-primary">1</span>
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/20 text-xs font-bold text-primary">
+                1
+              </span>
               <div>
                 <p className="text-sm font-medium">Instale um app autenticador</p>
-                <p className="text-xs text-muted-foreground">Use Google Authenticator, Authy ou Microsoft Authenticator.</p>
-              </div>
-            </div>
-            
-            <div className="flex gap-3">
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/20 text-xs font-bold text-primary">2</span>
-              <div className="space-y-3">
-                <p className="text-sm font-medium">Escaneie o QR Code abaixo</p>
-                <div className="flex justify-center p-4 border border-border rounded-lg bg-white">
-                   <QrCode className="h-32 w-32 text-slate-800 opacity-20" />
-                   {/* Real QR code logic would go here */}
-                </div>
-                <p className="text-[10px] text-center text-muted-foreground uppercase tracking-widest">Aguardando geração do desafio...</p>
+                <p className="text-xs text-muted-foreground">
+                  Use Google Authenticator, Authy ou Microsoft Authenticator.
+                </p>
               </div>
             </div>
 
             <div className="flex gap-3">
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/20 text-xs font-bold text-primary">3</span>
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/20 text-xs font-bold text-primary">
+                2
+              </span>
+              <div className="space-y-3">
+                <p className="text-sm font-medium">Escaneie o QR Code abaixo</p>
+                <div className="flex justify-center p-4 border border-border rounded-lg bg-white">
+                  <QrCode className="h-32 w-32 text-slate-800 opacity-20" />
+                  {/* Real QR code logic would go here */}
+                </div>
+                <p className="text-[10px] text-center text-muted-foreground uppercase tracking-widest">
+                  Aguardando geração do desafio...
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/20 text-xs font-bold text-primary">
+                3
+              </span>
               <div className="flex-1 space-y-2">
                 <p className="text-sm font-medium">Insira o código de verificação</p>
-                <Input placeholder="000 000" disabled className="text-center text-lg tracking-[0.5em]" />
+                <Input
+                  placeholder="000 000"
+                  disabled
+                  className="text-center text-lg tracking-[0.5em]"
+                />
               </div>
             </div>
           </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            Cancelar
+          </Button>
           <Button disabled>Verificar e Ativar</Button>
         </DialogFooter>
       </DialogContent>
@@ -424,14 +544,14 @@ function MfaModal({ open, onOpenChange }: { open: boolean, onOpenChange: (o: boo
   );
 }
 
-function SessionsModal({ 
-  open, 
+function SessionsModal({
+  open,
   onOpenChange,
-  onSignOutOthers
-}: { 
-  open: boolean, 
-  onOpenChange: (o: boolean) => void,
-  onSignOutOthers: () => void
+  onSignOutOthers,
+}: {
+  open: boolean;
+  onOpenChange: (o: boolean) => void;
+  onSignOutOthers: () => void;
 }): React.JSX.Element {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -451,14 +571,16 @@ function SessionsModal({
                   <p className="text-sm font-medium">Sessão Atual (Este navegador)</p>
                   <StatusBadge tone="success">Conectado</StatusBadge>
                 </div>
-                <p className="text-xs text-muted-foreground">IP: 189.120.45.XX • São Paulo, BR</p>
+                <p className="text-xs text-muted-foreground">
+                  Este navegador • sessão autenticada pelo Supabase
+                </p>
               </div>
             </div>
           </div>
-          
+
           <div className="flex justify-center p-4">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="text-critical hover:bg-critical/10 hover:text-critical"
               onClick={() => {
                 onOpenChange(false);
