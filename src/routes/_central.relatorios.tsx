@@ -256,7 +256,7 @@ function ReportsPage() {
                       <span className="text-sm font-medium text-foreground">Confirmações humanas</span>
                       <div className="flex items-center gap-2">
                         <StatusBadge tone="success" dot={false} className="bg-success/10 text-success border-success/20 px-1.5 py-0">
-                          {data?.quality.humanConfirmationsRate.toFixed(1)}%
+                          {data?.quality.humanConfirmationsRate.toFixed(1) ?? "0.0"}%
                         </StatusBadge>
                         <span className="text-[10px] text-muted-foreground">{data?.quality.totalReviewed} análises</span>
                       </div>
