@@ -182,10 +182,15 @@ export async function fetchReportData(filters: ReportFilters): Promise<ReportDat
 
   alerts.forEach(a => {
     const type = (a.threat_type || "").toLowerCase();
-    if (type.includes("arma") || type.includes("assalto")) categoryMap["Possível arma/assalto"]++;
-    else if (type.includes("violencia") || type.includes("corporal")) categoryMap["Violência corporal"]++;
-    else if (type.includes("audio") || type.includes("palavra")) categoryMap["Áudio/palavra de risco"]++;
-    else categoryMap["Outros sinais"]++;
+    if (type.includes("arma") || type.includes("assalto")) {
+      categoryMap["Possível arma/assalto"]++;
+    } else if (type.includes("violencia") || type.includes("corporal")) {
+      categoryMap["Violência corporal"]++;
+    } else if (type.includes("audio") || type.includes("palavra")) {
+      categoryMap["Áudio/palavra de risco"]++;
+    } else {
+      categoryMap["Outros sinais"]++;
+    }
   });
 
   const categories: ThreatCategoryData[] = Object.entries(categoryMap).map(([category, count]) => ({
