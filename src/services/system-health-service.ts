@@ -21,10 +21,10 @@ export interface InfrastructureEvent {
 }
 
 export interface SystemHealthOverview {
-  availability: string;
+  availability: string | null;
   averageLatencyMs: number | null;
   aiQueueSize: number | null;
-  incidentCount: number;
+  incidentCount: number | null;
   services: ServiceHealthSnapshot[];
   recentEvents: InfrastructureEvent[];
   lastUpdateAt: string;
