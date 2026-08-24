@@ -37,7 +37,7 @@ export async function getMonitoringData(): Promise<MonitoringData> {
       .map((session) => ({
         ...session,
         state: isRecentHeartbeat(session.lastHeartbeatAt) ? session.state : "offline",
-      })), 
+      })),
     alerts: context.alerts,
   };
 }
