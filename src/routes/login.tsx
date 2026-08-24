@@ -35,8 +35,7 @@ export const Route = createFileRoute("/login")({
       { property: "og:title", content: "Acesso à KIRVRA Central" },
       {
         property: "og:description",
-        content:
-          "Ambiente operacional restrito de vigilância KIRVRA. Sessão protegida e auditada.",
+        content: "Ambiente operacional restrito de vigilância KIRVRA. Sessão protegida e auditada.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -103,9 +102,7 @@ function LoginPage() {
     setError(null);
 
     if (remainingLockSeconds() > 0) {
-      setError(
-        `Muitas tentativas. Aguarde ${remainingLockSeconds()} s para tentar novamente.`,
-      );
+      setError(`Muitas tentativas. Aguarde ${remainingLockSeconds()} s para tentar novamente.`);
       return;
     }
 
@@ -133,12 +130,8 @@ function LoginPage() {
   return (
     <KirvraAuthLayout>
       <div className="rounded-xl border border-border bg-card p-6 shadow-[0_24px_60px_-30px_rgba(0,0,0,0.9)]">
-        <h2 className="text-lg font-semibold text-foreground">
-          Acesso à Central
-        </h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Use suas credenciais internas KIRVRA.
-        </p>
+        <h2 className="text-lg font-semibold text-foreground">Acesso à Central</h2>
+        <p className="mt-1 text-sm text-muted-foreground">Use suas credenciais internas KIRVRA.</p>
 
         {!backendAvailable ? (
           <div className="mt-4">
@@ -148,9 +141,7 @@ function LoginPage() {
 
         <form onSubmit={handleSubmit} className="mt-5 space-y-4" noValidate>
           <div className="space-y-1.5">
-            <Label htmlFor="identifier">
-              Identificação interna ou e-mail corporativo
-            </Label>
+            <Label htmlFor="identifier">Identificação interna ou e-mail corporativo</Label>
             <Input
               id="identifier"
               name="identifier"
@@ -200,8 +191,7 @@ function LoginPage() {
               onChange={(event) => setRemember(event.target.checked)}
               className="h-3.5 w-3.5 accent-primary"
             />
-            Manter esta sessão neste dispositivo (persistência segura do
-            Supabase)
+            Manter esta sessão neste dispositivo (persistência segura do Supabase)
           </label>
 
           {error ? (
@@ -240,8 +230,8 @@ function LoginPage() {
               Entrar no modo demonstração
             </Button>
             <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
-              Habilitado por VITE_KIRVRA_DEMO_MODE. Dados simulados, sem
-              gravação e sem ações críticas.
+              Habilitado por VITE_KIRVRA_DEMO_MODE. Dados simulados, sem gravação e sem ações
+              críticas.
             </p>
           </div>
         ) : null}

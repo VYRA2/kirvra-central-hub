@@ -97,11 +97,7 @@ export function ConfirmActionDialog({
         ) : null}
 
         <DialogFooter>
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={() => onOpenChange(false)}
-          >
+          <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
           <Button

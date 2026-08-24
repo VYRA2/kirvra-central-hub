@@ -1,5 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Edit2, ShieldOff, Car, History, FileText, Ban, ShieldCheck, User, Clock, MapPin, ChevronRight } from "lucide-react";
+import {
+  Edit2,
+  ShieldOff,
+  Car,
+  History,
+  FileText,
+  Ban,
+  ShieldCheck,
+  User,
+  Clock,
+  MapPin,
+  ChevronRight,
+} from "lucide-react";
 
 import { KirvraAppShell, BackLink } from "@/components/kirvra/app-shell";
 import {
@@ -70,13 +82,25 @@ function DriverDetailPage() {
         <div className="grid gap-4 lg:grid-cols-[1fr_360px]">
           <div className="space-y-4">
             {/* Perfil Principal */}
-            <Panel className="relative overflow-hidden" bodyClassName={undefined} title={undefined} description={undefined} actions={undefined}>
+            <Panel
+              className="relative overflow-hidden"
+              bodyClassName={undefined}
+              title={undefined}
+              description={undefined}
+              actions={undefined}
+            >
               <div className="flex flex-col gap-6 md:flex-row md:items-start">
                 <div className="flex flex-col items-center gap-3">
-                    <DriverAvatar initials={driver.initials} size="lg" />
-                    <StatusBadge tone={driver.registrationStatus === "verificado" ? "success" : "warning"}>
-                      {driver.registrationStatus === "verificado" ? "Verificado" : driver.registrationStatus === "suspenso" ? "Suspenso" : "Em análise"}
-                    </StatusBadge>
+                  <DriverAvatar initials={driver.initials} size="lg" />
+                  <StatusBadge
+                    tone={driver.registrationStatus === "verificado" ? "success" : "warning"}
+                  >
+                    {driver.registrationStatus === "verificado"
+                      ? "Verificado"
+                      : driver.registrationStatus === "suspenso"
+                        ? "Suspenso"
+                        : "Em análise"}
+                  </StatusBadge>
                 </div>
 
                 <div className="flex-1">
@@ -89,13 +113,21 @@ function DriverDetailPage() {
                     <DataField label="Telefone" value={driver.phone || "—"} />
                     <DataField
                       label="Nascimento"
-                      value={driver.birthDate ? format(new Date(driver.birthDate), "dd/MM/yyyy") : "—"}
+                      value={
+                        driver.birthDate ? format(new Date(driver.birthDate), "dd/MM/yyyy") : "—"
+                      }
                     />
                     <DataField
                       label="Assinatura"
                       value={
-                        <StatusBadge tone={driver.subscriptionStatus === "ativa" ? "success" : "warning"}>
-                          {driver.subscriptionStatus === "ativa" ? "Ativa" : driver.subscriptionStatus === "cancelada" ? "Cancelada" : "Pendente"}
+                        <StatusBadge
+                          tone={driver.subscriptionStatus === "ativa" ? "success" : "warning"}
+                        >
+                          {driver.subscriptionStatus === "ativa"
+                            ? "Ativa"
+                            : driver.subscriptionStatus === "cancelada"
+                              ? "Cancelada"
+                              : "Pendente"}
                         </StatusBadge>
                       }
                     />
@@ -105,7 +137,11 @@ function DriverDetailPage() {
                     />
                     <DataField
                       label="Contato emergencial"
-                      value={driver.emergencyContact ? `${driver.emergencyContact.name} (${driver.emergencyContact.relationship || "Outro"})` : "—"}
+                      value={
+                        driver.emergencyContact
+                          ? `${driver.emergencyContact.name} (${driver.emergencyContact.relationship || "Outro"})`
+                          : "—"
+                      }
                     />
                   </div>
                 </div>
@@ -136,14 +172,10 @@ function DriverDetailPage() {
                       </div>
                       <div className="leading-tight">
                         <p className="text-sm font-semibold text-foreground">
-                          {v.make} {v.model} {v.year} ·{" "}
-                          <span className="uppercase">{v.plate}</span>
+                          {v.make} {v.model} {v.year} · <span className="uppercase">{v.plate}</span>
                         </p>
                         <p className="text-[11px] text-muted-foreground">
-                          {v.color} ·{" "}
-                          {v.documentVerified
-                            ? "documento verificado"
-                            : "pendente"}
+                          {v.color} · {v.documentVerified ? "documento verificado" : "pendente"}
                         </p>
                       </div>
                     </div>
@@ -160,7 +192,13 @@ function DriverDetailPage() {
 
           <div className="space-y-4">
             {/* Resumo Operacional */}
-            <Panel title="Resumo operacional" className={undefined} bodyClassName={undefined} actions={undefined} description={undefined}>
+            <Panel
+              title="Resumo operacional"
+              className={undefined}
+              bodyClassName={undefined}
+              actions={undefined}
+              description={undefined}
+            >
               <div className="grid grid-cols-2 gap-3">
                 <MetricCard
                   label="Sessões"
@@ -178,7 +216,13 @@ function DriverDetailPage() {
             </Panel>
 
             {/* Atividade Recente */}
-            <Panel title="Atividade recente" className={undefined} bodyClassName={undefined} actions={undefined} description={undefined}>
+            <Panel
+              title="Atividade recente"
+              className={undefined}
+              bodyClassName={undefined}
+              actions={undefined}
+              description={undefined}
+            >
               <div className="relative space-y-6 before:absolute before:top-2 before:bottom-2 before:left-[11px] before:w-0.5 before:bg-border">
                 <TimelineItem
                   number={1}

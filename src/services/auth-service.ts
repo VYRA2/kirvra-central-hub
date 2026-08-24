@@ -136,9 +136,7 @@ function readDemoSession(): CentralSession | null {
     clearDemoStorage();
     return null;
   }
-  return window.localStorage.getItem(DEMO_STORAGE_KEY) === "1"
-    ? buildDemoSession()
-    : null;
+  return window.localStorage.getItem(DEMO_STORAGE_KEY) === "1" ? buildDemoSession() : null;
 }
 
 /** Inicia, de forma explícita, uma sessão local de demonstração. */
@@ -245,9 +243,7 @@ export function getSession(): CentralSession | null {
   return session;
 }
 
-export function subscribeSession(
-  listener: (s: CentralSession | null) => void,
-): () => void {
+export function subscribeSession(listener: (s: CentralSession | null) => void): () => void {
   listeners.add(listener);
   return () => {
     listeners.delete(listener);
@@ -263,10 +259,7 @@ export function remainingLockSeconds(): number {
   return diff > 0 ? Math.ceil(diff / 1000) : 0;
 }
 
-export function hasPermission(
-  value: CentralSession | null,
-  permission: PermissionCode,
-): boolean {
+export function hasPermission(value: CentralSession | null, permission: PermissionCode): boolean {
   return Boolean(value?.permissions.includes(permission));
 }
 
@@ -288,10 +281,7 @@ export function loginIdentifierToEmail(identifier: string): string {
   return `${value.toLowerCase()}@central.kirvra.internal`;
 }
 
-export async function signIn(
-  identifier: string,
-  password: string,
-): Promise<SignInResult> {
+export async function signIn(identifier: string, password: string): Promise<SignInResult> {
   if (remainingLockSeconds() > 0) {
     return {
       status: "error",
@@ -323,8 +313,7 @@ export async function signIn(
   } catch {
     return {
       status: "error",
-      message:
-        "Falha de conexão com o VYRA2. Verifique a rede e tente novamente.",
+      message: "Falha de conexão com o VYRA2. Verifique a rede e tente novamente.",
     };
   }
 
@@ -336,8 +325,7 @@ export async function signIn(
       failedAttempts = 0;
       return {
         status: "error",
-        message:
-          "Limite de tentativas atingido. Aguarde 60 s antes de tentar novamente.",
+        message: "Limite de tentativas atingido. Aguarde 60 s antes de tentar novamente.",
       };
     }
     return { status: "error", message: "Credenciais inválidas." };
@@ -370,15 +358,12 @@ export function validatePasswordPolicy(value: string): string[] {
   if (value.length < 12) problems.push("Mínimo de 12 caracteres");
   if (!/[A-Za-zÀ-ÿ]/.test(value)) problems.push("Pelo menos uma letra");
   if (!/[0-9]/.test(value)) problems.push("Pelo menos um número");
-  if (!/[^A-Za-z0-9À-ÿ]/.test(value))
-    problems.push("Pelo menos um caractere especial");
+  if (!/[^A-Za-z0-9À-ÿ]/.test(value)) problems.push("Pelo menos um caractere especial");
   return problems;
 }
 
 export type ServiceResult =
-  | { status: "ok" }
-  | { status: "pending"; message: string }
-  | { status: "error"; message: string };
+  { status: "ok" } | { status: "pending"; message: string } | { status: "error"; message: string };
 
 /**
  * Conclui o primeiro acesso: troca real da senha + atualização de
@@ -410,8 +395,7 @@ export async function completeFirstAccess(input: {
   if (!client) {
     return {
       status: "error",
-      message:
-        "Integração pendente: sem as credenciais do VYRA2 a senha não pode ser alterada.",
+      message: "Integração pendente: sem as credenciais do VYRA2 a senha não pode ser alterada.",
     };
   }
 
@@ -426,9 +410,7 @@ export async function completeFirstAccess(input: {
   if (passwordUpdate.error) {
     return {
       status: "error",
-      message:
-        passwordUpdate.error.message ||
-        "Não foi possível definir a nova senha.",
+      message: passwordUpdate.error.message || "Não foi possível definir a nova senha.",
     };
   }
 
@@ -447,9 +429,7 @@ export async function completeFirstAccess(input: {
   return { status: "ok" };
 }
 
-export async function requestPasswordReset(
-  identifier: string,
-): Promise<ServiceResult> {
+export async function requestPasswordReset(identifier: string): Promise<ServiceResult> {
   if (!identifier.trim()) {
     return {
       status: "error",
@@ -460,13 +440,10 @@ export async function requestPasswordReset(
   if (!client) {
     return {
       status: "error",
-      message:
-        "Integração pendente: a redefinição exige as credenciais do VYRA2.",
+      message: "Integração pendente: a redefinição exige as credenciais do VYRA2.",
     };
   }
-  const { error } = await client.auth.resetPasswordForEmail(
-    loginIdentifierToEmail(identifier),
-  );
+  const { error } = await client.auth.resetPasswordForEmail(loginIdentifierToEmail(identifier));
   if (error) {
     return {
       status: "error",

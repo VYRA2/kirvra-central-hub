@@ -255,8 +255,7 @@ export const drivers: Driver[] = [
   },
 ];
 
-const track = (points: Array<[number, number]>) =>
-  points.map(([x, y]) => ({ x, y }));
+const track = (points: Array<[number, number]>) => points.map(([x, y]) => ({ x, y }));
 
 export const sessions: ProtectionSession[] = [
   {
@@ -730,9 +729,8 @@ export const alertAudios: AlertAudio[] = [
     alertId: "alt-9001",
     durationSeconds: 42,
     waveform: [
-      12, 26, 18, 34, 52, 40, 66, 84, 72, 58, 44, 62, 90, 76, 54, 38, 28, 46,
-      70, 88, 64, 42, 30, 22, 36, 58, 74, 50, 32, 20, 28, 44, 62, 80, 56, 34,
-      24, 40, 60, 46,
+      12, 26, 18, 34, 52, 40, 66, 84, 72, 58, 44, 62, 90, 76, 54, 38, 28, 46, 70, 88, 64, 42, 30,
+      22, 36, 58, 74, 50, 32, 20, 28, 44, 62, 80, 56, 34, 24, 40, 60, 46,
     ],
     signedUrl: null,
   },

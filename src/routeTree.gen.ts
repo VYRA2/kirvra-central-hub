@@ -25,6 +25,8 @@ import { Route as CentralSaudeDoSistemaRouteImport } from './routes/_central.sau
 import { Route as CentralVeiculosRouteImport } from './routes/_central.veiculos'
 import { Route as CentralAlertasIndexRouteImport } from './routes/_central.alertas.index'
 import { Route as CentralAlertasAlertIdRouteImport } from './routes/_central.alertas.$alertId'
+import { Route as CentralEquipeCargosPermissoesRouteImport } from './routes/_central.equipe.cargos-permissoes'
+import { Route as CentralEquipeNovoRouteImport } from './routes/_central.equipe.novo'
 import { Route as CentralHistoricoAlertasRouteImport } from './routes/_central.historico.alertas'
 import { Route as CentralMotoristasIndexRouteImport } from './routes/_central.motoristas.index'
 import { Route as CentralMotoristasDriverIdRouteImport } from './routes/_central.motoristas.$driverId'
@@ -109,6 +111,17 @@ const CentralAlertasAlertIdRoute = CentralAlertasAlertIdRouteImport.update({
   path: '/alertas/$alertId',
   getParentRoute: () => CentralRoute,
 } as any)
+const CentralEquipeCargosPermissoesRoute =
+  CentralEquipeCargosPermissoesRouteImport.update({
+    id: '/cargos-permissoes',
+    path: '/cargos-permissoes',
+    getParentRoute: () => CentralEquipeRoute,
+  } as any)
+const CentralEquipeNovoRoute = CentralEquipeNovoRouteImport.update({
+  id: '/novo',
+  path: '/novo',
+  getParentRoute: () => CentralEquipeRoute,
+} as any)
 const CentralHistoricoAlertasRoute = CentralHistoricoAlertasRouteImport.update({
   id: '/historico/alertas',
   path: '/historico/alertas',
@@ -138,7 +151,7 @@ export interface FileRoutesByFullPath {
   '/auditoria': typeof CentralAuditoriaRoute
   '/central': typeof CentralCentralRoute
   '/configuracoes': typeof CentralConfiguracoesRoute
-  '/equipe': typeof CentralEquipeRoute
+  '/equipe': typeof CentralEquipeRouteWithChildren
   '/escalas': typeof CentralEscalasRoute
   '/evidencias': typeof CentralEvidenciasRoute
   '/monitoramento': typeof CentralMonitoramentoRoute
@@ -146,6 +159,8 @@ export interface FileRoutesByFullPath {
   '/saude-do-sistema': typeof CentralSaudeDoSistemaRoute
   '/veiculos': typeof CentralVeiculosRoute
   '/alertas/$alertId': typeof CentralAlertasAlertIdRoute
+  '/equipe/cargos-permissoes': typeof CentralEquipeCargosPermissoesRoute
+  '/equipe/novo': typeof CentralEquipeNovoRoute
   '/historico/alertas': typeof CentralHistoricoAlertasRoute
   '/motoristas/$driverId': typeof CentralMotoristasDriverIdRoute
   '/sessoes/$sessionId': typeof CentralSessoesSessionIdRoute
@@ -159,7 +174,7 @@ export interface FileRoutesByTo {
   '/auditoria': typeof CentralAuditoriaRoute
   '/central': typeof CentralCentralRoute
   '/configuracoes': typeof CentralConfiguracoesRoute
-  '/equipe': typeof CentralEquipeRoute
+  '/equipe': typeof CentralEquipeRouteWithChildren
   '/escalas': typeof CentralEscalasRoute
   '/evidencias': typeof CentralEvidenciasRoute
   '/monitoramento': typeof CentralMonitoramentoRoute
@@ -167,6 +182,8 @@ export interface FileRoutesByTo {
   '/saude-do-sistema': typeof CentralSaudeDoSistemaRoute
   '/veiculos': typeof CentralVeiculosRoute
   '/alertas/$alertId': typeof CentralAlertasAlertIdRoute
+  '/equipe/cargos-permissoes': typeof CentralEquipeCargosPermissoesRoute
+  '/equipe/novo': typeof CentralEquipeNovoRoute
   '/historico/alertas': typeof CentralHistoricoAlertasRoute
   '/motoristas/$driverId': typeof CentralMotoristasDriverIdRoute
   '/sessoes/$sessionId': typeof CentralSessoesSessionIdRoute
@@ -182,7 +199,7 @@ export interface FileRoutesById {
   '/_central/auditoria': typeof CentralAuditoriaRoute
   '/_central/central': typeof CentralCentralRoute
   '/_central/configuracoes': typeof CentralConfiguracoesRoute
-  '/_central/equipe': typeof CentralEquipeRoute
+  '/_central/equipe': typeof CentralEquipeRouteWithChildren
   '/_central/escalas': typeof CentralEscalasRoute
   '/_central/evidencias': typeof CentralEvidenciasRoute
   '/_central/monitoramento': typeof CentralMonitoramentoRoute
@@ -190,6 +207,8 @@ export interface FileRoutesById {
   '/_central/saude-do-sistema': typeof CentralSaudeDoSistemaRoute
   '/_central/veiculos': typeof CentralVeiculosRoute
   '/_central/alertas/$alertId': typeof CentralAlertasAlertIdRoute
+  '/_central/equipe/cargos-permissoes': typeof CentralEquipeCargosPermissoesRoute
+  '/_central/equipe/novo': typeof CentralEquipeNovoRoute
   '/_central/historico/alertas': typeof CentralHistoricoAlertasRoute
   '/_central/motoristas/$driverId': typeof CentralMotoristasDriverIdRoute
   '/_central/sessoes/$sessionId': typeof CentralSessoesSessionIdRoute
@@ -213,6 +232,8 @@ export interface FileRouteTypes {
     | '/saude-do-sistema'
     | '/veiculos'
     | '/alertas/$alertId'
+    | '/equipe/cargos-permissoes'
+    | '/equipe/novo'
     | '/historico/alertas'
     | '/motoristas/$driverId'
     | '/sessoes/$sessionId'
@@ -234,6 +255,8 @@ export interface FileRouteTypes {
     | '/saude-do-sistema'
     | '/veiculos'
     | '/alertas/$alertId'
+    | '/equipe/cargos-permissoes'
+    | '/equipe/novo'
     | '/historico/alertas'
     | '/motoristas/$driverId'
     | '/sessoes/$sessionId'
@@ -256,6 +279,8 @@ export interface FileRouteTypes {
     | '/_central/saude-do-sistema'
     | '/_central/veiculos'
     | '/_central/alertas/$alertId'
+    | '/_central/equipe/cargos-permissoes'
+    | '/_central/equipe/novo'
     | '/_central/historico/alertas'
     | '/_central/motoristas/$driverId'
     | '/_central/sessoes/$sessionId'
@@ -384,6 +409,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CentralAlertasAlertIdRouteImport
       parentRoute: typeof CentralRoute
     }
+    '/_central/equipe/cargos-permissoes': {
+      id: '/_central/equipe/cargos-permissoes'
+      path: '/cargos-permissoes'
+      fullPath: '/equipe/cargos-permissoes'
+      preLoaderRoute: typeof CentralEquipeCargosPermissoesRouteImport
+      parentRoute: typeof CentralEquipeRoute
+    }
+    '/_central/equipe/novo': {
+      id: '/_central/equipe/novo'
+      path: '/novo'
+      fullPath: '/equipe/novo'
+      preLoaderRoute: typeof CentralEquipeNovoRouteImport
+      parentRoute: typeof CentralEquipeRoute
+    }
     '/_central/historico/alertas': {
       id: '/_central/historico/alertas'
       path: '/historico/alertas'
@@ -415,11 +454,25 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface CentralEquipeRouteChildren {
+  CentralEquipeCargosPermissoesRoute: typeof CentralEquipeCargosPermissoesRoute
+  CentralEquipeNovoRoute: typeof CentralEquipeNovoRoute
+}
+
+const CentralEquipeRouteChildren: CentralEquipeRouteChildren = {
+  CentralEquipeCargosPermissoesRoute: CentralEquipeCargosPermissoesRoute,
+  CentralEquipeNovoRoute: CentralEquipeNovoRoute,
+}
+
+const CentralEquipeRouteWithChildren = CentralEquipeRoute._addFileChildren(
+  CentralEquipeRouteChildren,
+)
+
 interface CentralRouteChildren {
   CentralAuditoriaRoute: typeof CentralAuditoriaRoute
   CentralCentralRoute: typeof CentralCentralRoute
   CentralConfiguracoesRoute: typeof CentralConfiguracoesRoute
-  CentralEquipeRoute: typeof CentralEquipeRoute
+  CentralEquipeRoute: typeof CentralEquipeRouteWithChildren
   CentralEscalasRoute: typeof CentralEscalasRoute
   CentralEvidenciasRoute: typeof CentralEvidenciasRoute
   CentralMonitoramentoRoute: typeof CentralMonitoramentoRoute
@@ -438,7 +491,7 @@ const CentralRouteChildren: CentralRouteChildren = {
   CentralAuditoriaRoute: CentralAuditoriaRoute,
   CentralCentralRoute: CentralCentralRoute,
   CentralConfiguracoesRoute: CentralConfiguracoesRoute,
-  CentralEquipeRoute: CentralEquipeRoute,
+  CentralEquipeRoute: CentralEquipeRouteWithChildren,
   CentralEscalasRoute: CentralEscalasRoute,
   CentralEvidenciasRoute: CentralEvidenciasRoute,
   CentralMonitoramentoRoute: CentralMonitoramentoRoute,

@@ -40,12 +40,7 @@ interface PostgrestLikeError {
 function isMissingSchema(error: PostgrestLikeError | null): boolean {
   if (!error) return false;
   const code = error.code ?? "";
-  return (
-    code === "42P01" ||
-    code === "42883" ||
-    code === "PGRST202" ||
-    code === "PGRST205"
-  );
+  return code === "42P01" || code === "42883" || code === "PGRST202" || code === "PGRST205";
 }
 
 function migrationPendingMessage(): string {
@@ -53,9 +48,7 @@ function migrationPendingMessage(): string {
 }
 
 function normalizeStatus(value: unknown): CentralProfileStatus | null {
-  return value === "ativo" || value === "inativo" || value === "bloqueado"
-    ? value
-    : null;
+  return value === "ativo" || value === "inativo" || value === "bloqueado" ? value : null;
 }
 
 function initialsFrom(fullName: string): string {
@@ -118,16 +111,13 @@ export async function loadCentralAccess(
 
   const profile: CentralProfile = {
     id: userId,
-    employeeCode:
-      typeof row["employee_code"] === "string" ? row["employee_code"] : "",
+    employeeCode: typeof row["employee_code"] === "string" ? row["employee_code"] : "",
     fullName,
     phone: typeof row["phone"] === "string" ? row["phone"] : null,
-    avatarUrl:
-      typeof row["avatar_url"] === "string" ? row["avatar_url"] : null,
+    avatarUrl: typeof row["avatar_url"] === "string" ? row["avatar_url"] : null,
     status,
     primeiroAcesso: row["primeiro_acesso"] === true,
-    lastAccessAt:
-      typeof row["last_access_at"] === "string" ? row["last_access_at"] : null,
+    lastAccessAt: typeof row["last_access_at"] === "string" ? row["last_access_at"] : null,
   };
 
   const roleResponse = await client.rpc("central_role");
@@ -143,10 +133,7 @@ export async function loadCentralAccess(
   }
 
   const roleCode = roleResponse.data;
-  if (
-    typeof roleCode !== "string" ||
-    !KNOWN_ROLES.includes(roleCode as EmployeeRole)
-  ) {
+  if (typeof roleCode !== "string" || !KNOWN_ROLES.includes(roleCode as EmployeeRole)) {
     return { status: "denied", reason: "no_role" };
   }
 
@@ -202,8 +189,7 @@ export async function logCentralEvent(
     _entity_id: input.entityId ?? null,
     _previous: null,
     _next: input.next ?? null,
-    _user_agent:
-      typeof navigator !== "undefined" ? navigator.userAgent : null,
+    _user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
   });
   if (error) {
     return { ok: false, message: "Não foi possível registrar a auditoria." };

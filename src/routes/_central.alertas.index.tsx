@@ -13,11 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { KirvraAppShell } from "@/components/kirvra/app-shell";
-import {
-  FilterBar,
-  FilterField,
-  OperationalTable,
-} from "@/components/kirvra/data-display";
+import { FilterBar, FilterField, OperationalTable } from "@/components/kirvra/data-display";
 import {
   AlertStateBadge,
   DriverAvatar,
@@ -40,20 +36,19 @@ import {
 import { operators } from "@/mocks/kirvra-central";
 
 export const Route = createFileRoute("/_central/alertas/")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    severidade:
-      typeof search["severidade"] === "string"
-        ? (search["severidade"] as AlertQueueFilters["severity"])
-        : ("todos" as const),
+  validateSearch: (search: Record<string, unknown>): AlertQueueFilters => ({
+    severity: (search["severity"] as any) || "todos",
+    state: (search["state"] as any) || "todos",
+    operatorId: (search["operatorId"] as any) || "todos",
   }),
   component: AlertQueuePage,
 });
 
 function AlertQueuePage() {
-  const { severidade } = Route.useSearch();
+  const search = Route.useSearch();
   const [filters, setFilters] = useState<AlertQueueFilters>({
     ...DEFAULT_QUEUE_FILTERS,
-    severity: severidade,
+    ...search,
   });
   const [soundOn, setSoundOn] = useState(true);
 
@@ -98,10 +93,7 @@ function AlertQueuePage() {
               )}
               Som dos alertas: {soundOn ? "ativo" : "silenciado"}
             </Button>
-            <Button
-              variant="destructive"
-              onClick={() => void handleNextCritical()}
-            >
+            <Button variant="destructive" onClick={() => void handleNextCritical()}>
               Assumir próximo crítico
             </Button>
           </>
@@ -159,9 +151,7 @@ function AlertQueuePage() {
         <FilterField label="Operador" htmlFor="queue-operator">
           <Select
             value={filters.operatorId}
-            onValueChange={(value) =>
-              setFilters((f) => ({ ...f, operatorId: value }))
-            }
+            onValueChange={(value) => setFilters((f) => ({ ...f, operatorId: value }))}
           >
             <SelectTrigger id="queue-operator">
               <SelectValue />
@@ -180,9 +170,7 @@ function AlertQueuePage() {
 
       {isLoading ? <LoadingState rows={5} /> : null}
       {isError ? (
-        <ErrorState
-          action={<Button onClick={() => void refetch()}>Tentar novamente</Button>}
-        />
+        <ErrorState action={<Button onClick={() => void refetch()}>Tentar novamente</Button>} />
       ) : null}
 
       {data ? (
@@ -191,11 +179,7 @@ function AlertQueuePage() {
             caption="Fila de alertas da Central KIRVRA"
             rows={rows}
             rowKey={(row) => row.alert.id}
-            rowClassName={(row) =>
-              row.alert.severity === "critico"
-                ? "bg-critical/5"
-                : undefined
-            }
+            rowClassName={(row) => (row.alert.severity === "critico" ? "bg-critical/5" : undefined)}
             emptyState={
               <div className="p-4">
                 <EmptyState description="Nenhum alerta corresponde aos filtros selecionados." />
@@ -213,14 +197,9 @@ function AlertQueuePage() {
                 header: "Motorista",
                 render: (row) => (
                   <span className="flex items-center gap-2">
-                    <DriverAvatar
-                      initials={row.driverName.slice(0, 2)}
-                      size="sm"
-                    />
+                    <DriverAvatar initials={row.driverName.slice(0, 2)} size="sm" />
                     <span className="min-w-0">
-                      <span className="block truncate text-sm">
-                        {row.driverName}
-                      </span>
+                      <span className="block truncate text-sm">{row.driverName}</span>
                       <span className="tabular block text-xs text-muted-foreground">
                         {row.plate}
                       </span>
@@ -235,8 +214,7 @@ function AlertQueuePage() {
                   <span>
                     <span className="block text-sm">{row.alert.threatType}</span>
                     <span className="tabular block text-xs text-muted-foreground">
-                      Confiança IA {Math.round(row.alert.confidence * 100)}% ·
-                      revisão humana
+                      Confiança IA {Math.round(row.alert.confidence * 100)}% · revisão humana
                     </span>
                   </span>
                 ),
@@ -245,9 +223,7 @@ function AlertQueuePage() {
                 key: "location",
                 header: "Localização",
                 render: (row) => (
-                  <span className="text-xs text-muted-foreground">
-                    {row.alert.locationLabel}
-                  </span>
+                  <span className="text-xs text-muted-foreground">{row.alert.locationLabel}</span>
                 ),
               },
               {
@@ -255,9 +231,7 @@ function AlertQueuePage() {
                 header: "Aguardando",
                 align: "right",
                 render: (row) => (
-                  <span className="tabular text-sm">
-                    {formatClock(row.alert.waitingSince)}
-                  </span>
+                  <span className="tabular text-sm">{formatClock(row.alert.waitingSince)}</span>
                 ),
               },
               {
@@ -290,10 +264,7 @@ function AlertQueuePage() {
                       </Button>
                     ) : null}
                     <Button size="sm" asChild>
-                      <Link
-                        to="/alertas/$alertId"
-                        params={{ alertId: row.alert.id }}
-                      >
+                      <Link to="/alertas/$alertId" params={{ alertId: row.alert.id }}>
                         Abrir
                       </Link>
                     </Button>

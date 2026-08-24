@@ -38,20 +38,12 @@ function pinIcon(marker: GeoMarker) {
   });
 }
 
-function FitBounds({
-  markers,
-  activeId,
-}: {
-  markers: GeoMarker[];
-  activeId: string | null;
-}) {
+function FitBounds({ markers, activeId }: { markers: GeoMarker[]; activeId: string | null }) {
   const map = useMap();
 
   useEffect(() => {
     if (markers.length === 0) return;
-    const active = activeId
-      ? markers.find((marker) => marker.id === activeId)
-      : null;
+    const active = activeId ? markers.find((marker) => marker.id === activeId) : null;
     if (active) {
       map.setView([active.latitude, active.longitude], 15, { animate: true });
       return;
@@ -90,10 +82,7 @@ export default function GeoMap({
       attributionControl={false}
       preferCanvas
     >
-      <TileLayer
-        url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-        maxZoom={19}
-      />
+      <TileLayer url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" maxZoom={19} />
       {track && track.length > 1 ? (
         <Polyline
           positions={track}

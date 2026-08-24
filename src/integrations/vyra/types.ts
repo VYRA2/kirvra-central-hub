@@ -7,15 +7,248 @@
  */
 
 /** Placeholder do tipo gerado do banco. Será substituído após o inventário. */
-export type Database = Record<string, never>;
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
+
+export interface Database {
+  public: {
+    Tables: {
+      alert_evidence: {
+        Row: {
+          id: string;
+          alert_id: string | null;
+          security_alert_id: string | null;
+          session_id: string | null;
+          driver_id: string | null;
+          evidence_type: string | null;
+          storage_bucket: string | null;
+          storage_path: string | null;
+          mime_type: string | null;
+          size_bytes: number | null;
+          sha256: string | null;
+          metadata: Json | null;
+          captured_at: string | null;
+          created_at: string | null;
+        };
+        Insert: Omit<Database["public"]["Tables"]["alert_evidence"]["Row"], "id" | "created_at"> & {
+          id?: string;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["alert_evidence"]["Row"]>;
+      };
+      alerts: {
+        Row: {
+          id: string;
+          driver_id: string | null;
+          session_id: string | null;
+          threat_type: string | null;
+          severity: string | null;
+          status: string | null;
+          location_label: string | null;
+          created_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["alerts"]["Row"]>;
+        Update: Partial<Database["public"]["Tables"]["alerts"]["Row"]>;
+      };
+      security_alerts: {
+        Row: {
+          id: string;
+          threat_type: string | null;
+          confidence: number | null;
+          status: string | null;
+          created_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["security_alerts"]["Row"]>;
+        Update: Partial<Database["public"]["Tables"]["security_alerts"]["Row"]>;
+      };
+      drivers: {
+        Row: {
+          id: string;
+          full_name: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["drivers"]["Row"]>;
+        Update: Partial<Database["public"]["Tables"]["drivers"]["Row"]>;
+      };
+      central_audit_logs: {
+        Row: {
+          id: string;
+          operator_id: string | null;
+          action: string;
+          entity_type: string;
+          entity_id: string | null;
+          previous_data: Json | null;
+          next_data: Json | null;
+          ip_address: string | null;
+          user_agent: string | null;
+          created_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["central_audit_logs"]["Row"]>;
+        Update: Partial<Database["public"]["Tables"]["central_audit_logs"]["Row"]>;
+      };
+      central_profiles: {
+        Row: {
+          id: string;
+          full_name: string;
+          employee_code: string;
+          phone: string | null;
+          avatar_url: string | null;
+          status: string;
+          primeiro_acesso: boolean;
+          last_access_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["central_profiles"]["Row"]>;
+        Update: Partial<Database["public"]["Tables"]["central_profiles"]["Row"]>;
+      };
+      central_roles: {
+        Row: {
+          id: string;
+          name: string;
+          code: string;
+          description: string | null;
+          hierarchy_level: number;
+        };
+        Insert: Partial<Database["public"]["Tables"]["central_roles"]["Row"]>;
+        Update: Partial<Database["public"]["Tables"]["central_roles"]["Row"]>;
+      };
+      central_user_roles: {
+        Row: {
+          user_id: string;
+          role_id: string;
+        };
+        Insert: Database["public"]["Tables"]["central_user_roles"]["Row"];
+        Update: Partial<Database["public"]["Tables"]["central_user_roles"]["Row"]>;
+      };
+      central_permissions: {
+        Row: {
+          id: string;
+          name: string;
+          code: string;
+          description: string | null;
+        };
+        Insert: Partial<Database["public"]["Tables"]["central_permissions"]["Row"]>;
+        Update: Partial<Database["public"]["Tables"]["central_permissions"]["Row"]>;
+      };
+      central_role_permissions: {
+        Row: {
+          id: string;
+          role_id: string;
+          permission_id: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["central_role_permissions"]["Row"]>;
+        Update: Partial<Database["public"]["Tables"]["central_role_permissions"]["Row"]>;
+      };
+      vehicles: {
+        Row: {
+          id: string;
+          driver_id: string;
+          plate: string | null;
+          brand: string | null;
+          model: string | null;
+          color: string | null;
+          year: number | null;
+          renavam: string | null;
+          photo_path: string | null;
+          crlv_path: string | null;
+          owner_type: string;
+          authorization_confirmed: boolean;
+          authorization_confirmed_at: string | null;
+          verification_status: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["vehicles"]["Row"]>;
+        Update: Partial<Database["public"]["Tables"]["vehicles"]["Row"]>;
+      };
+      protection_sessions: {
+        Row: {
+          id: string;
+          vehicle_id: string;
+          driver_id: string | null;
+          started_at: string;
+          ended_at: string | null;
+        };
+        Insert: Partial<Database["public"]["Tables"]["protection_sessions"]["Row"]>;
+        Update: Partial<Database["public"]["Tables"]["protection_sessions"]["Row"]>;
+      };
+      central_regions: {
+        Row: {
+          id: string;
+          name: string;
+          code: string;
+          description: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["central_regions"]["Row"]>;
+        Update: Partial<Database["public"]["Tables"]["central_regions"]["Row"]>;
+      };
+      central_shifts: {
+        Row: {
+          id: string;
+          name: string;
+          start_time: string;
+          end_time: string;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["central_shifts"]["Row"]>;
+        Update: Partial<Database["public"]["Tables"]["central_shifts"]["Row"]>;
+      };
+      central_shift_assignments: {
+        Row: {
+          id: string;
+          shift_id: string;
+          operator_id: string;
+          date: string;
+          created_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["central_shift_assignments"]["Row"]>;
+        Update: Partial<Database["public"]["Tables"]["central_shift_assignments"]["Row"]>;
+      };
+      central_operator_presence: {
+        Row: {
+          operator_id: string;
+          status: string;
+          heartbeat_at: string;
+          ip_address: string | null;
+          station_id: string | null;
+          updated_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["central_operator_presence"]["Row"]>;
+        Update: Partial<Database["public"]["Tables"]["central_operator_presence"]["Row"]>;
+      };
+      central_region_assignments: {
+        Row: {
+          id: string;
+          operator_id: string;
+          region_id: string;
+          assigned_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["central_region_assignments"]["Row"]>;
+        Update: Partial<Database["public"]["Tables"]["central_region_assignments"]["Row"]>;
+      };
+      central_shift_handovers: {
+        Row: {
+          id: string;
+          shift_id: string;
+          outgoing_operator_id: string;
+          incoming_operator_id: string | null;
+          status: string;
+          notes: string | null;
+          created_at: string;
+          completed_at: string | null;
+        };
+        Insert: Partial<Database["public"]["Tables"]["central_shift_handovers"]["Row"]>;
+        Update: Partial<Database["public"]["Tables"]["central_shift_handovers"]["Row"]>;
+      };
+    };
+  };
+}
 
 export type EmployeeRole =
-  | "super_admin"
-  | "admin"
-  | "gerente"
-  | "supervisor"
-  | "operador"
-  | "auditor";
+  "super_admin" | "admin" | "gerente" | "supervisor" | "operador" | "auditor";
 
 export const EMPLOYEE_ROLE_LABEL: Record<EmployeeRole, string> = {
   super_admin: "Super Admin",
@@ -37,11 +270,7 @@ export interface CentralEmployee {
   lastSeenAt: string | null;
 }
 
-export type DriverRegistrationStatus =
-  | "verificado"
-  | "em_analise"
-  | "suspenso"
-  | "pendente";
+export type DriverRegistrationStatus = "verificado" | "em_analise" | "suspenso" | "pendente";
 
 export type SubscriptionStatus = "ativa" | "pendente" | "cancelada";
 
@@ -126,12 +355,7 @@ export interface ProtectionSession {
 }
 
 export type AlertState =
-  | "novo"
-  | "assumido"
-  | "em_analise"
-  | "confirmado"
-  | "falso_positivo"
-  | "encerrado";
+  "novo" | "assumido" | "em_analise" | "confirmado" | "falso_positivo" | "encerrado";
 
 export type AlertSeverity = "atencao" | "suspeito" | "critico";
 
