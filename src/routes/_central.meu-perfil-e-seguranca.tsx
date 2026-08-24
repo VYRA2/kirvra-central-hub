@@ -222,7 +222,7 @@ function ProfileSecurityPage() {
                     <Monitor className="mt-0.5 h-5 w-5 text-primary" />
                     <div className="flex-1">
                       <p className="text-sm font-medium">Dispositivo Atual</p>
-                      <p className="text-xs text-muted-foreground">{navigator.userAgent.split(')')[0].split('(')[1] || "Navegador Web"}</p>
+                      <p className="text-xs text-muted-foreground">{navigator?.userAgent?.split(')')?.[0]?.split('(')?.[1] || "Navegador Web"}</p>
                       <div className="mt-2 flex items-center gap-2">
                         <StatusBadge tone="success">Conectado agora</StatusBadge>
                       </div>
@@ -269,6 +269,7 @@ function ProfileSecurityPage() {
           const res = await profileSecurityService.signOutOthers();
           if (res.success) toast.success(res.message);
           else toast.error(res.message);
+          return { status: res.success ? "ok" : "error", message: res.message };
         }}
         variant="critical"
       />
@@ -276,7 +277,7 @@ function ProfileSecurityPage() {
   );
 }
 
-function PasswordModal({ open, onOpenChange }: { open: boolean, onOpenChange: (o: boolean) => void }) {
+function PasswordModal({ open, onOpenChange }: { open: boolean, onOpenChange: (o: boolean) => void }): React.JSX.Element {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
@@ -362,7 +363,7 @@ function PasswordModal({ open, onOpenChange }: { open: boolean, onOpenChange: (o
   );
 }
 
-function MfaModal({ open, onOpenChange }: { open: boolean, onOpenChange: (o: boolean) => void }) {
+function MfaModal({ open, onOpenChange }: { open: boolean, onOpenChange: (o: boolean) => void }): React.JSX.Element {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
@@ -425,7 +426,7 @@ function SessionsModal({
   open: boolean, 
   onOpenChange: (o: boolean) => void,
   onSignOutOthers: () => void
-}) {
+}): React.JSX.Element {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
