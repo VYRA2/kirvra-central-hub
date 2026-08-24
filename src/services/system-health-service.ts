@@ -59,14 +59,16 @@ export class SystemHealthService {
       ? Math.round(latencies.reduce((a, b) => a + b, 0) / latencies.length) 
       : null;
 
-    // Disponibilidade baseada no banco (simplificado)
-    const availability = dbHealth.status === "online" ? "99.98%" : "—";
+    // Disponibilidade histórica e incidentes exigem tabelas de métricas que não existem no VYRA2 ainda.
+    // Retornamos null para evitar dados fictícios.
+    const availability = null;
+    const incidentCount = null;
 
     return {
       availability,
       averageLatencyMs: averageLatency,
       aiQueueSize: null, // Depende do RunPod API
-      incidentCount: 0, // Depende de tabela de incidentes que não existe no VYRA2 ainda
+      incidentCount,
       services,
       recentEvents: [], // Sem tabela de eventos de infra
       lastUpdateAt: new Date().toISOString()
