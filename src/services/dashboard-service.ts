@@ -8,7 +8,6 @@
 import {
   isHandlingAlert,
   isOpenAlert,
-  isRecentHeartbeat,
   type LiveAlert,
   type LiveSession,
 } from "@/integrations/vyra/live";

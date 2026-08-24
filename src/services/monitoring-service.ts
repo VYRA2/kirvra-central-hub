@@ -3,7 +3,6 @@
  * Sem dados inventados: sessões sem localização válida não geram marcador.
  */
 import type { LiveAlert, LiveSession } from "@/integrations/vyra/live";
-import { isRecentHeartbeat } from "@/integrations/vyra/live";
 import type { RiskLevel } from "@/integrations/vyra/types";
 import { fetchLiveContext } from "./vyra-live-service";
 import type { DataSource } from "./dashboard-service";
