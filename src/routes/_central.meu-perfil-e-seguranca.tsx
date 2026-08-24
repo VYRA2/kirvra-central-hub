@@ -24,8 +24,8 @@ import {
   ErrorState, 
   StatusBadge,
   PendingIntegrationNotice,
-  ConfirmActionDialog
 } from "@/components/kirvra/primitives";
+import { ConfirmActionDialog } from "@/components/kirvra/confirm-action-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
