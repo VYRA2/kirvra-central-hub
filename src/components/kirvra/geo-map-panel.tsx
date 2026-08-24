@@ -7,7 +7,7 @@
  */
 import { Suspense, lazy, useEffect, useState, type ReactNode } from "react";
 import { ClientOnly } from "@tanstack/react-router";
-import { MapPinOff, TriangleAlert } from "lucide-react";
+import { TriangleAlert } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import type { GeoMarker } from "./geo-map";
