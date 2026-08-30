@@ -1,60 +1,52 @@
-# Plano — Mapas persistentes e monitoramento Realtime da KIRVRA Central
+# Plano — Assistente Claude para análise de alertas na KIRVRA Central
 
 ## Objetivo
-Corrigir estruturalmente `/central` e `/monitoramento` preservando integralmente o desenho atual, usando somente dados reais do cliente VYRA2 e mantendo o OpenStreetMap montado mesmo quando nenhuma sessão possui coordenadas.
+Adicionar à KIRVRA Central um assistente de IA baseado no Claude (Anthropic) para auxiliar operadores na análise e tomada de decisão sobre alertas de segurança, mantendo a chave da API no servidor e a UI dentro do desenho visual já aprovado.
 
-## Diagnóstico auditado
-- Rotas: `src/routes/_central.central.tsx` e `src/routes/_central.monitoramento.tsx`.
-- Wrapper compartilhado: `src/components/kirvra/geo-map-panel.tsx`.
-- Mapa Leaflet/OpenStreetMap: `src/components/kirvra/geo-map.tsx`.
-- Dados: `src/services/vyra-live-service.ts`, `src/services/monitoring-service.ts`, `src/services/dashboard-service.ts` e normalizadores em `src/integrations/vyra/live.ts`.
-- Realtime: `src/services/realtime-service.ts` e `src/hooks/use-central-realtime.ts`.
-- Problema confirmado: `GeoMapPanel` retorna apenas estado vazio quando `markers.length === 0`, impedindo a montagem do `MapContainer`; portanto o centro São Paulo existente no mapa nunca é utilizado nessa situação.
-- A origem operacional atual é `security_alerts`; as rotas já invalidam queries após eventos do canal compartilhado.
+## Escopo escolhido
+Como o pedido foi "conectar com o claude", a integração será feita diretamente com a API Anthropic. A funcionalidade inicial será um painel de assistente na tela de detalhe do alerta (`/alertas/$alertId`), capaz de:
+- Resumir o contexto do alerta (dados da sessão, motorista, veículo, evidências).
+- Sugerir ações e protocolos com base no tipo de ameaça.
+- Responder a perguntas livres do operador sobre o alerta.
 
 ## Alterações planejadas
-1. **Mapa sempre montado**
-   - Remover o retorno antecipado de estado vazio em `geo-map-panel.tsx`.
-   - Renderizar sempre `Frame`, `ClientOnly`, `Suspense` e `GeoMap`, inclusive com lista de marcadores vazia.
-   - Exibir “Nenhuma sessão com localização válida no momento” como overlay discreto somente quando não houver marcadores, sem ocultar controles ou tiles.
-   - Manter centro inicial `[-23.5505, -46.6333]` e zoom `11` no mapa vazio.
-   - Garantir coordenadas somente quando finitas e dentro dos limites válidos; preservar sessões sem GPS na lista.
 
-2. **Resiliência visual e ciclo do Leaflet**
-   - Adicionar invalidação de tamanho após montagem e redimensionamento, sem recriar o mapa.
-   - Preservar ajuste de bounds/centralização para marcadores reais e seleção de sessão.
-   - Evitar marcadores fictícios, coordenadas inventadas ou substituição do mapa por erro/vazio.
+1. **Backend — integração segura com a API Anthropic**
+   - Adicionar a dependência `@anthropic-ai/sdk`.
+   - Criar `src/services/claude-assistant.functions.ts` com uma `createServerFn` `analyzeAlertWithClaude`.
+   - A função receberá `{ alertId, question, context }`, lerá `process.env['ANTHROPIC_API_KEY']` dentro do handler e chamará a API Anthropic Messages.
+   - Construir um prompt de sistema enxuto que posicione o modelo como assistente de segurança da KIRVRA, com regras de não inventar dados e não sugerir ações fora dos protocolos da central.
+   - Limitar tokens de saída e habilitar streaming opcional para respostas longas.
+   - Tratar erros da Anthropic (401, 429, 5xx, etc.) e retornar mensagens amigáveis para a UI.
 
-3. **Dados e estados operacionais**
-   - Revisar filtros e normalização para manter sessões ativas sem localização, com heartbeat e estado de conexão reais.
-   - Manter a regra de motorista conectado: sessão ativa, não encerrada e heartbeat válido nos 5 minutos definidos pelo projeto.
-   - Confirmar que Central e Monitoramento calculam métricas a partir de `protection_sessions` e `security_alerts`, sem mocks, arrays estáticos ou fallback demonstrativo.
+2. **Frontend — painel de assistente na tela de alerta**
+   - Adicionar um painel lateral ou seção expansível em `src/routes/_central.alertas.$alertId.tsx` com:
+     - Botão "Analisar com Claude" que envia o contexto do alerta.
+     - Campo de pergunta livre.
+     - Área de resposta com markdown simples.
+     - Estados de carregamento e erro.
+   - Usar `useServerFn` para chamar a server function.
+   - Preservar o layout e a paleta Midnight Indigo + Neon Mint já existentes.
 
-4. **Realtime único**
-   - Preservar o canal compartilhado e deduplicado existente.
-   - Assinar eventos em `protection_sessions`, `security_alerts`, `drivers`, `vehicles` e `central_operator_presence` conforme disponibilidade já integrada.
-   - Refinar mapeamento dos estados `SUBSCRIBED`, conectando, reconectando, erro/fechado e cleanup, sem polling agressivo nem canais duplicados.
-   - Invalidar as queries sem reload para que lista, métricas, alertas e marcadores respondam às mudanças.
+3. **Configuração de secrets**
+   - Adicionar `ANTHROPIC_API_KEY` como secret do projeto via ferramenta de secrets.
+   - Garantir que a chave nunca apareça no bundle do cliente.
 
-5. **Validação**
-   - Executar build, typecheck e lint direcionado aos arquivos alterados.
-   - Inspecionar o código para confirmar ausência de mocks nas rotas/serviços envolvidos e ausência de `service_role`/segredos no bundle cliente.
-   - Verificar no preview que o mapa continua visível sem coordenadas, com overlay e centro em São Paulo; que uma atualização real altera a lista/mapa sem recarga; e que alertas reais continuam alimentando Central, Monitoramento, Alertas e notificações.
-   - Documentar qualquer bloqueio verdadeiro de schema/RLS sem criar ou alterar migrations, tabelas, policies, grants ou secrets.
+4. **Validação**
+   - Executar `typecheck` e `build` após as alterações.
+   - Testar o fluxo no preview com uma pergunta simples e verificar se a resposta é exibida.
+   - Verificar logs para garantir que a chave não vazou.
 
 ## Arquivos prováveis
-- `src/components/kirvra/geo-map-panel.tsx`
-- `src/components/kirvra/geo-map.tsx`
-- `src/services/realtime-service.ts`
-- `src/hooks/use-central-realtime.ts`
-- `src/services/vyra-live-service.ts`
-- `src/services/monitoring-service.ts`
-- `src/services/dashboard-service.ts`
-- `src/routes/_central.central.tsx`
-- `src/routes/_central.monitoramento.tsx`
+- `package.json`
+- `src/services/claude-assistant.functions.ts`
+- `src/routes/_central.alertas.$alertId.tsx`
+- `src/components/kirvra/alert-assistant-panel.tsx` (novo componente)
+- `src/components/kirvra/primitives.tsx` (se precisar de novos primitivos visuais)
 
 ## Fora do escopo
-- Redesign, troca de identidade visual ou alteração de textos não relacionada ao funcionamento.
-- Criação/aplicação de migrations, alteração de schema, RLS, policies, grants ou secrets.
-- Troca do cliente, URL ou chave VYRA2.
+- Criação de novas tabelas ou migrations.
+- Alteração de RLS, policies ou grants.
+- Integração com outros modelos (OpenAI, Gemini) — exceto se a chave Anthropic não estiver disponível, caso em que se propõe fallback para Lovable AI Gateway.
 - Publicação automática.
+- Modificações em outras telas além da tela de detalhe do alerta.
