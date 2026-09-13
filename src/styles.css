@@ -1,7 +1,5 @@
 @import "tailwindcss" source(none);
 @import "tw-animate-css";
-/* Mapa real da Central (Leaflet) — arquivo local, resolvido pelo bundler. */
-@import "leaflet/dist/leaflet.css";
 @source "../src";
 
 @custom-variant dark (&:is(.dark *));
@@ -170,11 +168,6 @@
       transparent 1px
     );
   background-size: 56px 56px;
-}
-
-.maplibregl-canvas-container {
-  height: 100%;
-  width: 100%;
 }
 
 @media (prefers-reduced-motion: reduce) {
