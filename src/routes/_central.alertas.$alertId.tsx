@@ -26,7 +26,7 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { BackLink, KirvraAppShell } from "@/components/kirvra/app-shell";
 import { ConfirmActionDialog } from "@/components/kirvra/confirm-action-dialog";
-import { LiveMapPanel } from "@/components/kirvra/map-panel";
+import { GeoMapPanel } from "@/components/kirvra/geo-map-panel";
 import {
   AlertStateBadge,
   EmptyState,
@@ -74,6 +74,20 @@ function AlertHandlingPage() {
     queryFn: listCentralOperators,
     staleTime: 60_000,
   });
+  const markers =
+    data?.alert.latitude != null && data.alert.longitude != null
+      ? [
+          {
+            id: data.alert.id,
+            label: data.alert.threatType,
+            initials: data.driver.displayName?.slice(0, 2).toUpperCase() ?? "AL",
+            latitude: data.alert.latitude,
+            longitude: data.alert.longitude,
+            risk: data.alert.severity,
+            offline: false,
+          },
+        ]
+      : [];
 
   const report = (result: ServiceResult) => {
     if (result.status === "pending") toast.warning(result.message);
@@ -151,15 +165,12 @@ function AlertHandlingPage() {
                 className={undefined}
                 actions={undefined}
               >
-                <LiveMapPanel
+                <GeoMapPanel
                   className="min-h-[300px] rounded-none border-0"
-                  activeId={null}
-                  track={[]}
-                  markers={[]}
-                  onSelect={undefined}
-                  overlay={undefined}
-                  footer={
-                    <div className="flex items-center justify-between gap-2">
+                  activeId={data.alert.id}
+                  markers={markers}
+                  overlay={
+                    <div className="absolute inset-x-0 bottom-0 z-[500] flex items-center justify-between gap-2 border-t border-border bg-card/85 px-3 py-2 backdrop-blur-sm">
                       <span className="tabular text-xs text-muted-foreground">
                         Coordenadas capturadas no momento do alerta
                       </span>

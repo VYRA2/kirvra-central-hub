@@ -447,6 +447,8 @@ export interface Alert {
   state: AlertState;
   riskScore: number;
   locationLabel: string;
+  latitude: number | null;
+  longitude: number | null;
   detectedAt: string;
   waitingSince: string;
   assignment: AlertAssignment;
