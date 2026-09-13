@@ -1,3 +1,5 @@
+/// <reference types="google.maps" />
+
 import { useEffect, useMemo, useRef, useState } from "react";
 import { APIProvider, Map, Marker, useMap } from "@vis.gl/react-google-maps";
 import { createServerFn } from "@tanstack/react-start";
