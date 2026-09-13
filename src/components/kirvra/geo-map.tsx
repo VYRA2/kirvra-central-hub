@@ -1,8 +1,7 @@
 /// <reference types="google.maps" />
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { APIProvider, Map, Marker, useMap } from "@vis.gl/react-google-maps";
-import { createServerFn } from "@tanstack/react-start";
 
 import type { RiskLevel } from "@/integrations/vyra/types";
 
@@ -25,12 +24,10 @@ const RISK_COLOR: Record<string, string> = {
 
 const DEFAULT_CENTER = { lat: -23.5505, lng: -46.6333 };
 
-// A chave é pública por design e protegida por restrição de domínio no Google Cloud.
-const getGoogleMapsApiKey = createServerFn({ method: "GET" }).handler(() => {
-  const apiKey = process.env["GOOGLE_API_KEY"];
-  if (!apiKey) throw new Error("Google Maps API key não configurada.");
-  return apiKey;
-});
+// A chave é pública por design e protegida por restrição de domínio no Google Cloud
+// (Application restrictions → HTTP referrers), não por sigilo — por isso pode
+// ser usada diretamente no navegador, sem passar por segredo de servidor.
+const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY;
 
 function pinIcon(marker: GeoMarker): google.maps.Icon {
   const color = RISK_COLOR[marker.risk ?? "normal"] ?? RISK_COLOR["normal"];
@@ -153,16 +150,8 @@ export default function GeoMap({
   track?: Array<[number, number]> | undefined;
   onSelect?: ((id: string) => void) | undefined;
 }) {
-  const [apiKey, setApiKey] = useState<string | null>(null);
-
-  useEffect(() => {
-    void getGoogleMapsApiKey().then(setApiKey);
-  }, []);
-
-  if (!apiKey) return null;
-
   return (
-    <APIProvider apiKey={apiKey} libraries={[]}>
+    <APIProvider apiKey={GOOGLE_MAPS_API_KEY} libraries={[]}>
       <GoogleMap markers={markers} activeId={activeId} track={track} onSelect={onSelect} />
     </APIProvider>
   );
