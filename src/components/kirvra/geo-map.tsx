@@ -40,13 +40,7 @@ function pinIcon(marker: GeoMarker): google.maps.Icon {
   };
 }
 
-function ViewController({
-  markers,
-  activeId,
-}: {
-  markers: GeoMarker[];
-  activeId: string | null;
-}) {
+function ViewController({ markers, activeId }: { markers: GeoMarker[]; activeId: string | null }) {
   const map = useMap();
 
   useEffect(() => {
@@ -66,9 +60,7 @@ function ViewController({
     }
 
     const bounds = new google.maps.LatLngBounds();
-    markers.forEach((marker) =>
-      bounds.extend({ lat: marker.latitude, lng: marker.longitude }),
-    );
+    markers.forEach((marker) => bounds.extend({ lat: marker.latitude, lng: marker.longitude }));
     map.fitBounds(bounds, 48);
   }, [map, markers, activeId]);
 
