@@ -172,6 +172,11 @@
   background-size: 56px 56px;
 }
 
+.maplibregl-canvas-container {
+  height: 100%;
+  width: 100%;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
