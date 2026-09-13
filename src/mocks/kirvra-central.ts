@@ -442,6 +442,8 @@ export const alerts: Alert[] = [
     state: "em_analise",
     riskScore: 87,
     locationLabel: "Av. Paulista, 1578 · Bela Vista",
+    latitude: null,
+    longitude: null,
     detectedAt: minutesAgo(3),
     waitingSince: minutesAgo(3),
     assignment: {
@@ -465,6 +467,8 @@ export const alerts: Alert[] = [
     state: "assumido",
     riskScore: 78,
     locationLabel: "R. da Consolação, 2210 · Consolação",
+    latitude: null,
+    longitude: null,
     detectedAt: minutesAgo(6),
     waitingSince: minutesAgo(6),
     assignment: {
@@ -488,6 +492,8 @@ export const alerts: Alert[] = [
     state: "novo",
     riskScore: 61,
     locationLabel: "R. Domingos de Morais, 940 · Vila Mariana",
+    latitude: null,
+    longitude: null,
     detectedAt: minutesAgo(9),
     waitingSince: minutesAgo(9),
     assignment: {
@@ -511,6 +517,8 @@ export const alerts: Alert[] = [
     state: "novo",
     riskScore: 34,
     locationLabel: "Av. Santo Amaro, 4120 · Brooklin",
+    latitude: null,
+    longitude: null,
     detectedAt: minutesAgo(14),
     waitingSince: minutesAgo(14),
     assignment: {
@@ -534,6 +542,8 @@ export const alerts: Alert[] = [
     state: "assumido",
     riskScore: 52,
     locationLabel: "Praça da Sé, 100 · Sé",
+    latitude: null,
+    longitude: null,
     detectedAt: minutesAgo(18),
     waitingSince: minutesAgo(18),
     assignment: {
@@ -560,6 +570,8 @@ export const alertHistory: Alert[] = [
     state: "confirmado",
     riskScore: 92,
     locationLabel: "Av. Rebouças, 3970 · Pinheiros",
+    latitude: null,
+    longitude: null,
     detectedAt: daysAgo(1),
     waitingSince: daysAgo(1),
     assignment: {
@@ -590,6 +602,8 @@ export const alertHistory: Alert[] = [
     state: "falso_positivo",
     riskScore: 70,
     locationLabel: "R. Vergueiro, 2200 · Vila Mariana",
+    latitude: null,
+    longitude: null,
     detectedAt: daysAgo(2),
     waitingSince: daysAgo(2),
     assignment: {
@@ -620,6 +634,8 @@ export const alertHistory: Alert[] = [
     state: "encerrado",
     riskScore: 48,
     locationLabel: "Av. Ibirapuera, 1010 · Moema",
+    latitude: null,
+    longitude: null,
     detectedAt: daysAgo(3),
     waitingSince: daysAgo(3),
     assignment: {
@@ -650,6 +666,8 @@ export const alertHistory: Alert[] = [
     state: "confirmado",
     riskScore: 74,
     locationLabel: "R. Augusta, 900 · Consolação",
+    latitude: null,
+    longitude: null,
     detectedAt: daysAgo(5),
     waitingSince: daysAgo(5),
     assignment: {
@@ -680,6 +698,8 @@ export const alertHistory: Alert[] = [
     state: "encerrado",
     riskScore: 22,
     locationLabel: "Rod. dos Imigrantes, km 12",
+    latitude: null,
+    longitude: null,
     detectedAt: daysAgo(8),
     waitingSince: daysAgo(8),
     assignment: {
