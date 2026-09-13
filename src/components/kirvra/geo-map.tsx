@@ -1,7 +1,7 @@
 /// <reference types="google.maps" />
 
 import { useEffect, useMemo, useRef } from "react";
-import { APIProvider, Map, Marker, useMap } from "@vis.gl/react-google-maps";
+import { APIProvider, Map, Marker, useApiIsLoaded, useMap } from "@vis.gl/react-google-maps";
 
 import type { RiskLevel } from "@/integrations/vyra/types";
 
@@ -102,6 +102,7 @@ function GoogleMap({
   track?: Array<[number, number]> | undefined;
   onSelect?: ((id: string) => void) | undefined;
 }) {
+  const apiIsLoaded = useApiIsLoaded();
   const initialCenter = useMemo(() => {
     const first = markers[0];
     return first ? { lat: first.latitude, lng: first.longitude } : DEFAULT_CENTER;
@@ -119,21 +120,23 @@ function GoogleMap({
       clickableIcons={false}
     >
       {track && track.length > 1 ? <TrackPolyline track={track} /> : null}
-      {markers.map((marker) => (
-        <Marker
-          key={marker.id}
-          position={{ lat: marker.latitude, lng: marker.longitude }}
-          icon={pinIcon(marker)}
-          label={{
-            text: marker.initials,
-            color: "#04131a",
-            fontSize: "10px",
-            fontWeight: "700",
-          }}
-          title={marker.label}
-          onClick={() => onSelect?.(marker.id)}
-        />
-      ))}
+      {apiIsLoaded
+        ? markers.map((marker) => (
+            <Marker
+              key={marker.id}
+              position={{ lat: marker.latitude, lng: marker.longitude }}
+              icon={pinIcon(marker)}
+              label={{
+                text: marker.initials,
+                color: "#04131a",
+                fontSize: "10px",
+                fontWeight: "700",
+              }}
+              title={marker.label}
+              onClick={() => onSelect?.(marker.id)}
+            />
+          ))
+        : null}
       <ViewController markers={markers} activeId={activeId} />
     </Map>
   );
