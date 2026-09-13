@@ -7,7 +7,9 @@
  */
 import { useEffect, useMemo } from "react";
 import L from "leaflet";
-import { MapContainer, Marker, Polyline, TileLayer, useMap } from "react-leaflet";
+import { MapContainer, Marker, Polyline, useMap } from "react-leaflet";
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@maplibre/maplibre-gl-leaflet";
 
 import type { RiskLevel } from "@/integrations/vyra/types";
 
@@ -36,6 +38,22 @@ function pinIcon(marker: GeoMarker) {
     iconAnchor: [13, 13],
     html: `<span style="display:flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:9999px;border:2px solid rgba(10,20,24,0.9);background:${color};color:#04131a;font:700 10px/1 ui-sans-serif,system-ui;opacity:${marker.offline ? 0.55 : 1};filter:${marker.offline ? "grayscale(1)" : "none"}">${marker.initials}</span>`,
   });
+}
+
+function MapLibreTiles() {
+  const map = useMap();
+
+  useEffect(() => {
+    const layer = L.maplibreGL({
+      style: "https://tiles.openfreemap.org/styles/liberty",
+    }).addTo(map);
+
+    return () => {
+      layer.remove();
+    };
+  }, [map]);
+
+  return null;
 }
 
 function FitBounds({ markers, activeId }: { markers: GeoMarker[]; activeId: string | null }) {
@@ -93,10 +111,10 @@ export default function GeoMap({
       zoom={markers.length > 0 ? 13 : 11}
       scrollWheelZoom
       className="h-full w-full"
-      attributionControl={false}
+      attributionControl
       preferCanvas
     >
-      <TileLayer url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" maxZoom={19} />
+      <MapLibreTiles />
       {track && track.length > 1 ? (
         <Polyline
           positions={track}
