@@ -48,7 +48,17 @@ function MapLibreTiles() {
       style: "https://tiles.openfreemap.org/styles/liberty",
     }).addTo(map);
 
+    const resize = () => {
+      const inner = layer.getMaplibreMap?.();
+      inner?.resize();
+    };
+
+    const frame = window.requestAnimationFrame(resize);
+    window.addEventListener("resize", resize);
+
     return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("resize", resize);
       layer.remove();
     };
   }, [map]);
