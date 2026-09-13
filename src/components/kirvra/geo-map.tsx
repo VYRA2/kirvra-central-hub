@@ -44,7 +44,6 @@ function MapLibreTiles() {
   const map = useMap();
 
   useEffect(() => {
-    // @ts-expect-error — plugin adiciona esse método ao namespace L via import lateral
     const layer = L.maplibreGL({
       style: "https://tiles.openfreemap.org/styles/liberty",
     }).addTo(map);
