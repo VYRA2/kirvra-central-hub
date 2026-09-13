@@ -1,14 +1,8 @@
-/**
- * Mapa real (MapLibre GL JS nativo + OpenFreeMap).
- *
- * Módulo carregado APENAS no navegador (React.lazy dentro de <ClientOnly>
- * no geo-map-panel.tsx), porque maplibre-gl toca `window` no import.
- * Nenhuma coordenada é inventada: o componente recebe somente sessões
- * com ponto válido.
- */
-import { useEffect, useMemo, useRef } from "react";
-import { Layer, Map, Marker, Source, type MapRef } from "react-map-gl/maplibre";
-import "maplibre-gl/dist/maplibre-gl.css";
+/// <reference types="google.maps" />
+
+import { useEffect, useMemo, useRef, useState } from "react";
+import { APIProvider, Map, Marker, useMap } from "@vis.gl/react-google-maps";
+import { createServerFn } from "@tanstack/react-start";
 
 import type { RiskLevel } from "@/integrations/vyra/types";
 
@@ -23,13 +17,130 @@ export interface GeoMarker {
 }
 
 const RISK_COLOR: Record<string, string> = {
-  normal: "oklch(0.789 0.148 173)",
-  atencao: "oklch(0.79 0.16 82)",
-  suspeito: "oklch(0.79 0.16 82)",
-  critico: "oklch(0.63 0.22 22)",
+  normal: "#3ddc97",
+  atencao: "#f2b705",
+  suspeito: "#f2b705",
+  critico: "#ef4444",
 };
 
-const DEFAULT_CENTER: [number, number] = [-46.6333, -23.5505];
+const DEFAULT_CENTER = { lat: -23.5505, lng: -46.6333 };
+
+// A chave é pública por design e protegida por restrição de domínio no Google Cloud.
+const getGoogleMapsApiKey = createServerFn({ method: "GET" }).handler(() => {
+  const apiKey = process.env["GOOGLE_API_KEY"];
+  if (!apiKey) throw new Error("Google Maps API key não configurada.");
+  return apiKey;
+});
+
+function pinIcon(marker: GeoMarker): google.maps.Icon {
+  const color = RISK_COLOR[marker.risk ?? "normal"] ?? RISK_COLOR["normal"];
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26"><circle cx="13" cy="13" r="11" fill="${color}" stroke="rgba(10,20,24,0.9)" stroke-width="2" opacity="${marker.offline ? 0.55 : 1}"/></svg>`;
+  return {
+    url: `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`,
+    scaledSize: new google.maps.Size(26, 26),
+    anchor: new google.maps.Point(13, 13),
+  };
+}
+
+function ViewController({ markers, activeId }: { markers: GeoMarker[]; activeId: string | null }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (!map) return;
+
+    if (markers.length === 0) {
+      map.panTo(DEFAULT_CENTER);
+      map.setZoom(11);
+      return;
+    }
+
+    const active = activeId ? markers.find((marker) => marker.id === activeId) : null;
+    if (active) {
+      map.panTo({ lat: active.latitude, lng: active.longitude });
+      map.setZoom(15);
+      return;
+    }
+
+    const bounds = new google.maps.LatLngBounds();
+    markers.forEach((marker) => bounds.extend({ lat: marker.latitude, lng: marker.longitude }));
+    map.fitBounds(bounds, 48);
+  }, [map, markers, activeId]);
+
+  return null;
+}
+
+function TrackPolyline({ track }: { track: Array<[number, number]> }) {
+  const map = useMap();
+  const polylineRef = useRef<google.maps.Polyline | null>(null);
+
+  useEffect(() => {
+    if (!map || track.length < 2) return;
+
+    const polyline = new google.maps.Polyline({
+      path: track.map(([lat, lng]) => ({ lat, lng })),
+      strokeColor: "#3ddc97",
+      strokeOpacity: 0.9,
+      strokeWeight: 3,
+      map,
+    });
+    polylineRef.current = polyline;
+
+    return () => {
+      polyline.setMap(null);
+      polylineRef.current = null;
+    };
+  }, [map, track]);
+
+  return null;
+}
+
+function GoogleMap({
+  markers,
+  activeId,
+  track,
+  onSelect,
+}: {
+  markers: GeoMarker[];
+  activeId: string | null;
+  track?: Array<[number, number]> | undefined;
+  onSelect?: ((id: string) => void) | undefined;
+}) {
+  const initialCenter = useMemo(() => {
+    const first = markers[0];
+    return first ? { lat: first.latitude, lng: first.longitude } : DEFAULT_CENTER;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return (
+    <Map
+      defaultCenter={initialCenter}
+      defaultZoom={markers.length > 0 ? 13 : 11}
+      style={{ width: "100%", height: "100%" }}
+      disableDefaultUI
+      zoomControl
+      gestureHandling="greedy"
+      clickableIcons={false}
+    >
+      {track && track.length > 1 ? <TrackPolyline track={track} /> : null}
+      {markers.map((marker) => (
+        <Marker
+          key={marker.id}
+          position={{ lat: marker.latitude, lng: marker.longitude }}
+          icon={pinIcon(marker)}
+          label={{
+            text: marker.initials,
+            color: "#04131a",
+            fontSize: "10px",
+            fontWeight: "700",
+          }}
+          title={marker.label}
+          onClick={() => onSelect?.(marker.id)}
+        />
+      ))}
+      <ViewController markers={markers} activeId={activeId} />
+    </Map>
+  );
+}
 
 export default function GeoMap({
   markers,
@@ -42,111 +153,17 @@ export default function GeoMap({
   track?: Array<[number, number]> | undefined;
   onSelect?: ((id: string) => void) | undefined;
 }) {
-  const mapRef = useRef<MapRef | null>(null);
-
-  const initialViewState = useMemo(() => {
-    const first = markers[0];
-    return {
-      longitude: first ? first.longitude : DEFAULT_CENTER[0],
-      latitude: first ? first.latitude : DEFAULT_CENTER[1],
-      zoom: markers.length > 0 ? 13 : 11,
-    };
-    // A posição inicial é capturada somente na montagem; mudanças posteriores
-    // são tratadas pelo efeito de enquadramento abaixo.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const [apiKey, setApiKey] = useState<string | null>(null);
 
   useEffect(() => {
-    const map = mapRef.current;
-    if (!map) return;
+    void getGoogleMapsApiKey().then(setApiKey);
+  }, []);
 
-    if (markers.length === 0) {
-      map.flyTo({ center: DEFAULT_CENTER, zoom: 11, duration: 0 });
-      return;
-    }
-
-    const active = activeId ? markers.find((marker) => marker.id === activeId) : null;
-    if (active) {
-      map.flyTo({ center: [active.longitude, active.latitude], zoom: 15, duration: 600 });
-      return;
-    }
-
-    const lngs = markers.map((marker) => marker.longitude);
-    const lats = markers.map((marker) => marker.latitude);
-    map.fitBounds(
-      [
-        [Math.min(...lngs), Math.min(...lats)],
-        [Math.max(...lngs), Math.max(...lats)],
-      ],
-      { padding: 48, maxZoom: 15, duration: 600 },
-    );
-  }, [markers, activeId]);
-
-  const trackGeoJson = useMemo(() => {
-    if (!track || track.length < 2) return null;
-    return {
-      type: "Feature" as const,
-      geometry: {
-        type: "LineString" as const,
-        coordinates: track.map(([lat, lng]) => [lng, lat]),
-      },
-      properties: {},
-    };
-  }, [track]);
+  if (!apiKey) return null;
 
   return (
-    <Map
-      ref={mapRef}
-      initialViewState={initialViewState}
-      mapStyle="https://tiles.openfreemap.org/styles/liberty"
-      style={{ width: "100%", height: "100%" }}
-      attributionControl={{ compact: true }}
-    >
-      {trackGeoJson ? (
-        <Source id="track" type="geojson" data={trackGeoJson}>
-          <Layer
-            id="track-line"
-            type="line"
-            paint={{
-              "line-color": "oklch(0.789 0.148 173)",
-              "line-width": 3,
-              "line-dasharray": [2, 1.5],
-            }}
-          />
-        </Source>
-      ) : null}
-      {markers.map((marker) => {
-        const color = RISK_COLOR[marker.risk ?? "normal"] ?? RISK_COLOR["normal"];
-        return (
-          <Marker
-            key={marker.id}
-            longitude={marker.longitude}
-            latitude={marker.latitude}
-            onClick={() => onSelect?.(marker.id)}
-          >
-            <span
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                width: 26,
-                height: 26,
-                borderRadius: 9999,
-                border: "2px solid rgba(10,20,24,0.9)",
-                background: color,
-                color: "#04131a",
-                font: "700 10px/1 ui-sans-serif, system-ui",
-                opacity: marker.offline ? 0.55 : 1,
-                filter: marker.offline ? "grayscale(1)" : "none",
-                cursor: "pointer",
-              }}
-              title={marker.label}
-            >
-              {marker.initials}
-            </span>
-          </Marker>
-        );
-      })}
-    </Map>
+    <APIProvider apiKey={apiKey} libraries={[]}>
+      <GoogleMap markers={markers} activeId={activeId} track={track} onSelect={onSelect} />
+    </APIProvider>
   );
 }
