@@ -163,6 +163,8 @@ function mapAlert(
     state: state(row.status, assignment),
     riskScore: row.risk_score,
     locationLabel: location,
+    latitude: row.latitude,
+    longitude: row.longitude,
     detectedAt: row.detected_at,
     waitingSince: row.detected_at,
     assignment: {
