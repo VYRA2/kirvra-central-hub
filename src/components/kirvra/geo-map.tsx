@@ -27,7 +27,8 @@ const DEFAULT_CENTER = { lat: -23.5505, lng: -46.6333 };
 // A chave é pública por design e protegida por restrição de domínio no Google Cloud
 // (Application restrictions → HTTP referrers), não por sigilo — por isso pode
 // ser usada diretamente no navegador, sem passar por segredo de servidor.
-const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY;
+const GOOGLE_MAPS_API_KEY =
+  import.meta.env["VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY"];
 
 function pinIcon(marker: GeoMarker): google.maps.Icon {
   const color = RISK_COLOR[marker.risk ?? "normal"] ?? RISK_COLOR["normal"];
